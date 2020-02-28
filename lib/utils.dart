@@ -47,6 +47,30 @@ void showAPIResponse(BuildContext context, String title, Color color) {
   )..show(context);
 }
 
+void showNoInternetConnection(BuildContext context) {
+  Flushbar flush;
+  flush = Flushbar(
+    flushbarPosition: FlushbarPosition.TOP,
+    flushbarStyle: FlushbarStyle.GROUNDED,
+    backgroundColor: Colors.red,
+    boxShadows: [
+      BoxShadow(
+        color: Color(COLOR_DANGER),
+        offset: Offset(0.0, 0.0),
+        blurRadius: 1.0,
+      )
+    ],
+    mainButton: FlatButton(
+      child: Icon(Icons.close, color: Colors.white,),
+      onPressed: (){
+        flush.dismiss(true);
+      },
+    ),
+    title: "No Internet Connection",
+    message: "Make sure you're connected with internet",
+  )..show(context);
+}
+
 String formatDate(String date) {
   DateFormat inputFormat = DateFormat("yyyy-MM-dd'T'hh:mm:ss");
   DateTime dateTime = inputFormat.parse(date);

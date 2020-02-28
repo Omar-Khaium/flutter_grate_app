@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:ui';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/drawer/side_nav.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_grate_app/ui/fragment_search_result.dart';
 import 'package:flutter_grate_app/ui/fragment_update_basement_report.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
+import '../flutter_connectivity.dart';
 import '../utils.dart';
 import 'fragment_recommended_level.dart';
 import 'fragment_update_estimate.dart';
@@ -42,6 +45,63 @@ class _DashboardUIState extends State<DashboardUI>
   GlobalKey<SideNavUIState> _keySideNav = GlobalKey();
   DBHelper dbHelper = new DBHelper();
   LoggedInUser loggedInUser;
+
+  StreamSubscription _connectionChangeStream;
+
+  @override
+  void initState() {
+    super.initState();
+    fragment = new DashboardFragment(
+      login: widget.login,
+      goToCustomerDetails: _goToCustomerDetails,
+      loggedInUser: widget.loggedInUser,
+      goToSearch: _goToSearch,
+    );
+    _checkBasementData();
+    ConnectionStatusSingleton connectionStatus = ConnectionStatusSingleton.getInstance();
+    _connectionChangeStream = connectionStatus.connectionChange.listen(connectionChanged);
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    if(!hasConnection) {
+      showAPIResponse(context, "No Internet Connection", Color(COLOR_DANGER));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: WillPopScope(
+        onWillPop: () async => false,
+        child: ModalProgressHUD(
+          child: SafeArea(
+            child: Row(
+              children: <Widget>[
+                SideNavUI(
+                  refreshEvent: _refresh,
+                  key: _keySideNav,
+                  login: widget.login,
+                  loggedInUser: widget.loggedInUser,
+                ),
+                Expanded(
+                  child: fragment,
+                ),
+              ],
+            ),
+          ),
+          inAsyncCall: _isLoading,
+          color: Colors.black,
+          progressIndicator: CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation<Color>(
+              Colors.white,
+            ),
+          ),
+          dismissible: false,
+        ),
+      ),
+    );
+  }
 
   _refresh(int index) {
     setState(() {
@@ -271,53 +331,6 @@ class _DashboardUIState extends State<DashboardUI>
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fragment = new DashboardFragment(
-      login: widget.login,
-      goToCustomerDetails: _goToCustomerDetails,
-      loggedInUser: widget.loggedInUser,
-      goToSearch: _goToSearch,
-    );
-    _checkBasementData();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: WillPopScope(
-        onWillPop: ()async=>false,
-        child: ModalProgressHUD(
-          child: SafeArea(
-            child: Row(
-              children: <Widget>[
-                SideNavUI(
-                  refreshEvent: _refresh,
-                  key: _keySideNav,
-                  login: widget.login,
-                  loggedInUser: widget.loggedInUser,
-                ),
-                Expanded(
-                  child: fragment,
-                ),
-              ],
-            ),
-          ),
-          inAsyncCall: _isLoading,
-          color: Colors.black,
-          progressIndicator: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(
-              Colors.white,
-            ),
-          ),
-          dismissible: false,
-        ),
-      ),
-    );
-  }
-
   void _checkBasementData() async {
     List<BasementReport> basementsDatas = await dbHelper.getBasementData();
     if (basementsDatas.isNotEmpty && basementsDatas.length != 0) {
@@ -470,5 +483,4 @@ class _DashboardUIState extends State<DashboardUI>
       ),
     );
   }
-//-----------------------Offline DB-----------------------
 }

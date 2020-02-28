@@ -15,6 +15,7 @@ import 'package:flutter_grate_app/widgets/list_row_item.dart';
 import 'package:flutter_grate_app/widgets/list_shimmer_item_customer.dart';
 import 'package:flutter_grate_app/widgets/list_shimmer_item_multiline_customer.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
+import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:http/http.dart' as http;
 
 class DashboardFragment extends StatefulWidget {
@@ -24,7 +25,11 @@ class DashboardFragment extends StatefulWidget {
   final LoggedInUser loggedInUser;
 
   DashboardFragment(
-      {Key key, this.login, this.goToCustomerDetails, this.goToSearch, this.loggedInUser})
+      {Key key,
+      this.login,
+      this.goToCustomerDetails,
+      this.goToSearch,
+      this.loggedInUser})
       : super(key: key);
 
   @override
@@ -37,6 +42,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
   Customer customer;
 
   bool _showPaginationShimmer = false;
+  bool isOffline = false;
   ScrollController _scrollController;
   int _pageNo = 0;
   int _totalSize = 0;
@@ -187,161 +193,171 @@ class _DashboardFragmentState extends State<DashboardFragment>
                   try {
                     return RefreshIndicator(
                       onRefresh: _refresh,
-                      child: ListView(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        controller: _scrollController,
-                        children: <Widget>[
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: ScrollPhysics(),
-                            itemCount: arrayList.length,
-                            itemBuilder: (context, index) {
-                              customer = arrayList[index];
-                              return InkWell(
-                                onTap: () {
-                                  widget
-                                      .goToCustomerDetails(arrayList[index].Id);
-                                },
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              ListRowItem(
-                                                icon: Icons.person,
-                                                text: customer.Name,
-                                              ),
-                                              SizedBox(
-                                                height: 8,
-                                              ),
-                                              ListRowItem(
-                                                icon: Icons.phone,
-                                                text: customer.ContactNum,
-                                              ),
-                                              SizedBox(
-                                                height: 8,
-                                              ),
-                                              ListRowItem(
-                                                icon: Icons.email,
-                                                text: customer.Email,
-                                              ),
-                                            ],
+                      child: !isOffline
+                          ? ListView(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              controller: _scrollController,
+                              children: <Widget>[
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: ScrollPhysics(),
+                                  itemCount: arrayList.length,
+                                  itemBuilder: (context, index) {
+                                    customer = arrayList[index];
+                                    return InkWell(
+                                      onTap: () {
+                                        widget.goToCustomerDetails(
+                                            arrayList[index].Id);
+                                      },
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          SizedBox(
+                                            height: 8,
                                           ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: <Widget>[
-                                              ListRowItem(
-                                                icon: Icons.pin_drop,
-                                                text: customer.Address,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            InkWell(
-                                              onTap: () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        deleteMessage(index));
-                                              },
-                                              child: CircleAvatar(
-                                                backgroundColor:
-                                                    Colors.grey.shade300,
-                                                child: Icon(
-                                                  Icons.delete,
-                                                  color: Colors.black,
-                                                  size: 18,
+                                              Expanded(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    ListRowItem(
+                                                      icon: Icons.person,
+                                                      text: customer.Name,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    ListRowItem(
+                                                      icon: Icons.phone,
+                                                      text: customer.ContactNum,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    ListRowItem(
+                                                      icon: Icons.email,
+                                                      text: customer.Email,
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
+                                              Expanded(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    ListRowItem(
+                                                      icon: Icons.pin_drop,
+                                                      text: customer.Address,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                  InkWell(
+                                                    onTap: () {
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (context) =>
+                                                              deleteMessage(
+                                                                  index));
+                                                    },
+                                                    child: CircleAvatar(
+                                                      backgroundColor:
+                                                          Colors.grey.shade300,
+                                                      child: Icon(
+                                                        Icons.delete,
+                                                        color: Colors.black,
+                                                        size: 18,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Divider(),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                                _showPaginationShimmer
+                                    ? Focus(
+                                        autofocus: false,
+                                        focusNode: _paginationFocus,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Row(
+                                              children: <Widget>[
+                                                Expanded(
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      ShimmerItemCustomer(250),
+                                                      SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      ShimmerItemCustomer(125),
+                                                      SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      ShimmerItemCustomer(175),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      ShimmerItemMultiLineCustomer(
+                                                          300),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 8,
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Divider(),
-                                  ],
+                                      )
+                                    : Container(),
+                                SizedBox(
+                                  height: 8,
                                 ),
-                              );
-                            },
-                          ),
-                          _showPaginationShimmer
-                              ? Focus(
-                            autofocus: false,
-                                focusNode: _paginationFocus,
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                ShimmerItemCustomer(250),
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
-                                                ShimmerItemCustomer(125),
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
-                                                ShimmerItemCustomer(175),
-                                              ],
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                ShimmerItemMultiLineCustomer(300),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                    ],
-                                  ),
-                              )
-                              : Container(),
-                          SizedBox(
-                            height: 8,
-                          ),
-                        ],
-                      ),
+                              ],
+                            )
+                          : NoInternetConnectionWidget(),
                     );
                   } catch (error) {
                     return Container();
@@ -362,55 +378,82 @@ class _DashboardFragmentState extends State<DashboardFragment>
   }
 
   Future getData() async {
-    Map<String, String> headers = {
-      'Authorization': widget.login.accessToken,
-      'PageNo': (++_pageNo).toString(),
-      'PageSize': '30',
-      'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
-    };
+    try {
+      Map<String, String> headers = {
+        'Authorization': widget.login.accessToken,
+        'PageNo': (++_pageNo).toString(),
+        'PageSize': '30',
+        'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
+      };
 
-    var result =
-        await http.get(BASE_URL + API_GET_ALL_CUSTOMER, headers: headers);
-    if (result.statusCode == 200) {
-      var map = json.decode(result.body);
-      var _customersMap = map['data']['CustomerList'];
-      _totalSize = map['data']['TotalCustomerCount']['Counter'];
-      arrayList = List.generate(_customersMap.length, (index) {
-        return Customer.fromMap(_customersMap[index]);
-      });
-      setState(() {});
-      return result;
-    } else {
-      showMessage(context, "Network error!", json.decode(result.body),
-          Colors.redAccent, Icons.warning);
-      return [];
+      var result =
+          await http.get(BASE_URL + API_GET_ALL_CUSTOMER, headers: headers);
+      if (result.statusCode == 200) {
+        var map = json.decode(result.body);
+        var _customersMap = map['data']['CustomerList'];
+        _totalSize = map['data']['TotalCustomerCount']['Counter'];
+        arrayList = List.generate(_customersMap.length, (index) {
+          return Customer.fromMap(_customersMap[index]);
+        });
+        setState(() {
+          isOffline = false;
+        });
+        return result;
+      } else {
+        showMessage(context, "Network error!", json.decode(result.body),
+            Colors.redAccent, Icons.warning);
+        return [];
+      }
+    } catch (error) {
+      if (error.toString().contains("SocketException")) {
+        setState(() {
+          isOffline = true;
+        });
+        showNoInternetConnection(context);
+        return [];
+      }
     }
   }
 
   Future fetchData() async {
-    Map<String, String> headers = {
-      'Authorization': widget.login.accessToken,
-      'PageNo': (++_pageNo).toString(),
-      'PageSize': '30',
-      'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
-    };
+    try {
+      Map<String, String> headers = {
+        'Authorization': widget.login.accessToken,
+        'PageNo': (++_pageNo).toString(),
+        'PageSize': '30',
+        'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
+      };
 
-    var result =
-        await http.get(BASE_URL + API_GET_ALL_CUSTOMER, headers: headers);
-    if (result.statusCode == 200) {
-      var map = json.decode(result.body);
-      var _customersMap = map['data']['CustomerList'];
-      List<Customer> _arrayList = List.generate(_customersMap.length, (index) {
-        return Customer.fromMap(_customersMap[index]);
-      });
-      setState(() {
-        arrayList.addAll(_arrayList);
-      });
-      return _arrayList;
-    } else {
-      showMessage(context, "Network error!", json.decode(result.body),
-          Colors.redAccent, Icons.warning);
-      return [];
+      var result =
+          await http.get(BASE_URL + API_GET_ALL_CUSTOMER, headers: headers);
+      if (result.statusCode == 200) {
+        var map = json.decode(result.body);
+        var _customersMap = map['data']['CustomerList'];
+        List<Customer> _arrayList =
+            List.generate(_customersMap.length, (index) {
+          return Customer.fromMap(_customersMap[index]);
+        });
+        setState(() {
+          isOffline = false;
+          arrayList.addAll(_arrayList);
+        });
+        return _arrayList;
+      } else {
+        setState(() {
+          isOffline = false;
+        });
+        showMessage(context, "Network error!", json.decode(result.body),
+            Colors.redAccent, Icons.warning);
+        return [];
+      }
+    } catch (error) {
+      if (error.toString().contains("SocketException")) {
+        setState(() {
+          isOffline = true;
+        });
+        showNoInternetConnection(context);
+        return [];
+      }
     }
   }
 
@@ -436,38 +479,61 @@ class _DashboardFragmentState extends State<DashboardFragment>
         });
 
         setState(() {
+          isOffline = false;
           arrayList.clear();
           arrayList.addAll(_arrayList);
         });
         Navigator.of(context).pop();
       } else {
+        setState(() {
+          isOffline = false;
+        });
         Navigator.of(context).pop();
         showMessage(context, "Network error!", json.decode(result.body),
             Colors.redAccent, Icons.warning);
       }
     } catch (error) {
       Navigator.of(context).pop();
-      showMessage(context, "Network error!", "Something Went Wrong.",
-          Colors.redAccent, Icons.warning);
+      if (error.toString().contains("SocketException")) {
+        setState(() {
+          isOffline = true;
+        });
+        showNoInternetConnection(context);
+      }
     }
   }
 
   Future deleteCustomer(int index) async {
-    Map<String, String> headers = {
-      'Authorization': widget.login.accessToken,
-      'customerid': arrayList[index].Id,
-    };
+    try {
+      Map<String, String> headers = {
+        'Authorization': widget.login.accessToken,
+        'customerid': arrayList[index].Id,
+      };
 
-    var result =
-        await http.delete(BASE_URL + API_DELETE_CUSTOMER, headers: headers);
-    if (result.statusCode == 200) {
-      arrayList.removeAt(index);
-      setState(() {});
-      return json.decode(result.body)['result'];
-    } else {
-      showMessage(context, "Network error!", json.decode(result.body),
-          Colors.redAccent, Icons.warning);
-      return [];
+      var result =
+          await http.delete(BASE_URL + API_DELETE_CUSTOMER, headers: headers);
+      if (result.statusCode == 200) {
+        arrayList.removeAt(index);
+        setState(() {
+          isOffline = false;
+        });
+        return json.decode(result.body)['result'];
+      } else {
+        setState(() {
+          isOffline = false;
+        });
+        showMessage(context, "Network error!", json.decode(result.body),
+            Colors.redAccent, Icons.warning);
+        return [];
+      }
+    } catch (error) {
+      Navigator.of(context).pop();
+      if (error.toString().contains("SocketException")) {
+        setState(() {
+          isOffline = true;
+        });
+        showNoInternetConnection(context);
+      }
     }
   }
 
@@ -667,7 +733,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
   }
 
   void deleteDialog(int index) async {
-    showDialog<void>(context: context, builder: (_)=>loadingAlert());
+    showDialog<void>(context: context, builder: (_) => loadingAlert());
     bool status = await deleteCustomer(index);
     Navigator.of(context).pop();
     if (status) {
@@ -847,7 +913,6 @@ class _DashboardFragmentState extends State<DashboardFragment>
       ),
     );
   }
-
 
   void onValueChanged(int newValue) {
     setState(() {

@@ -17,28 +17,26 @@ class _LauncherUIState extends State<LauncherUI> {
   Login login;
   LoggedInUser loggedInUser;
 
-  Future begin() async {
-    return await dbHelper.getAllFromLogin().then((result) {
+  begin() async {
+    await dbHelper.getAllFromLogin().then((result) async {
       login = result;
       if (login != null) {
-        setState(() async {
-          if (login.isAuthenticated) {
-            await getLoggedInUser();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => new DashboardUI(login, loggedInUser),
-              ),
-            );
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => new LogInUI(login),
-              ),
-            );
-          }
-        });
+        if (login.isAuthenticated) {
+          await getLoggedInUser();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => new DashboardUI(login, loggedInUser),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => new LogInUI(login),
+            ),
+          );
+        }
       } else {
         Navigator.push(
           context,
@@ -64,11 +62,10 @@ class _LauncherUIState extends State<LauncherUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold (
+    return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child:
-        CupertinoActivityIndicator(
+        child: CupertinoActivityIndicator(
           animating: true,
           radius: 14,
         ),

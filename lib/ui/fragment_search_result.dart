@@ -58,7 +58,7 @@ class _SearchResultFragmentState extends State<SearchResultFragment> {
                   ),
                   Text(_isSearching
                       ? "Searching"
-                      : "${_list.length} ${_list.length > 1 ? "results" : "result"} found", style: Theme.of(context).textTheme.title.copyWith(color: Colors.black, fontWeight: FontWeight.bold),)
+                      : "${_list!=null ? _list.length : "No"} ${_list!= null ? _list.length > 1 ? "results" : "result": "result"} found", style: Theme.of(context).textTheme.title.copyWith(color: Colors.black, fontWeight: FontWeight.bold),)
                 ],
               ),
             ),
@@ -75,7 +75,7 @@ class _SearchResultFragmentState extends State<SearchResultFragment> {
             initialData: _list,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return ListView.builder(
+                return _list!= null ? ListView.builder(
                   padding: EdgeInsets.all(16),
                   shrinkWrap: true,
                   physics: ScrollPhysics(),
@@ -153,7 +153,7 @@ class _SearchResultFragmentState extends State<SearchResultFragment> {
                       ),
                     );
                   },
-                );
+                ) : Container();
               } else {
                 return ShimmerDashboardFragment();
               }
@@ -194,6 +194,9 @@ class _SearchResultFragmentState extends State<SearchResultFragment> {
       setState(() {
         _isSearching = false;
       });
+      if (error.toString().contains("SocketException")) {
+        showNoInternetConnection(context);
+      }
       _controller.sink.add([]);
     }
   }

@@ -1,14 +1,15 @@
 import 'dart:ui';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/video_preview.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/widget_media_player.dart';
+import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../utils.dart';
 
@@ -43,25 +44,14 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> {
   ];
 
   bool isLoading = false;
+  bool offline = false;
 
   var key = GlobalKey();
-
-  List<VideoPreview> _list = [
-    new VideoPreview(
-        "images/video.mp4", "images/peach_of_mind.jpg", "Peace Of Mind"),
-    new VideoPreview("images/video.mp4", "images/no_power.PNG", "No Power"),
-    new VideoPreview(
-        "images/video.mp4", "images/flooded_basement.PNG", "Flooded Basement"),
-    new VideoPreview("images/video.mp4", "images/odors.PNG", "Odors"),
-    new VideoPreview(
-        "images/video.mp4", "images/unhealthy_basement.PNG", "Unhealthy Home"),
-    new VideoPreview(
-        "images/video.mp4", "images/system_failure.PNG", "System Failure"),
-  ];
 
   @override
   void initState() {
     super.initState();
+    _checkConnectivity();
   }
 
   @override
@@ -81,13 +71,13 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         elevation: 8,
-        onPressed: () {
+        onPressed: offline ? null : () {
           showDialog(context: context, builder: (_) => loadingAlert());
           _save();
         },
         icon: Icon(Icons.save),
         label: Text("Save"),
-        backgroundColor: Colors.black,
+        backgroundColor: offline ? Colors.grey : Colors.black,
       ),
       backgroundColor: Colors.white,
       body: OrientationBuilder(
@@ -357,7 +347,7 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> {
                       width: double.infinity,
                       height: double.infinity,
                       margin: EdgeInsets.only(left: 16, right: 16, top: 16),
-                      child: Stack(
+                      child: offline ? NoInternetConnectionWidget() : Stack(
                         children: <Widget>[
                           InkWell(
                             onTap: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VideoPlayerScreen(url: _videoLinks[widget.index - 1],),fullscreenDialog: true)),
@@ -425,13 +415,29 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> {
             Icons.warning);
       } else {
         Navigator.of(context).pop();
+        setState(() {
+          offline = false;
+        });
         showMessage(context, "Error!", "Something went wrong!!!",
             Colors.redAccent, Icons.warning);
       }
     } catch (error) {
       Navigator.of(context).pop();
-      showMessage(context, "Error!", "Something went wrong!!!",
-          Colors.redAccent, Icons.warning);
+      setState(() {
+        offline = true;
+      });
+      if (error.toString().contains("SocketException")) {
+        showNoInternetConnection(context);
+      }
+    }
+  }
+
+  _checkConnectivity() async {
+    var result = await Connectivity().checkConnectivity();
+    if (result == ConnectivityResult.none) {
+      setState(() {
+        offline = true;
+      });
     }
   }
 }

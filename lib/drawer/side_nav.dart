@@ -5,9 +5,7 @@ import 'package:flutter_grate_app/sqflite/db_helper.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
-import 'package:uuid/uuid.dart';
 
-import '../utils.dart';
 import 'collapsing_list_tile.dart';
 import 'drawer_theme.dart';
 
@@ -97,14 +95,7 @@ class SideNavUIState extends State<SideNavUI>
                               height: 28,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(28),
-                                child: FadeInImage.assetNetwork(placeholder: "images/loading.gif", image:  buildCustomerImageUrl(
-                                    widget
-                                        .loggedInUser.UserGUID,
-                                    widget
-                                        .loggedInUser
-                                        .CompanyGUID,
-                                    widget.login
-                                        .username, Uuid().v1()), fit: BoxFit.cover,),
+                                child: FadeInImage.assetNetwork(placeholder: "images/loading.gif", image: widget.loggedInUser.ProfilePicture.startsWith("/Files") ? "https://www.gratecrm.com"+widget.loggedInUser.ProfilePicture : widget.loggedInUser.ProfilePicture, fit: BoxFit.cover,),
                               ),
                             ),
                       SizedBox(
