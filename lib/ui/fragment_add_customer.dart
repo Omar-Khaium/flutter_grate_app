@@ -42,7 +42,7 @@ class AddCustomerFragment extends StatefulWidget {
   _AddCustomerState createState() => _AddCustomerState();
 }
 
-class _AddCustomerState extends State<AddCustomerFragment> {
+class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProviderStateMixin {
   DBHelper dbHelper = new DBHelper();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Zip zipData;
@@ -108,7 +108,7 @@ class _AddCustomerState extends State<AddCustomerFragment> {
               ),
               Expanded(
                 child: offline
-                    ? NoInternetConnectionWidget()
+                    ? NoInternetConnectionWidget(refreshConnectivity)
                     : Container(
                   margin: EdgeInsets.only(right: 32, left: 32),
                   child: Form(
@@ -598,6 +598,12 @@ class _AddCustomerState extends State<AddCustomerFragment> {
               ),
             ],
           );
+  }
+
+  refreshConnectivity(bool flag) {
+    setState(() {
+      offline = flag;
+    });
   }
 
   getData() async {

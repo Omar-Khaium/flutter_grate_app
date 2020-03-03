@@ -5,13 +5,13 @@ import 'package:flutter_grate_app/widgets/list_shimmer_item_without_icon.dart';
 import 'list_shimmer_item_customer.dart';
 
 class ShimmerAddOrEditEstimate extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       scrollDirection: Axis.vertical,
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(top: 16, left: 32, right: 32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -21,18 +21,6 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: <Widget>[
-                            ShimmerItemWithOnlyIcon(),
-                            SizedBox(
-                              width: 16,
-                            ),
-                            ShimmerItemWithoutIcon(100),
-                          ],
-                        ),
-                      ),
                       SizedBox(
                         height: 16,
                       ),

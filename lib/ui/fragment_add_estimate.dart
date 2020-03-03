@@ -38,18 +38,19 @@ class AddEstimateFragment extends StatefulWidget {
   CustomerDetails customer;
   ValueChanged<CustomerDetails> backToCustomerDetailsFromEstimate;
 
-  AddEstimateFragment({Key key,
-    this.login,
-    this.loggedInUser,
-    this.customer,
-    this.backToCustomerDetailsFromEstimate})
+  AddEstimateFragment(
+      {Key key,
+      this.login,
+      this.loggedInUser,
+      this.customer,
+      this.backToCustomerDetailsFromEstimate})
       : super(key: key);
 
   @override
   _AddEstimateFragmentState createState() => _AddEstimateFragmentState();
 }
 
-class _AddEstimateFragmentState extends State<AddEstimateFragment> {
+class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTickerProviderStateMixin {
   String dollar = "\$";
   TextEditingController _productNameController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
@@ -59,7 +60,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
   TextEditingController _discountController = new TextEditingController();
   TextEditingController _noteController = new TextEditingController();
   TextEditingController _EstimateDiscountController =
-  new TextEditingController();
+      new TextEditingController();
   bool _discountModeIsPercentage = true;
   bool _EstimateDiscountModeIsPercentage = false;
   GlobalKey _columnKey = GlobalKey();
@@ -101,7 +102,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
   double estimateTotalAmount = 0.0;
 
   var _future;
-  int _changeTaxValue=0;
+  int _changeTaxValue = 0;
 
   File _imageFile;
 
@@ -117,1077 +118,1251 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Container(
       padding: EdgeInsets.only(top: 16, left: 32, right: 32, bottom: 16),
-      shrinkWrap: false,
-      scrollDirection: Axis.vertical,
-      children: <Widget>[
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Row(
-            children: <Widget>[
-              CustomBackButton(
-                onTap: () =>
-                    widget.backToCustomerDetailsFromEstimate(
-                        widget.customer),
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              Text(offline ? "Offline" : estimateId.isEmpty ? "Loading" : estimateId,
-                  style: fragmentTitleStyle()),
-            ],
+      child: Column(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Row(
+              children: <Widget>[
+                CustomBackButton(
+                  onTap: () =>
+                      widget.backToCustomerDetailsFromEstimate(widget.customer),
+                ),
+                SizedBox(
+                  width: 16,
+                ),
+                Text(
+                    offline
+                        ? "Offline"
+                        : estimateId.isEmpty ? "Loading" : estimateId,
+                    style: fragmentTitleStyle()),
+              ],
+            ),
           ),
-        ),
-        offline ? NoInternetConnectionWidget() : FutureBuilder(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return new ListView(
-                shrinkWrap: false,
-                scrollDirection: Axis.vertical,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Container(
-                        child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Creating estimate for, " +
-                                  widget.customer.FirstName,
-                              style: new TextStyle(fontSize: 20),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Stack(
+          Expanded(
+            child: offline
+                ? NoInternetConnectionWidget(refreshConnectivity)
+                : Container(
+                    child: FutureBuilder(
+                      future: _future,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return new ListView(
+                            shrinkWrap: false,
+                            scrollDirection: Axis.vertical,
                             children: <Widget>[
-                              Column(
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Container(
-                                          width: 256,
-                                          decoration: new BoxDecoration(
-                                              color: Colors.grey.shade200,
-                                              shape: BoxShape.rectangle,
-                                              border: Border.all(
-                                                  width: 1.0,
-                                                  color: Colors.black26),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(5.0))),
-                                          padding: EdgeInsets.all(8),
-                                          child: Row(
-                                            crossAxisAlignment:
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                      Container(
+                                        child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              "Creating estimate for, " +
+                                                  widget.customer.Name,
+                                              style:
+                                                  new TextStyle(fontSize: 20),
+                                            )),
+                                      ),
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
                                             CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Stack(
                                             children: <Widget>[
-                                              Icon(Icons.email),
-                                              SizedBox(
-                                                width: 8,
-                                              ),
-                                              Text(
-                                                widget.customer.Email,
-                                                style: estimateTextStyle(),
-                                                overflow: TextOverflow.ellipsis,
+                                              Column(
+                                                children: <Widget>[
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: <Widget>[
+                                                        Container(
+                                                          width: 256,
+                                                          decoration: new BoxDecoration(
+                                                              color: Colors.grey
+                                                                  .shade200,
+                                                              shape: BoxShape
+                                                                  .rectangle,
+                                                              border: Border.all(
+                                                                  width: 1.0,
+                                                                  color: Colors
+                                                                      .black26),
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          5.0))),
+                                                          padding:
+                                                              EdgeInsets.all(8),
+                                                          child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: <Widget>[
+                                                              Icon(Icons.email),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              Text(
+                                                                widget.customer
+                                                                    .Email,
+                                                                style:
+                                                                    estimateTextStyle(),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 8),
+                                                          width: 144,
+                                                          decoration: new BoxDecoration(
+                                                              color: Colors.grey
+                                                                  .shade200,
+                                                              shape: BoxShape
+                                                                  .rectangle,
+                                                              border: Border.all(
+                                                                  width: 1.0,
+                                                                  color: Colors
+                                                                      .black26),
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          5.0))),
+                                                          padding:
+                                                              EdgeInsets.all(8),
+                                                          child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: <Widget>[
+                                                              Icon(MdiIcons
+                                                                  .calendarMonth),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              Text(
+                                                                formattedDate
+                                                                    .toString(),
+                                                                style:
+                                                                    estimateTextStyle(),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: <Widget>[
+                                                        Container(
+                                                          width: 256,
+                                                          height: 48,
+                                                          decoration: new BoxDecoration(
+                                                              color: Colors.grey
+                                                                  .shade200,
+                                                              shape: BoxShape
+                                                                  .rectangle,
+                                                              border: Border.all(
+                                                                  width: 1.0,
+                                                                  color: Colors
+                                                                      .black26),
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          5.0))),
+                                                          padding:
+                                                              EdgeInsets.all(8),
+                                                          child:
+                                                              DropdownButtonHideUnderline(
+                                                            child:
+                                                                DropdownButton<
+                                                                    String>(
+                                                              items: _days.map(
+                                                                  (String
+                                                                      dropDownStringItem) {
+                                                                return DropdownMenuItem<
+                                                                    String>(
+                                                                  value:
+                                                                      dropDownStringItem,
+                                                                  child: Text(
+                                                                    dropDownStringItem,
+                                                                    style:
+                                                                        estimateTextStyle(),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  ),
+                                                                );
+                                                              }).toList(),
+                                                              onChanged: (String
+                                                                  newValueSelected) {
+                                                                setState(() {
+                                                                  this._currentValueSelected =
+                                                                      newValueSelected;
+                                                                  switch (
+                                                                      _currentValueSelected) {
+                                                                    case "After 15 days":
+                                                                      {
+                                                                        nextDate =
+                                                                            DateFormat('MM/dd/yyyy').format(DateTime.now().add(Duration(days: 15)));
+                                                                      }
+                                                                      break;
+                                                                    case "After 30 days":
+                                                                      {
+                                                                        nextDate =
+                                                                            DateFormat('MM/dd/yyyy').format(DateTime.now().add(Duration(days: 30)));
+                                                                      }
+                                                                      break;
+                                                                    case "After 60 days":
+                                                                      {
+                                                                        nextDate =
+                                                                            DateFormat('MM/dd/yyyy').format(DateTime.now().add(Duration(days: 60)));
+                                                                      }
+                                                                      break;
+                                                                  }
+                                                                });
+                                                              },
+                                                              value:
+                                                                  _currentValueSelected,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          width: 144,
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 8),
+                                                          decoration: new BoxDecoration(
+                                                              color: Colors.grey
+                                                                  .shade200,
+                                                              shape: BoxShape
+                                                                  .rectangle,
+                                                              border: Border.all(
+                                                                  width: 1.0,
+                                                                  color: Colors
+                                                                      .black26),
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          5.0))),
+                                                          padding:
+                                                              EdgeInsets.all(8),
+                                                          child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: <Widget>[
+                                                              Icon(MdiIcons
+                                                                  .calendarMonth),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              Text(
+                                                                nextDate,
+                                                                style:
+                                                                    estimateTextStyle(),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(left: 8),
-                                          width: 144,
-                                          decoration: new BoxDecoration(
-                                              color: Colors.grey.shade200,
-                                              shape: BoxShape.rectangle,
-                                              border: Border.all(
-                                                  width: 1.0,
-                                                  color: Colors.black26),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(5.0))),
-                                          padding: EdgeInsets.all(8),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(
+                                        "Amount",
+                                        style: estimateTextStyle(),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        "$dollar ${estimateTotalAmount.toStringAsFixed(2).replaceAllMapped(reg, mathFunc)}",
+                                        style: fragmentTitleStyle(),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                      Container(
+                                        child: RaisedButton(
+                                          highlightElevation: 2,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  new BorderRadius.circular(
+                                                      36.0),
+                                              side: BorderSide(
+                                                  color: Colors.white12)),
+                                          disabledColor: Colors.black,
+                                          color: Colors.black,
+                                          elevation: 2,
+                                          textColor: Colors.white,
+                                          padding: EdgeInsets.only(
+                                              left: 16,
+                                              right: 16,
+                                              top: 12,
+                                              bottom: 12),
                                           child: Row(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
                                             children: <Widget>[
-                                              Icon(MdiIcons.calendarMonth),
-                                              SizedBox(
-                                                width: 8,
-                                              ),
+                                              Icon(Icons.add),
                                               Text(
-                                                formattedDate.toString(),
-                                                style: estimateTextStyle(),
-                                                overflow: TextOverflow.ellipsis,
+                                                "Add Product",
+                                                style: customButtonTextStyle(),
                                               ),
                                             ],
                                           ),
+                                          onPressed: () {
+                                            _productNameController.text = "";
+                                            _descriptionController.text = "";
+                                            _quantityController.text = "";
+                                            _rateController.text = "";
+                                            _discountController.text = "";
+                                            _priceController.text = "";
+                                            showPopUp();
+                                          },
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 8, bottom: 8),
+                                child: DottedBorder(
+                                  color: Colors.black,
+                                  strokeWidth: .5,
+                                  child: _productList.length == 0
+                                      ? Container(
+                                          padding: EdgeInsets.only(
+                                              top: 16, bottom: 16),
+                                          child: Center(
+                                            child: Text("No Products Found!"),
+                                          ),
+                                        )
+                                      : ListView.separated(
+                                          separatorBuilder: (context, index) {
+                                            return Divider(
+                                              thickness: .75,
+                                            );
+                                          },
+                                          physics: ScrollPhysics(),
+                                          scrollDirection: Axis.vertical,
+                                          shrinkWrap: true,
+                                          itemCount: _productList.length,
+                                          itemBuilder: (context, index) {
+                                            return Container(
+                                              padding: EdgeInsets.all(16),
+                                              child: Table(
+                                                columnWidths: {
+                                                  0: FlexColumnWidth(3),
+                                                  1: FlexColumnWidth(1.5),
+                                                  2: FlexColumnWidth(.5),
+                                                },
+                                                defaultVerticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                children: [
+                                                  TableRow(children: [
+                                                    TableCell(
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: <Widget>[
+                                                          Row(
+                                                            children: <Widget>[
+                                                              Icon(MdiIcons
+                                                                  .cubeOutline),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Flexible(
+                                                                child: Text(
+                                                                  _productList[
+                                                                          index]
+                                                                      .Name,
+                                                                  style:
+                                                                      listTextStyle(),
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                          Row(
+                                                            children: <Widget>[
+                                                              Icon(MdiIcons
+                                                                  .text),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Flexible(
+                                                                child: Text(
+                                                                  _productList[
+                                                                          index]
+                                                                      .Description,
+                                                                  style:
+                                                                      listTextStyle(),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                          Row(
+                                                            children: <Widget>[
+                                                              Icon(MdiIcons
+                                                                  .calendarClock),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Text(
+                                                                _productList[
+                                                                        index]
+                                                                    .Date,
+                                                                style:
+                                                                    listTextStyle(),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    TableCell(
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: <Widget>[
+                                                          Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: <Widget>[
+                                                              Icon(MdiIcons
+                                                                  .layers),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Text(
+                                                                "${_productList[index].Quantity.replaceAllMapped(reg, mathFunc)}",
+                                                                style:
+                                                                    listTextStyle(),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                          Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: <Widget>[
+                                                              Icon(MdiIcons
+                                                                  .cashUsdOutline),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Text(
+                                                                "${_discountController.text == "0" ? _productList[index].Rate.replaceAllMapped(reg, mathFunc) : _productList[index].Rate.replaceAllMapped(reg, mathFunc)}",
+                                                                style:
+                                                                    listTextStyle(),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                          Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: <Widget>[
+                                                              Icon(MdiIcons
+                                                                  .cashUsd),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              RichText(
+                                                                text: TextSpan(
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .body1,
+                                                                  children: <
+                                                                      TextSpan>[
+                                                                    TextSpan(
+                                                                        text:
+                                                                            "${_discountController.text == "0.0" ? _productList[index].Price.replaceAllMapped(reg, mathFunc) : "${_productList[index].Price.replaceAllMapped(reg, mathFunc)}"}",
+                                                                        style: TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color: Colors.black)),
+                                                                    _productList[index].Discount ==
+                                                                            "0.00"
+                                                                        ? TextSpan()
+                                                                        : TextSpan(
+                                                                            text:
+                                                                                "${_discountController.text == "0.00" ? _productList[index].Price.replaceAllMapped(reg, mathFunc) : " ( ${_productList[index].discountAsPercentage ? "${_productList[index].discount}%" : "\$${_productList[index].discount}"} off )"}",
+                                                                            style:
+                                                                                TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    TableCell(
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: <Widget>[
+                                                          CircleAvatar(
+                                                            backgroundColor:
+                                                                Colors.grey
+                                                                    .shade300,
+                                                            child: IconButton(
+                                                              icon: Icon(
+                                                                Icons.delete,
+                                                                color: Colors
+                                                                    .black,
+                                                                size: 18,
+                                                              ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  _productList
+                                                                      .removeAt(
+                                                                          index);
+                                                                  estimateTotalCalculation();
+                                                                });
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ])
+                                                ],
+                                              ),
+                                            );
+                                          }),
+                                ),
+                              ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Container(
+                                            width: 172,
+                                            height: 172,
+                                            decoration: new BoxDecoration(
+                                                color: Colors.grey.shade200,
+                                                shape: BoxShape.rectangle,
+                                                border: Border.all(
+                                                    width: 1.0,
+                                                    color: Colors.black26),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(5.0))),
+                                            child: InkWell(
+                                              child: _imageFile == null
+                                                  ? Icon(Icons.camera_enhance)
+                                                  : Image.file(
+                                                      _imageFile,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                              onTap: () {
+                                                FocusScope.of(context)
+                                                    .requestFocus(FocusNode());
+                                                _showDialog(context);
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 420,
+                                        child: Table(
+                                          defaultVerticalAlignment:
+                                              TableCellVerticalAlignment.middle,
+                                          columnWidths: {
+                                            0: FlexColumnWidth(1),
+                                            1: FlexColumnWidth(2),
+                                            2: FlexColumnWidth(1),
+                                          },
+                                          children: [
+                                            TableRow(children: [
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Text("Retail"),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 12, bottom: 12),
+                                                  child: Divider(
+                                                    color: Colors.black,
+                                                    thickness: .5,
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: Text(
+                                                      "\$ ${estimateBaseSubTotal.toStringAsFixed(2).replaceAllMapped(reg, mathFunc)}"),
+                                                ),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Text("Discount"),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: TextField(
+                                                  controller:
+                                                      _EstimateDiscountController,
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      estimateTotalCalculation();
+                                                    });
+                                                  },
+                                                  autofocus: false,
+                                                  keyboardType: TextInputType
+                                                      .numberWithOptions(
+                                                          signed: true,
+                                                          decimal: true),
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    prefixIcon: IconButton(
+                                                      icon: Icon(
+                                                          _EstimateDiscountModeIsPercentage
+                                                              ? MdiIcons.sale
+                                                              : MdiIcons
+                                                                  .cashUsd),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _EstimateDiscountModeIsPercentage =
+                                                              !_EstimateDiscountModeIsPercentage;
+                                                          estimateTotalCalculation();
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: Text(
+                                                    "\$ ${estimateDiscountTotal.toStringAsFixed(2) == "0.00" ? "" : "-"} ${estimateDiscountTotal.toStringAsFixed(2).replaceAllMapped(reg, mathFunc)}",
+                                                    style: TextStyle(
+                                                        color: discountColor()),
+                                                  ),
+                                                ),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Text(
+                                                  "Subtotal",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 12, bottom: 12),
+                                                  child: Divider(
+                                                    color: Colors.black,
+                                                    thickness: 1,
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: Text(
+                                                    "\$ ${estimateMainSubtotal.toStringAsFixed(2).replaceAllMapped(reg, mathFunc)}",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Text("Tax"),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Container(
+                                                  decoration: new BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade200,
+                                                      shape: BoxShape.rectangle,
+                                                      border: Border.all(
+                                                          width: 1.0,
+                                                          color:
+                                                              Colors.black26),
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  5.0))),
+                                                  padding: EdgeInsets.only(
+                                                      left: 8, right: 8),
+                                                  child:
+                                                      DropdownButtonHideUnderline(
+                                                    child:
+                                                        DropdownButtonFormField(
+                                                      decoration:
+                                                          InputDecoration(
+                                                              enabled: false),
+                                                      items: _TaxType.map((String
+                                                          dropDownStringItem) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                          value:
+                                                              dropDownStringItem,
+                                                          child: Text(
+                                                              dropDownStringItem),
+                                                        );
+                                                      }).toList(),
+                                                      onChanged: (String
+                                                          newValueSelected) {
+                                                        setState(() {
+                                                          this._TaxTypeSelectedValue =
+                                                              newValueSelected;
+                                                          estimateTotalCalculation();
+                                                        });
+                                                      },
+                                                      value:
+                                                          _TaxTypeSelectedValue,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: Text(
+                                                    "\$ ${estimateTaxTotal.toStringAsFixed(2) == "0.00" ? "" : "+"} ${estimateTaxTotal.toStringAsFixed(2).replaceAllMapped(reg, mathFunc)}",
+                                                    style: TextStyle(
+                                                        color: taxColor()),
+                                                  ),
+                                                ),
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Text(
+                                                  "Estimate Toal",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 12, bottom: 12),
+                                                  child: Divider(
+                                                    color: Colors.black,
+                                                    thickness: 1,
+                                                  ),
+                                                ),
+                                              ),
+                                              TableCell(
+                                                verticalAlignment:
+                                                    TableCellVerticalAlignment
+                                                        .middle,
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: Text(
+                                                    "\$ ${estimateTotalAmount.toStringAsFixed(2).replaceAllMapped(reg, mathFunc)}",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                              ),
+                                            ]),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+/*------------------BASEMENT DRAWING------------------*/
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(4)),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 4,
+                                          spreadRadius: 2,
+                                          offset: Offset(
+                                            0,
+                                            0,
+                                          ),
+                                        )
                                       ],
+                                    ),
+                                    margin: EdgeInsets.all(4),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Basement Drawing",
+                                            style: cardTitleStyle(),
+                                          ),
+                                          Container(
+                                            width: 220,
+                                            margin: EdgeInsets.only(
+                                                top: 8, bottom: 8),
+                                            child: Divider(
+                                              color: Colors.black,
+                                              thickness: 2,
+                                            ),
+                                          ),
+                                          AspectRatio(
+                                            aspectRatio: MediaQuery.of(context)
+                                                .size
+                                                .aspectRatio,
+                                            child: Container(
+                                              color: Colors.grey.shade100,
+                                              child: InkWell(
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    _Drawing,
+                                                    isDrawingSaving
+                                                        ? Center(
+                                                            child:
+                                                                ShimmerUploadIcon(
+                                                                    200),
+                                                          )
+                                                        : Container(),
+                                                  ],
+                                                ),
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) {
+                                                          return DrawingDialog(
+                                                              picture:
+                                                                  _generateDrawingPicture);
+                                                        },
+                                                        fullscreenDialog: true),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
                                     height: 8,
                                   ),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Container(
-                                          width: 256,
-                                          height: 48,
-                                          decoration: new BoxDecoration(
-                                              color: Colors.grey.shade200,
-                                              shape: BoxShape.rectangle,
-                                              border: Border.all(
-                                                  width: 1.0,
-                                                  color: Colors.black26),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(5.0))),
-                                          padding: EdgeInsets.all(8),
-                                          child: DropdownButtonHideUnderline(
-                                            child: DropdownButton<String>(
-                                              items: _days.map(
-                                                      (
-                                                      String dropDownStringItem) {
-                                                    return DropdownMenuItem<
-                                                        String>(
-                                                      value: dropDownStringItem,
-                                                      child: Text(
-                                                        dropDownStringItem,
-                                                        style: estimateTextStyle(),
-                                                        overflow:
-                                                        TextOverflow.ellipsis,
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                              onChanged:
-                                                  (String newValueSelected) {
-                                                setState(() {
-                                                  this._currentValueSelected =
-                                                      newValueSelected;
-                                                  switch (
-                                                  _currentValueSelected) {
-                                                    case "After 15 days":
-                                                      {
-                                                        nextDate = DateFormat(
-                                                            'MM/dd/yyyy')
-                                                            .format(DateTime
-                                                            .now()
-                                                            .add(Duration(
-                                                            days: 15)));
-                                                      }
-                                                      break;
-                                                    case "After 30 days":
-                                                      {
-                                                        nextDate = DateFormat(
-                                                            'MM/dd/yyyy')
-                                                            .format(DateTime
-                                                            .now()
-                                                            .add(Duration(
-                                                            days: 30)));
-                                                      }
-                                                      break;
-                                                    case "After 60 days":
-                                                      {
-                                                        nextDate = DateFormat(
-                                                            'MM/dd/yyyy')
-                                                            .format(DateTime
-                                                            .now()
-                                                            .add(Duration(
-                                                            days: 60)));
-                                                      }
-                                                      break;
-                                                  }
-                                                });
-                                              },
-                                              value: _currentValueSelected,
-                                            ),
+/*------------------Agreement DRAWING------------------*/
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(4)),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 4,
+                                          spreadRadius: 2,
+                                          offset: Offset(
+                                            0,
+                                            0,
                                           ),
-                                        ),
-                                        Container(
-                                          width: 144,
-                                          margin: EdgeInsets.only(left: 8),
-                                          decoration: new BoxDecoration(
-                                              color: Colors.grey.shade200,
-                                              shape: BoxShape.rectangle,
-                                              border: Border.all(
-                                                  width: 1.0,
-                                                  color: Colors.black26),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(5.0))),
-                                          padding: EdgeInsets.all(8),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                            children: <Widget>[
-                                              Icon(MdiIcons.calendarMonth),
-                                              SizedBox(
-                                                width: 8,
-                                              ),
-                                              Text(
-                                                nextDate,
-                                                style: estimateTextStyle(),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                        )
                                       ],
                                     ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "Amount",
-                        style: estimateTextStyle(),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        "$dollar ${estimateTotalAmount.toStringAsFixed(2)
-                            .replaceAllMapped(reg, mathFunc)}",
-                        style: fragmentTitleStyle(),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Container(
-                        child: RaisedButton(
-                          highlightElevation: 2,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(36.0),
-                              side: BorderSide(color: Colors.white12)),
-                          disabledColor: Colors.black,
-                          color: Colors.black,
-                          elevation: 2,
-                          textColor: Colors.white,
-                          padding: EdgeInsets.only(
-                              left: 16, right: 16, top: 12, bottom: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Icon(Icons.add),
-                              Text(
-                                "Add Product",
-                                style: customButtonTextStyle(),
-                              ),
-                            ],
-                          ),
-                          onPressed: () {
-                            _productNameController.text = "";
-                            _descriptionController.text = "";
-                            _quantityController.text = "";
-                            _rateController.text = "";
-                            _discountController.text = "";
-                            _priceController.text = "";
-                            showPopUp();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 8, bottom: 8),
-                    child: DottedBorder(
-                      color: Colors.black,
-                      strokeWidth: .5,
-                      child: _productList.length == 0
-                          ? Container(
-                        padding: EdgeInsets.only(top: 16, bottom: 16),
-                        child: Center(
-                          child: Text("No Products Found!"),
-                        ),
-                      )
-                          : ListView.separated(
-                          separatorBuilder: (context, index) {
-                            return Divider(
-                              thickness: .75,
-                            );
-                          },
-                          physics: ScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: _productList.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              padding: EdgeInsets.all(16),
-                              child: Table(
-                                columnWidths: {
-                                  0: FlexColumnWidth(3),
-                                  1: FlexColumnWidth(1.5),
-                                  2: FlexColumnWidth(.5),
-                                },
-                                defaultVerticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                                children: [
-                                  TableRow(children: [
-                                    TableCell(
+                                    margin: EdgeInsets.all(4),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
                                       child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.start,
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
                                         children: <Widget>[
-                                          Row(
-                                            children: <Widget>[
-                                              Icon(MdiIcons.cubeOutline),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              Flexible(
-                                                child: Text(
-                                                  _productList[index].Name,
-                                                  style: listTextStyle(),
-                                                ),
-                                              )
-                                            ],
+                                          Text(
+                                            "Agreement",
+                                            style: cardTitleStyle(),
+                                          ),
+                                          Container(
+                                            width: 128,
+                                            margin: EdgeInsets.only(
+                                                top: 8, bottom: 8),
+                                            child: Divider(
+                                              color: Colors.black,
+                                              thickness: 2,
+                                            ),
+                                          ),
+                                          new TextField(
+                                            controller: _noteController,
+                                            obscureText: false,
+                                            autofocus: false,
+                                            cursorColor: Colors.black,
+                                            maxLength: 1000,
+                                            maxLengthEnforced: true,
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            maxLines: null,
+                                            minLines: 10,
+                                            style: customTextStyle(),
+                                            decoration: new InputDecoration(
+                                                fillColor: Colors.grey.shade200,
+                                                filled: true,
+                                                labelText: "Notes",
+                                                labelStyle: customTextStyle(),
+                                                hintText: "e.g. hint",
+                                                hintStyle: customHintStyle(),
+                                                alignLabelWithHint: false,
+                                                isDense: true),
                                           ),
                                           SizedBox(
                                             height: 8,
                                           ),
-                                          Row(
-                                            children: <Widget>[
-                                              Icon(MdiIcons.text),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              Flexible(
-                                                child: Text(
-                                                  _productList[index]
-                                                      .Description,
-                                                  style: listTextStyle(),
-                                                  overflow:
-                                                  TextOverflow.ellipsis,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 8,
-                                          ),
-                                          Row(
-                                            children: <Widget>[
-                                              Icon(MdiIcons.calendarClock),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              Text(
-                                                _productList[index].Date,
-                                                style: listTextStyle(),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Icon(MdiIcons.layers),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              Text(
-                                                "${_productList[index].Quantity
-                                                    .replaceAllMapped(
-                                                    reg, mathFunc)}",
-                                                style: listTextStyle(),
-                                              )
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 8,
-                                          ),
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Icon(MdiIcons.cashUsdOutline),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              Text(
-                                                "${_discountController.text == "0"
-                                                    ? _productList[index].Rate
-                                                    .replaceAllMapped(reg, mathFunc)
-                                                    : _productList[index].Rate
-                                                    .replaceAllMapped(
-                                                    reg, mathFunc)}",
-                                                style: listTextStyle(),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 8,
-                                          ),
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Icon(MdiIcons.cashUsd),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              RichText(
-                                                text: TextSpan(
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .body1,
-                                                  children: <TextSpan>[
-                                                    TextSpan(
-                                                        text:
-                                                        "${_discountController.text == "0.0" ? _productList[index].Price.replaceAllMapped(reg, mathFunc) : "${_productList[index].Price.replaceAllMapped(reg, mathFunc)}"}",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                            FontWeight.bold,
-                                                            color:
-                                                            Colors.black)),
-                                                    _productList[index].Discount == "0.00" ? TextSpan () :
-                                                    TextSpan(
-                                                        text:
-                                                        "${_discountController.text == "0.00" ? _productList[index].Price.replaceAllMapped(reg, mathFunc) : " ( ${_productList[index].discountAsPercentage ? "${_productList[index].discount}%" : "\$${_productList[index].discount}"} off )"}",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                            FontWeight.bold,
-                                                            color: Colors.red)),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  3.15,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  3.75,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return SignatureDialog(
+                                                            picture:
+                                                                _generateHOSignaturePicture);
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: <Widget>[
+                                                    SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Text(
+                                                        "Home Owner Signature"),
+                                                    SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Expanded(
+                                                      child: Stack(
+                                                        children: <Widget>[
+                                                          _HOSignature,
+                                                          isHOSignatureSaving
+                                                              ? Center(
+                                                                  child:
+                                                                      ShimmerUploadIcon(
+                                                                          64),
+                                                                )
+                                                              : Container(),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Center(
+                                                      child: Container(
+                                                        color: Colors
+                                                            .grey.shade100,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Center(
+                                                            child: ListRowItem(
+                                                              icon: Icons.event,
+                                                              text:
+                                                                  "${DateFormat('MM/dd/yyyy').format(DateTime.now())}",
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
                                                   ],
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.end,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          CircleAvatar(
-                                            backgroundColor:
-                                            Colors.grey.shade300,
-                                            child: IconButton(
-                                              icon: Icon(
-                                                Icons.delete,
-                                                color: Colors.black,
-                                                size: 18,
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _productList.removeAt(index);
-                                                  estimateTotalCalculation();
-                                                });
-                                              },
                                             ),
-                                          ),
+                                          )
                                         ],
                                       ),
                                     ),
-                                  ])
-                                ],
-                              ),
-                            );
-                          }),
-                    ),
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Container(
-                                width: 172,
-                                height: 172,
-                                decoration: new BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    shape: BoxShape.rectangle,
-                                    border: Border.all(
-                                        width: 1.0, color: Colors.black26),
-                                    borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0))),
-                                child: InkWell(
-                                  child: _imageFile == null
-                                      ? Icon(Icons.camera_enhance)
-                                      : Image.file(
-                                    _imageFile,
-                                    fit: BoxFit.cover,
                                   ),
-                                  onTap: () {
-                                    FocusScope.of(context)
-                                        .requestFocus(FocusNode());
-                                    _showDialog(context);
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            width: 420,
-                            child: Table(
-                              defaultVerticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                              columnWidths: {
-                                0: FlexColumnWidth(1),
-                                1: FlexColumnWidth(2),
-                                2: FlexColumnWidth(1),
-                              },
-                              children: [
-                                TableRow(children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Text("Retail"),
+                                  SizedBox(
+                                    height: 16,
                                   ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Container(
-                                      margin: EdgeInsets.only(top: 12, bottom: 12),
-                                      child: Divider(
-                                        color: Colors.black,
-                                        thickness: .5,
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                          "\$ ${estimateBaseSubTotal
-                                              .toStringAsFixed(2).replaceAllMapped(
-                                              reg, mathFunc)}"),
-                                    ),
-                                  ),
-                                ]),
-                                TableRow(children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Text("Discount"),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: TextField(
-                                      controller: _EstimateDiscountController,
-                                      onChanged: (val) {
-                                        setState(() {
-                                          estimateTotalCalculation();
-                                        });
-                                      },
-                                      autofocus: false,
-                                      keyboardType: TextInputType.numberWithOptions(
-                                          signed: true, decimal: true),
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        prefixIcon: IconButton(
-                                          icon: Icon(
-                                              _EstimateDiscountModeIsPercentage
-                                                  ? MdiIcons.sale
-                                                  : MdiIcons.cashUsd),
-                                          onPressed: () {
-                                            setState(() {
-                                              _EstimateDiscountModeIsPercentage =
-                                              !_EstimateDiscountModeIsPercentage;
-                                              estimateTotalCalculation();
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        "\$ ${estimateDiscountTotal.toStringAsFixed(
-                                            2) == "0.00"
-                                            ? ""
-                                            : "-"} ${estimateDiscountTotal
-                                            .toStringAsFixed(2).replaceAllMapped(
-                                            reg, mathFunc)}",
-                                        style: TextStyle(color: discountColor()),
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                                TableRow(children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Text(
-                                      "Subtotal",
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Container(
-                                      margin: EdgeInsets.only(top: 12, bottom: 12),
-                                      child: Divider(
-                                        color: Colors.black,
-                                        thickness: 1,
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        "\$ ${estimateMainSubtotal.toStringAsFixed(
-                                            2).replaceAllMapped(reg, mathFunc)}",
-                                        style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                                TableRow(children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Text("Tax"),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Container(
-                                      decoration: new BoxDecoration(
-                                          color: Colors.grey.shade200,
-                                          shape: BoxShape.rectangle,
-                                          border: Border.all(
-                                              width: 1.0, color: Colors.black26),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5.0))),
-                                      padding: EdgeInsets.only(left: 8, right: 8),
-                                      child: DropdownButtonHideUnderline(
-                                        child: DropdownButtonFormField(
-                                          decoration: InputDecoration(
-                                            enabled: false
-                                          ),
-                                          items: _TaxType.map(
-                                                  (String dropDownStringItem) {
-                                                return DropdownMenuItem<String>(
-                                                  value: dropDownStringItem,
-                                                  child: Text(dropDownStringItem),
-                                                );
-                                              }).toList(),
-                                          onChanged: (String newValueSelected) {
-                                            setState(() {
-                                              this._TaxTypeSelectedValue =
-                                                  newValueSelected;
-                                              estimateTotalCalculation();
-                                            });
-                                          },
-                                          value: _TaxTypeSelectedValue,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        "\$ ${estimateTaxTotal.toStringAsFixed(2) ==
-                                            "0.00" ? "" : "+"} ${estimateTaxTotal
-                                            .toStringAsFixed(2).replaceAllMapped(
-                                            reg, mathFunc)}",
-                                        style: TextStyle(color: taxColor()),
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                                TableRow(children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Text(
-                                      "Estimate Toal",
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Container(
-                                      margin: EdgeInsets.only(top: 12, bottom: 12),
-                                      child: Divider(
-                                        color: Colors.black,
-                                        thickness: 1,
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        "\$ ${estimateTotalAmount.toStringAsFixed(2)
-                                            .replaceAllMapped(reg, mathFunc)}",
-                                        style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-/*------------------BASEMENT DRAWING------------------*/
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              offset: Offset(
-                                0,
-                                0,
-                              ),
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.all(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "Basement Drawing",
-                                style: cardTitleStyle(),
-                              ),
-                              Container(
-                                width: 220,
-                                margin: EdgeInsets.only(top: 8, bottom: 8),
-                                child: Divider(
-                                  color: Colors.black,
-                                  thickness: 2,
-                                ),
-                              ),
-                              AspectRatio(
-                                aspectRatio: MediaQuery.of(context).size.aspectRatio,
-                                child: Container(
-                                  color: Colors.grey.shade100,
-                                  child: InkWell(
-                                    child: Stack(
-                                      children: <Widget>[
-                                        _Drawing,
-                                        isDrawingSaving
-                                            ? Center(
-                                          child: ShimmerUploadIcon(200),
-                                        )
-                                            : Container(),
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) {
-                                              return DrawingDialog(
-                                                  picture: _generateDrawingPicture);
-                                            },
-                                            fullscreenDialog: true),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-/*------------------Agreement DRAWING------------------*/
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              offset: Offset(
-                                0,
-                                0,
-                              ),
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.all(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text(
-                                "Agreement",
-                                style: cardTitleStyle(),
-                              ),
-                              Container(
-                                width: 128,
-                                margin: EdgeInsets.only(top: 8, bottom: 8),
-                                child: Divider(
-                                  color: Colors.black,
-                                  thickness: 2,
-                                ),
-                              ),
-                              new TextField(
-                                controller: _noteController,
-                                obscureText: false,
-                                autofocus: false,
-                                cursorColor: Colors.black,
-                                maxLength: 1000,
-                                maxLengthEnforced: true,
-                                keyboardType: TextInputType.multiline,
-                                maxLines: null,
-                                minLines: 10,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                  fillColor: Colors.grey.shade200,
-                                    filled: true,
-                                    labelText: "Notes",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width/3.15,
-                                  height: MediaQuery.of(context).size.width/3.75,
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return SignatureDialog(
-                                                picture:
-                                                _generateHOSignaturePicture);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    child: Column(
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text("Home Owner Signature"),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Expanded(
-                                          child: Stack(
-                                            children: <Widget>[
-                                              _HOSignature,
-                                              isHOSignatureSaving
-                                                  ? Center(
-                                                child:
-                                                ShimmerUploadIcon(
-                                                    64),
-                                              )
-                                                  : Container(),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Center(
-                                          child: Container(
-                                            color: Colors.grey.shade100,
-                                            child: Padding(
-                                              padding:
-                                              const EdgeInsets.all(8.0),
-                                              child: Center(
-                                                child: ListRowItem(
-                                                  icon: Icons.event,
-                                                  text:
-                                                  "${DateFormat('MM/dd/yyyy')
-                                                      .format(
-                                                      DateTime.now())}",
-                                                ),
-                                              ),
+                                        Container(
+                                          height: 48,
+                                          width: 256,
+                                          margin: EdgeInsets.only(right: 24),
+                                          child: RaisedButton(
+                                            highlightElevation: 2,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    new BorderRadius.circular(
+                                                        36.0),
+                                                side: BorderSide(
+                                                    color: Colors.white12)),
+                                            disabledColor: Colors.black,
+                                            color: Colors.black,
+                                            elevation: 2,
+                                            textColor: Colors.white,
+                                            padding: EdgeInsets.all(12.0),
+                                            child: Text(
+                                              "Save and Send",
+                                              style: customButtonTextStyle(),
                                             ),
+                                            onPressed: () {
+                                              if (_productList.length == 0) {
+                                                showError(
+                                                    "Product list is empty!");
+                                              } else if (isDrawingSaving ||
+                                                  isCameraSaving ||
+                                                  isHOSignatureSaving) {
+                                                showError(
+                                                    "Uploading Image. Grab some snacks and wait for a while");
+                                              } else {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        loadingAlert());
+                                                showSendMail();
+                                              }
+                                            },
                                           ),
-                                        )
+                                        ),
+                                        Container(
+                                          height: 48,
+                                          width: 144,
+                                          child: RaisedButton(
+                                            highlightElevation: 2,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    new BorderRadius.circular(
+                                                        36.0),
+                                                side: BorderSide(
+                                                    color: Colors.white12)),
+                                            disabledColor: Colors.black,
+                                            color: Colors.black,
+                                            elevation: 2,
+                                            textColor: Colors.white,
+                                            padding: EdgeInsets.all(12.0),
+                                            child: Text(
+                                              "Save",
+                                              style: customButtonTextStyle(),
+                                            ),
+                                            onPressed: () {
+                                              if (_productList.length == 0) {
+                                                showError(
+                                                    "Product list is empty!");
+                                              } else if (isDrawingSaving ||
+                                                  isCameraSaving ||
+                                                  isHOSignatureSaving) {
+                                                showError(
+                                                    "Uploading Image. Grab some snacks and wait for a while");
+                                              } else {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        loadingAlert());
+                                                showSaving();
+                                              }
+                                            },
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
-                                ),
-                              )
+                                ],
+                              ),
                             ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                             Container(
-                              height: 48,
-                              width: 256,
-                              margin: EdgeInsets.only(right: 24),
-                              child: RaisedButton(
-                                highlightElevation: 2,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                    new BorderRadius.circular(36.0),
-                                    side: BorderSide(color: Colors.white12)),
-                                disabledColor: Colors.black,
-                                color: Colors.black,
-                                elevation: 2,
-                                textColor: Colors.white,
-                                padding: EdgeInsets.all(12.0),
-                                child: Text(
-                                  "Save and Send",
-                                  style: customButtonTextStyle(),
-                                ),
-                                onPressed: () {
-                                  if (_productList.length == 0) {
-                                    showError("Product list is empty!");
-                                  } else if (isDrawingSaving ||
-                                      isCameraSaving ||
-                                      isHOSignatureSaving) {
-                                    showError(
-                                        "Uploading Image. Grab some snacks and wait for a while");
-                                  } else {
-                                    showDialog(
-                                        context: context,
-                                    builder: (context) => loadingAlert());
-                                    showSendMail();
-                                  }
-                                },
-                              ),
-                            ),
-                            Container(
-                              height: 48,
-                              width: 144,
-                              child: RaisedButton(
-                                highlightElevation: 2,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(36.0),
-                                    side: BorderSide(color: Colors.white12)),
-                                disabledColor: Colors.black,
-                                color: Colors.black,
-                                elevation: 2,
-                                textColor: Colors.white,
-                                padding: EdgeInsets.all(12.0),
-                                child: Text(
-                                  "Save",
-                                  style: customButtonTextStyle(),
-                                ),
-                                onPressed: () {
-                                  if (_productList.length == 0) {
-                                    showError("Product list is empty!");
-                                  } else if (isDrawingSaving ||
-                                      isCameraSaving ||
-                                      isHOSignatureSaving) {
-                                    showError(
-                                        "Uploading Image. Grab some snacks and wait for a while");
-                                  } else {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => loadingAlert());
-                                    showSaving();
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                          );
+                        } else {
+                          return ShimmerAddOrEditEstimate();
+                        }
+                      },
+                    ),
                   ),
-                ],
-              );
-            } else {
-              return ShimmerAddOrEditEstimate();
-            }
-          },
-        ),
-      ],
+          ),
+        ],
+      ),
     );
+  }
+
+  refreshConnectivity(bool flag) {
+    setState(() {
+      offline = flag;
+    });
   }
 
   _openCamera() async {
     File cameraOutput =
-    (await ImagePicker.pickImage(source: ImageSource.camera));
-    if(cameraOutput!=null) {
+        (await ImagePicker.pickImage(source: ImageSource.camera));
+    if (cameraOutput != null) {
       setState(() {
         _imageFile = cameraOutput;
         uploadCameraImage();
@@ -1198,8 +1373,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
 
   _openGallery(BuildContext context) async {
     File pickFromGallery =
-    (await ImagePicker.pickImage(source: ImageSource.gallery));
-    if(pickFromGallery!=null) {
+        (await ImagePicker.pickImage(source: ImageSource.gallery));
+    if (pickFromGallery != null) {
       setState(() {
         _imageFile = pickFromGallery;
         uploadCameraImage();
@@ -1244,8 +1419,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
                     ),
                     InkWell(
                       onTap: () {
-                        FocusScope.of(context)
-                            .requestFocus(FocusNode());
+                        FocusScope.of(context).requestFocus(FocusNode());
                         showFavouriteList();
                       },
                       child: Row(
@@ -1291,36 +1465,36 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
                                   padding: EdgeInsets.all(8),
                                   child: TypeAheadField(
                                     textFieldConfiguration:
-                                    TextFieldConfiguration(
-                                        controller: _productNameController,
-                                        autofocus: true,
-                                        keyboardType: TextInputType.text,
-                                        maxLines: 1,
-                                        decoration: new InputDecoration(
-                                          labelText: "Product",
-                                          focusedBorder:
-                                          UnderlineInputBorder(
-                                              borderSide:
-                                              BorderSide.none),
-                                          enabledBorder:
-                                          UnderlineInputBorder(
-                                              borderSide:
-                                              BorderSide.none),
-                                          icon: new Icon(
-                                            MdiIcons.cube,
-                                            color: Colors.grey,
-                                          ),
-                                          hintStyle: customHintStyle(),
-                                          isDense: true,
-                                        )),
+                                        TextFieldConfiguration(
+                                            controller: _productNameController,
+                                            autofocus: true,
+                                            keyboardType: TextInputType.text,
+                                            maxLines: 1,
+                                            decoration: new InputDecoration(
+                                              labelText: "Product",
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide:
+                                                          BorderSide.none),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide:
+                                                          BorderSide.none),
+                                              icon: new Icon(
+                                                MdiIcons.cube,
+                                                color: Colors.grey,
+                                              ),
+                                              hintStyle: customHintStyle(),
+                                              isDense: true,
+                                            )),
                                     suggestionsCallback: (pattern) async {
                                       return await getSuggestions(pattern);
                                     },
                                     itemBuilder: (context, suggestion) {
                                       Product product =
-                                      Product.fromMap(suggestion, true);
-                                      for(Product item in _productList) {
-                                        if(item.guid==product.guid) {
+                                          Product.fromMap(suggestion, true);
+                                      for (Product item in _productList) {
+                                        if (item.guid == product.guid) {
                                           return Container();
                                         }
                                       }
@@ -1329,8 +1503,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
                                         title: Text(product.name),
                                         subtitle: Text(product.description),
                                         trailing: Text(
-                                            '\$ ${product.rate.toStringAsFixed(
-                                                2)}'),
+                                            '\$ ${product.rate.toStringAsFixed(2)}'),
                                       );
                                     },
                                     onSuggestionSelected: (suggestion) {
@@ -1411,7 +1584,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
                                     Container(
                                       height: 224,
@@ -1450,7 +1623,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
                                   key: _columnKey,
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
                                     Container(
                                       decoration: new BoxDecoration(
@@ -1506,8 +1679,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
                                       },
                                       autofocus: false,
                                       keyboardType:
-                                      TextInputType.numberWithOptions(
-                                          signed: true, decimal: true),
+                                          TextInputType.numberWithOptions(
+                                              signed: true, decimal: true),
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(),
                                         filled: true,
@@ -1519,11 +1692,11 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
                                           onPressed: () {
                                             setState(() {
                                               _discountModeIsPercentage =
-                                              !_discountModeIsPercentage;
+                                                  !_discountModeIsPercentage;
                                               calculatePrice().then((price) {
                                                 _priceController.text =
                                                     double.parse(
-                                                        price.toString())
+                                                            price.toString())
                                                         .toStringAsFixed(2);
                                               });
                                             });
@@ -1689,74 +1862,89 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
 
   void showSendMail() async {
     Map<String, dynamic> result = await showSavingForSendMail();
-    Navigator.of(context).push(new MaterialPageRoute<Null>(
-        builder: (context) => SendMailFragment(
-            result,
-            estimateId,
-            widget.login,
-            widget.customer,
-            backToCustomerDetails),
-        fullscreenDialog: true));
+    if(result!=null) {
+      Navigator.of(context).push(new MaterialPageRoute<Null>(
+          builder: (context) =>
+              SendMailFragment(result, estimateId, widget.login,
+                  widget.customer, backToCustomerDetails),
+          fullscreenDialog: true));
+    }
   }
 
   void showSaving() async {
     var result = await CreateEstimate(false);
-    bool resultStatus = result['result'];
-    Navigator.of(context).pop();
-    showAPIResponse(
-        context,
-        resultStatus ? "Estimate saved Successfully!" : "Failed to Save!",
-        Color(resultStatus ? COLOR_SUCCESS : COLOR_DANGER));
-    setState(() {});
-    if (resultStatus) widget.backToCustomerDetailsFromEstimate(widget.customer);
+    if (result != null) {
+      Navigator.of(context).pop();
+      bool resultStatus = result['result'];
+      showAPIResponse(
+          context,
+          resultStatus ? "Estimate saved Successfully!" : "Failed to Save!",
+          Color(resultStatus ? COLOR_SUCCESS : COLOR_DANGER));
+      setState(() {});
+      if (resultStatus)
+        widget.backToCustomerDetailsFromEstimate(widget.customer);
+    }
   }
 
   Future showSavingForSendMail() async {
     var result = await CreateEstimate(true);
-    if(result!=null) {
-      bool resultStatus = result['result'];
+    if (result != null) {
       Navigator.of(context).pop();
+      bool resultStatus = result['result'];
       showAPIResponse(
           context,
           resultStatus ? "Estimate saved Successfully!" : "Failed to Save!",
           Color(resultStatus ? COLOR_SUCCESS : COLOR_DANGER));
       setState(() {});
       return result;
-    } else
-      Navigator.of(context).pop();
+    }
+    return null;
   }
 
   Future getSuggestions(String pattern) async {
-    if (pattern.isNotEmpty) {
-      Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
-        'Key': pattern.trim()
-      };
+    try {
+      if (pattern.isNotEmpty) {
+        Map<String, String> headers = {
+          'Authorization': widget.login.accessToken,
+          'Key': pattern.trim()
+        };
 
-      var result =
-      await http.get(BASE_URL + API_EQUIPMENT_LIST, headers: headers);
-      if (result.statusCode == 200) {
-        return json.decode(result.body)['EquipmentList'];
-      } else {
-        showMessage(context, "Network error!", json.decode(result.body),
-            Colors.redAccent, Icons.warning);
-        return [];
+        var result =
+            await http.get(BASE_URL + API_EQUIPMENT_LIST, headers: headers);
+        setState(() {
+          offline = false;
+        });
+        if (result.statusCode == 200) {
+          return json.decode(result.body)['EquipmentList'];
+        } else {
+          showMessage(context, "Network error!", json.decode(result.body),
+              Colors.redAccent, Icons.warning);
+          return [];
+        }
+      }
+    } catch (error) {
+      Navigator.of(context).pop();
+      setState(() {
+        offline = true;
+      });
+      if (error.toString().contains("SocketException")) {
+        showNoInternetConnection(context);
       }
     }
   }
 
   Future<double> calculatePrice() async {
     int quantity =
-    _quantityController.text == null || _quantityController.text.isEmpty
-        ? 0
-        : int.parse(_quantityController.text);
+        _quantityController.text == null || _quantityController.text.isEmpty
+            ? 0
+            : int.parse(_quantityController.text);
     double rate = _rateController.text == null || _rateController.text.isEmpty
         ? 0
         : double.parse(_rateController.text);
     double discount =
-    _discountController.text == null || _discountController.text.isEmpty
-        ? 0
-        : double.parse(_discountController.text);
+        _discountController.text == null || _discountController.text.isEmpty
+            ? 0
+            : double.parse(_discountController.text);
     return _discountModeIsPercentage
         ? ((quantity * rate) * (1 - (discount / 100)))
         : ((quantity * rate) - discount);
@@ -1765,7 +1953,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
   Future estimateTotalCalculation() async {
     setState(() {
       double discount = _EstimateDiscountController.text == null ||
-          _EstimateDiscountController.text.isEmpty
+              _EstimateDiscountController.text.isEmpty
           ? 0
           : double.parse(_EstimateDiscountController.text);
       estimateBaseSubTotal = getCurrentBaseSubtotal();
@@ -1774,7 +1962,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
           : discount;
       estimateMainSubtotal = estimateBaseSubTotal - estimateDiscountTotal;
       estimateTaxTotal = (estimateMainSubtotal *
-          (_TaxTypeSelectedValue == _TaxType[0] ? 8.25 : 0)) /
+              (_TaxTypeSelectedValue == _TaxType[0] ? 8.25 : 0)) /
           100;
       estimateTotalAmount = estimateMainSubtotal + estimateTaxTotal;
     });
@@ -1797,7 +1985,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
     };
     try {
       var result =
-      await http.post(BASE_URL + API_GENERATE_ESTIMATE, headers: headers);
+          await http.post(BASE_URL + API_GENERATE_ESTIMATE, headers: headers);
       setState(() {
         offline = false;
       });
@@ -1848,7 +2036,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
       'Content-Type': "application/json",
     };
 
-    try{
+    try {
       Map<String, List> body = {};
       List<Map<String, dynamic>> map = [];
       for (Product product in _productList) {
@@ -1857,6 +2045,9 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
       body['ListEstimate'] = map;
       var result = await http.post(BASE_URL + API_CREATE_ESTIMATE,
           headers: headers, body: json.encode(body));
+      setState(() {
+        offline = false;
+      });
       if (result.statusCode == 200) {
         return json.decode(result.body);
       } else {
@@ -1864,6 +2055,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
       }
     } catch (error) {
       if (error.toString().contains("SocketException")) {
+        Navigator.of(context).pop();
         setState(() {
           offline = true;
         });
@@ -1871,7 +2063,6 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
         return null;
       }
     }
-
   }
 
   discountColor() {
@@ -1901,7 +2092,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
         headers: headers, body: body);
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
-      _CameraImagePath = "https://api.gratecrm.com"+map['filePath'];
+      _CameraImagePath = "https://api.gratecrm.com" + map['filePath'];
     }
     setState(() {
       isCameraSaving = false;
@@ -1923,7 +2114,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
         headers: headers, body: body);
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
-      _drawingImagePath = "https://api.gratecrm.com"+map['filePath'];
+      _drawingImagePath = "https://api.gratecrm.com" + map['filePath'];
     }
     setState(() {
       isDrawingSaving = false;
@@ -1945,7 +2136,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
         headers: headers, body: body);
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
-      _HOSignatureImagePath = "https://api.gratecrm.com" +map['filePath'];
+      _HOSignatureImagePath = "https://api.gratecrm.com" + map['filePath'];
     }
     setState(() {
       isHOSignatureSaving = false;
@@ -1969,9 +2160,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
               child: ListBody(
                 children: <Widget>[
                   ListTile(
-                    onTap: (){
-                      FocusScope.of(context)
-                          .requestFocus(FocusNode());
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
                       widget.customer.ProfileImage = null;
                       _openGallery(context);
                     },
@@ -1979,9 +2169,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
                     title: Text("Gallery"),
                   ),
                   ListTile(
-                    onTap: (){
-                      FocusScope.of(context)
-                          .requestFocus(FocusNode());
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
                       widget.customer.ProfileImage = null;
                       _openCamera();
                     },
@@ -1998,12 +2187,12 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> {
   showFavouriteList() {
     Navigator.of(context).push(new MaterialPageRoute<Null>(
         builder: (BuildContext context) {
-          return FavouriteProductListUI(widget.login, _fillProductInformations);
+          return FavouriteProductListUI(widget.login, _fillProductInformation);
         },
         fullscreenDialog: true));
   }
 
-  _fillProductInformations(Product product) {
+  _fillProductInformation(Product product) {
     setState(() {
       _productNameController.text = product.name;
       _rateController.text = product.rate.toString();

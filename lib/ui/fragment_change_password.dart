@@ -25,7 +25,7 @@ class ChangePasswordFragment extends StatefulWidget {
   _ChangePasswordFragmentState createState() => _ChangePasswordFragmentState();
 }
 
-class _ChangePasswordFragmentState extends State<ChangePasswordFragment> {
+class _ChangePasswordFragmentState extends State<ChangePasswordFragment> with SingleTickerProviderStateMixin{
   var _formKey = GlobalKey<FormState>();
 
   TextEditingController _oldPasswordController = new TextEditingController();
@@ -113,7 +113,7 @@ class _ChangePasswordFragmentState extends State<ChangePasswordFragment> {
           ),
           Expanded(
             child: offline
-                ? NoInternetConnectionWidget()
+                ? NoInternetConnectionWidget(refreshConnectivity)
                 : Form(
                     key: _formKey,
                     child: ListView(
@@ -316,6 +316,12 @@ class _ChangePasswordFragmentState extends State<ChangePasswordFragment> {
         ],
       ),
     );
+  }
+
+  refreshConnectivity(bool flag) {
+    setState(() {
+      offline = flag;
+    });
   }
 
   void showPopup() {

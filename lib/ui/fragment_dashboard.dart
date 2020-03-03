@@ -42,7 +42,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
   Customer customer;
 
   bool _showPaginationShimmer = false;
-  bool isOffline = false;
+  bool offline = false;
   ScrollController _scrollController;
   int _pageNo = 0;
   int _totalSize = 0;
@@ -193,7 +193,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
                   try {
                     return RefreshIndicator(
                       onRefresh: _refresh,
-                      child: !isOffline
+                      child: !offline
                           ? ListView(
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
@@ -357,7 +357,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
                                 ),
                               ],
                             )
-                          : NoInternetConnectionWidget(),
+                          : NoInternetConnectionWidget(refreshConnectivity),
                     );
                   } catch (error) {
                     return Container();
@@ -375,6 +375,12 @@ class _DashboardFragmentState extends State<DashboardFragment>
         ],
       ),
     );
+  }
+
+  refreshConnectivity(bool flag) {
+    setState(() {
+      offline = flag;
+    });
   }
 
   Future getData() async {
@@ -396,7 +402,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
           return Customer.fromMap(_customersMap[index]);
         });
         setState(() {
-          isOffline = false;
+          offline = false;
         });
         return result;
       } else {
@@ -407,7 +413,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
     } catch (error) {
       if (error.toString().contains("SocketException")) {
         setState(() {
-          isOffline = true;
+          offline = true;
         });
         showNoInternetConnection(context);
         return [];
@@ -434,13 +440,13 @@ class _DashboardFragmentState extends State<DashboardFragment>
           return Customer.fromMap(_customersMap[index]);
         });
         setState(() {
-          isOffline = false;
+          offline = false;
           arrayList.addAll(_arrayList);
         });
         return _arrayList;
       } else {
         setState(() {
-          isOffline = false;
+          offline = false;
         });
         showMessage(context, "Network error!", json.decode(result.body),
             Colors.redAccent, Icons.warning);
@@ -449,7 +455,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
     } catch (error) {
       if (error.toString().contains("SocketException")) {
         setState(() {
-          isOffline = true;
+          offline = true;
         });
         showNoInternetConnection(context);
         return [];
@@ -479,14 +485,14 @@ class _DashboardFragmentState extends State<DashboardFragment>
         });
 
         setState(() {
-          isOffline = false;
+          offline = false;
           arrayList.clear();
           arrayList.addAll(_arrayList);
         });
         Navigator.of(context).pop();
       } else {
         setState(() {
-          isOffline = false;
+          offline = false;
         });
         Navigator.of(context).pop();
         showMessage(context, "Network error!", json.decode(result.body),
@@ -496,7 +502,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
       Navigator.of(context).pop();
       if (error.toString().contains("SocketException")) {
         setState(() {
-          isOffline = true;
+          offline = true;
         });
         showNoInternetConnection(context);
       }
@@ -515,12 +521,12 @@ class _DashboardFragmentState extends State<DashboardFragment>
       if (result.statusCode == 200) {
         arrayList.removeAt(index);
         setState(() {
-          isOffline = false;
+          offline = false;
         });
         return json.decode(result.body)['result'];
       } else {
         setState(() {
-          isOffline = false;
+          offline = false;
         });
         showMessage(context, "Network error!", json.decode(result.body),
             Colors.redAccent, Icons.warning);
@@ -530,7 +536,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
       Navigator.of(context).pop();
       if (error.toString().contains("SocketException")) {
         setState(() {
-          isOffline = true;
+          offline = true;
         });
         showNoInternetConnection(context);
       }

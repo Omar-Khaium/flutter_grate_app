@@ -60,7 +60,7 @@ class CustomerDetailsFragment extends StatefulWidget {
       _CustomerDetailsFragmentState();
 }
 
-class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
+class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with SingleTickerProviderStateMixin{
   List<Estimate> _list;
   var _base64Image;
 
@@ -80,52 +80,29 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Make a choice"),
+            title: Text("Make A choice"),
             content: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: ListBody(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(16),
-                      child: GestureDetector(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(Icons.photo_album),
-                            SizedBox(
-                              width: 12,
-                            ),
-                            Text("Gallery"),
-                          ],
-                        ),
-                        onTap: () {
-                          widget.customer.ProfileImage = null;
-                          _openGallery(context);
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(16),
-                      child: GestureDetector(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(Icons.photo_camera),
-                            SizedBox(
-                              width: 12,
-                            ),
-                            Text("Camera"),
-                          ],
-                        ),
-                        onTap: () {
-                          widget.customer.ProfileImage = null;
-                          _openCamera(context);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+              child: ListBody(
+                children: <Widget>[
+                  ListTile(
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      widget.customer.ProfileImage = null;
+                      _openGallery();
+                    },
+                    leading: Icon(Icons.photo_album),
+                    title: Text("Gallery"),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      widget.customer.ProfileImage = null;
+                      _openCamera();
+                    },
+                    leading: Icon(Icons.camera_enhance),
+                    title: Text("Camera"),
+                  ),
+                ],
               ),
             ),
           );
@@ -170,7 +147,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
                   try {
                     if (snapshot.hasData) {
                       return offline
-                          ? NoInternetConnectionWidget()
+                          ? NoInternetConnectionWidget(refreshConnectivity)
                           : Column(
                               children: <Widget>[
                                 Stack(
@@ -841,12 +818,12 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
                             );
                     } else {
                       return offline
-                          ? NoInternetConnectionWidget()
+                          ? NoInternetConnectionWidget(refreshConnectivity)
                           : ShimmerCustomerDetailsFragment();
                     }
                   } catch (error) {
                     return offline
-                        ? NoInternetConnectionWidget()
+                        ? NoInternetConnectionWidget(refreshConnectivity)
                         : Center(
                             child: Text(
                               "Something went wrong...",
@@ -863,7 +840,13 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
     );
   }
 
-  _openGallery(BuildContext context) async {
+  refreshConnectivity(bool flag) {
+    setState(() {
+      offline = flag;
+    });
+  }
+
+  _openGallery() async {
     File pickFromGallery =
         (await ImagePicker.pickImage(source: ImageSource.gallery));
     setState(() {
@@ -875,7 +858,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
     uploadCustomerImage();
   }
 
-  _openCamera(BuildContext context) async {
+  _openCamera() async {
     File pickFromCamera =
         (await ImagePicker.pickImage(source: ImageSource.camera));
     setState(() {
@@ -939,29 +922,24 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
         "filepath": _base64Image
       };
 
-      http
-          .post(BASE_URL + API_CUSTOMER_UPLOAD, headers: headers, body: body)
-          .then((response) {
-        if (response.statusCode == 200) {
-          setState(() {
-            offline = false;
-          });
-          Navigator.of(context).pop();
-          showMessage(
-              context,
-              "Profile Picture",
-              "Successfully updated ${widget.customer.Name}'s profile picture",
-              Colors.green,
-              Icons.check);
-        } else {
-          setState(() {
-            offline = false;
-          });
-          Navigator.of(context).pop();
-          showMessage(context, "Error!", "Something went wrong",
-              Colors.redAccent, Icons.warning);
-        }
+      var response = await http.post(BASE_URL + API_CUSTOMER_UPLOAD,
+          headers: headers, body: body);
+      setState(() {
+        offline = false;
       });
+      if (response.statusCode == 200) {
+        Navigator.of(context).pop();
+        showMessage(
+            context,
+            "Profile Picture",
+            "Successfully updated ${widget.customer.Name}'s profile picture",
+            Colors.green,
+            Icons.check);
+      } else {
+        Navigator.of(context).pop();
+        showMessage(context, "Error!", "Something went wrong", Colors.redAccent,
+            Icons.warning);
+      }
     } catch (error) {
       Navigator.of(context).pop();
       if (error.toString().contains("SocketException")) {
@@ -970,7 +948,6 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
         });
         showNoInternetConnection(context);
       }
-      _controller.sink.add([]);
     }
   }
 
@@ -1109,12 +1086,12 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> {
       };
 
       var result =
-      await http.delete(BASE_URL + API_DELETE_ESTIMATE, headers: headers);
+          await http.delete(BASE_URL + API_DELETE_ESTIMATE, headers: headers);
       setState(() {
         offline = false;
       });
       return json.decode(result.body)['result'];
-    } catch(error) {
+    } catch (error) {
       if (error.toString().contains("SocketException")) {
         setState(() {
           offline = true;

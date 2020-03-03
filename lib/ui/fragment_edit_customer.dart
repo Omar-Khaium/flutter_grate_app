@@ -47,7 +47,7 @@ class EditCustomerFragment extends StatefulWidget {
   _AddCustomerState createState() => _AddCustomerState();
 }
 
-class _AddCustomerState extends State<EditCustomerFragment> {
+class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerProviderStateMixin {
   DBHelper dbHelper = new DBHelper();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Zip zipData;
@@ -123,7 +123,7 @@ class _AddCustomerState extends State<EditCustomerFragment> {
             Expanded(
               child:
               offline
-                  ? NoInternetConnectionWidget()
+                  ? NoInternetConnectionWidget(refreshConnectivity)
                   : ListView(
                 padding: EdgeInsets.only(left: 32, right: 32),
                 shrinkWrap: true,
@@ -605,6 +605,12 @@ class _AddCustomerState extends State<EditCustomerFragment> {
         ),
       ),
     );
+  }
+
+  refreshConnectivity(bool flag) {
+    setState(() {
+      offline = flag;
+    });
   }
 
   getData() async {

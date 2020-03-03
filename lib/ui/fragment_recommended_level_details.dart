@@ -33,7 +33,7 @@ class RecommendedLevelDetails extends StatefulWidget {
   _RecommendedLevelDetails createState() => _RecommendedLevelDetails();
 }
 
-class _RecommendedLevelDetails extends State<RecommendedLevelDetails> {
+class _RecommendedLevelDetails extends State<RecommendedLevelDetails> with SingleTickerProviderStateMixin {
   List<String> _videoLinks = [
     "Eb5QhpcRHVg",
     "3HIV1Q8Oxsw",
@@ -347,7 +347,7 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> {
                       width: double.infinity,
                       height: double.infinity,
                       margin: EdgeInsets.only(left: 16, right: 16, top: 16),
-                      child: offline ? NoInternetConnectionWidget() : Stack(
+                      child: offline ? NoInternetConnectionWidget(refreshConnectivity) : Stack(
                         children: <Widget>[
                           InkWell(
                             onTap: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VideoPlayerScreen(url: _videoLinks[widget.index - 1],),fullscreenDialog: true)),
@@ -389,6 +389,12 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> {
         },
       ),
     );
+  }
+
+  refreshConnectivity(bool flag) {
+    setState(() {
+      offline = flag;
+    });
   }
 
   Future _save() async {

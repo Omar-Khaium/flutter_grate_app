@@ -34,6 +34,7 @@ dependencies:
   url_launcher:
   flutter_pdfview:
   youtube_player_flutter:
+  flutter_keyboard_visibility:
 
 dev_dependencies:
   flutter_test:
