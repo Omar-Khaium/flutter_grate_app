@@ -6,13 +6,14 @@ import 'list_shimmer_item_customer.dart';
 class ShimmerDashboardFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width/4.5;
     return ListView(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       children: <Widget>[
         Column(
           mainAxisSize: MainAxisSize.min,
-          children: [0, 1, 2, 3, 4, 5, 6, 7]
+          children: [0, 1, 2, 3, 4, 5, 6, 7,8,9]
               .map(
                 (_) => Column(
                   mainAxisSize: MainAxisSize.min,
@@ -27,15 +28,15 @@ class ShimmerDashboardFragment extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              ShimmerItemCustomer(250),
+                              ShimmerItemCustomer(width),
                               SizedBox(
                                 height: 8,
                               ),
-                              ShimmerItemCustomer(125),
+                              ShimmerItemCustomer(width-100),
                               SizedBox(
                                 height: 8,
                               ),
-                              ShimmerItemCustomer(175),
+                              ShimmerItemCustomer(width-64),
                             ],
                           ),
                         ),
@@ -44,7 +45,7 @@ class ShimmerDashboardFragment extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              ShimmerItemMultiLineCustomer(300),
+                              ShimmerItemMultiLineCustomer(width),
                             ],
                           ),
                         ),

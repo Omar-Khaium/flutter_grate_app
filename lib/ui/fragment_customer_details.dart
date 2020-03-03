@@ -130,9 +130,12 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                   SizedBox(
                     width: 16,
                   ),
-                  Text(
-                      "${offline ? "Offline" : widget.customer == null ? "Loading" : "${widget.customer.ProfileName}'s Profile"}",
-                      style: fragmentTitleStyle()),
+                  Container(
+                    width: MediaQuery.of(context).size.width/2,
+                    child: Text(
+                        "${offline ? "Offline" : widget.customer == null ? "Loading" : "${widget.customer.ProfileName}'s Profile"}",
+                        style: fragmentTitleStyle(), overflow: TextOverflow.ellipsis,),
+                  ),
                 ],
               ),
             ),
@@ -165,7 +168,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                     ),
                                     Container(
                                       margin:
-                                          EdgeInsets.only(left: 16, right: 16),
+                                          EdgeInsets.only(left: 16, right: 16, top: 8),
                                       child: Column(
                                         children: <Widget>[
                                           Row(
@@ -239,7 +242,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                               Colors.black54,
                                                           child: InkWell(
                                                             child: Icon(
-                                                              MdiIcons.pencil,
+                                                              MdiIcons.imageEdit,
                                                               size: 18,
                                                               color:
                                                                   Colors.white,
@@ -254,7 +257,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                     ],
                                                   ),
                                                   SizedBox(
-                                                    width: 26,
+                                                    width: 24,
                                                   ),
                                                   Column(
                                                     mainAxisSize:
@@ -265,11 +268,11 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                     children: <Widget>[
                                                       Text(
                                                         widget.customer.Name,
-                                                        style: new TextStyle(
-                                                            fontSize: 26,
+                                                        style: Theme.of(context).textTheme.title.copyWith(
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
+                                                        overflow: TextOverflow.ellipsis,
                                                       ),
                                                       widget.customer.Type ==
                                                                   null ||
@@ -277,7 +280,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                                   .Type.isEmpty
                                                           ? Container()
                                                           : SizedBox(
-                                                              height: 16,
+                                                              height: 8,
                                                             ),
                                                       widget.customer.Type ==
                                                                   null ||
@@ -306,7 +309,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                               ],
                                                             ),
                                                       SizedBox(
-                                                        height: 16,
+                                                        height: 8,
                                                       ),
                                                       Row(
                                                         crossAxisAlignment:
@@ -376,11 +379,14 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                   )
                                                 ],
                                               ),
-                                              IconButton(
-                                                icon: Icon(Icons.edit),
-                                                onPressed: () =>
-                                                    widget.goToEditCustomer(
-                                                        widget.customer),
+                                              CircleAvatar(
+                                                backgroundColor: Colors.grey.shade100,
+                                                child: IconButton(
+                                                  icon: Icon(MdiIcons.accountEdit, color: Colors.black),
+                                                  onPressed: () =>
+                                                      widget.goToEditCustomer(
+                                                          widget.customer),
+                                                ),
                                               )
                                             ],
                                           ),

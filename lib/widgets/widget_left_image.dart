@@ -16,7 +16,7 @@ class LeftPanelForLoginWidget extends StatelessWidget {
                 "Welcome To GrateApp",
                 style: Theme.of(context)
                     .textTheme
-                    .display2
+                    .display1
                     .copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900),

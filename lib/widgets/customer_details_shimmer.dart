@@ -10,6 +10,7 @@ import 'list_shimmer_item_without_icon.dart';
 class ShimmerCustomerDetailsFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width/4.75;
     return Column(
       children: <Widget>[
         Stack(
@@ -29,51 +30,44 @@ class ShimmerCustomerDetailsFragment extends StatelessWidget {
                 children: <Widget>[
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(
-                            width: 128,
-                            height: 128,
-                            child: Shimmer.fromColors(
-                              baseColor: Colors.black12,
-                              highlightColor: Colors.white24,
-                              child: ClipRRect(
-                                borderRadius:
-                                    new BorderRadius.all(Radius.circular(12)),
-                                child: Container(
-                                  color: Colors.grey,
-                                ),
-                              ),
+                      SizedBox(
+                        width: 128,
+                        height: 128,
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.black12,
+                          highlightColor: Colors.white24,
+                          child: ClipRRect(
+                            borderRadius:
+                                new BorderRadius.all(Radius.circular(12)),
+                            child: Container(
+                              color: Colors.grey,
                             ),
                           ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 24,
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          ShimmerItemWithoutIcon(width),
                           SizedBox(
-                            width: 26,
+                            height: 16,
                           ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              ShimmerItemWithoutIcon(300),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              ShimmerItemCustomer(200),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              ShimmerItemCustomer(150),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              ShimmerItemMultiLineCustomer(250),
-                            ],
-                          )
+                          ShimmerItemCustomer(width-48),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          ShimmerItemCustomer(width-36),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          ShimmerItemMultiLineCustomer(width-44),
                         ],
                       ),
-                      ShimmerItemWithoutIcon(150),
                     ],
                   ),
                   Container(
@@ -179,13 +173,13 @@ class ShimmerCustomerDetailsFragment extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 16,
+          height: 26,
         ),
         Expanded(
           child: ListView(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
-            children: [0, 1, 2, 3, 4, 5, 6]
+            children: [0, 1, 2, 3, 4, 5, 6,7,8,9]
                 .map((_) => Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
@@ -200,34 +194,31 @@ class ShimmerCustomerDetailsFragment extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                ShimmerItemCustomer(100),
+                                ShimmerItemCustomer(width-72),
                                 SizedBox(
                                   height: 8,
                                 ),
-                                ShimmerItemCustomer(300),
+                                ShimmerItemCustomer(width),
                                 SizedBox(
                                   height: 8,
                                 ),
-                                ShimmerItemCustomer(200),
+                                ShimmerItemCustomer(width-36),
                               ],
                             ),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                ShimmerItemCustomer(150),
+                                ShimmerItemCustomer(width-100),
                                 SizedBox(
                                   height: 8,
                                 ),
-                                ShimmerItemCustomer(200),
+                                ShimmerItemCustomer(width-120),
                               ],
                             ),
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                ShimmerItemWithOnlyIcon(),
-                                SizedBox(
-                                  width: 8,
-                                ),
                                 ShimmerItemWithOnlyIcon(),
                                 SizedBox(
                                   width: 8,
