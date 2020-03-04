@@ -27,7 +27,7 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
                     Container(
                       child: Align(
                           alignment: Alignment.centerLeft,
-                          child: ShimmerItemWithoutIcon(width/2)),
+                          child: ShimmerItemWithoutIcon(width / 2)),
                     ),
                     SizedBox(
                       height: 16,
@@ -43,8 +43,7 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   ShimmerItemCustomer(width / 4),
                                   SizedBox(
@@ -61,8 +60,7 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
                                   ShimmerItemCustomer(width / 4),
                                   SizedBox(
@@ -95,95 +93,96 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
                   ],
                 ),
                 Container(
-                margin: EdgeInsets.only(top: 16, bottom: 16),
-                child: DottedBorder(
-                color: Colors.black,
-                strokeWidth: .5,
-                  child: ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    ShimmerItemCustomer(128),
-                                    SizedBox(
+                  margin: EdgeInsets.only(top: 16, bottom: 16),
+                  child: DottedBorder(
+                    color: Colors.black,
+                    strokeWidth: .5,
+                    child: ListView.builder(
+                        padding: EdgeInsets.all(8),
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      ShimmerItemCustomer(128),
+                                      SizedBox(
+                                        height: 8,
+                                      ),
+                                      ShimmerItemCustomer(144),
+                                      SizedBox(
+                                        height: 8,
+                                      ),
+                                      ShimmerItemCustomer(172),
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      ShimmerItemCustomer(144),
+                                      SizedBox(
+                                        height: 8,
+                                      ),
+                                      ShimmerItemCustomer(100),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      ShimmerItemWithOnlyIcon(),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              index == 1
+                                  ? Container()
+                                  : SizedBox(
                                       height: 8,
                                     ),
-                                    ShimmerItemCustomer(144),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    ShimmerItemCustomer(172),
-                                  ],
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    ShimmerItemCustomer(144),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    ShimmerItemCustomer(100),
-                                  ],
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    ShimmerItemWithOnlyIcon(),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Divider(),
-                          ],
-                        );
-                      }),),
+                              index == 1 ? Container() : Divider(),
+                            ],
+                          );
+                        }),
+                  ),
                 ),
-
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Container(
-                              width: orientation==Orientation.landscape ? 172 : 108,
-                              height: orientation==Orientation.landscape ? 172 : 108,
-                              decoration: new BoxDecoration(
-                                  color: Colors.grey.shade200,
-                                  shape: BoxShape.rectangle,
-                                  border: Border.all(
-                                      width: 1.0,
-                                      color: Colors.black26),
-                                  borderRadius: BorderRadius.all(
-                                      Radius.circular(5.0))),
+                              width: orientation == Orientation.landscape
+                                  ? 172
+                                  : 108,
+                              height: orientation == Orientation.landscape
+                                  ? 172
+                                  : 108,
                               child: Shimmer.fromColors(
                                 baseColor: Colors.black12,
                                 highlightColor: Colors.white24,
                                 child: ClipRRect(
                                   borderRadius:
-                                  new BorderRadius.all(Radius.circular(12)),
+                                      new BorderRadius.all(Radius.circular(12)),
                                   child: Container(
                                     color: Colors.grey,
                                   ),
@@ -193,21 +192,39 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
                           ],
                         ),
                         SizedBox(
-                          width: orientation==Orientation.landscape ? 420 : 360,
+                          width:
+                              orientation == Orientation.landscape ? 420 : 360,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
-                            children: [0,1,2,3,4].map((_)=>Container(
-                              margin: EdgeInsets.only(bottom: 16),
-                              child: Row(mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  ShimmerItemWithoutIcon(100),
-                                  Container(child: Divider(color: Colors.grey, thickness: 1,), width: 24,),
-                                  ShimmerItemWithoutIcon(100),
-                                  Container(child: Divider(color: Colors.grey, thickness: 1,), width: 24,),
-                                  ShimmerItemWithoutIcon(100),
-                                ],),
-                            )).toList(),
+                            children: [0, 1, 2, 3, 4]
+                                .map((_) => Container(
+                                      margin: EdgeInsets.only(bottom: 16),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: <Widget>[
+                                          ShimmerItemWithoutIcon(100),
+                                          Container(
+                                            child: Divider(
+                                              color: Colors.grey,
+                                              thickness: 1,
+                                            ),
+                                            width: 24,
+                                          ),
+                                          ShimmerItemWithoutIcon(100),
+                                          Container(
+                                            child: Divider(
+                                              color: Colors.grey,
+                                              thickness: 1,
+                                            ),
+                                            width: 24,
+                                          ),
+                                          ShimmerItemWithoutIcon(100),
+                                        ],
+                                      ),
+                                    ))
+                                .toList(),
                           ),
                         )
                       ],
@@ -218,8 +235,7 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
 /*------------------BASEMENT DRAWING------------------*/
                     Container(
                       decoration: BoxDecoration(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(4)),
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(
@@ -237,23 +253,20 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            ShimmerItemWithoutIcon(width/2),
+                            ShimmerItemWithoutIcon(width / 2),
                             Container(
                               width: 220,
-                              margin: EdgeInsets.only(
-                                  top: 8, bottom: 8),
+                              margin: EdgeInsets.only(top: 8, bottom: 8),
                               child: Divider(
                                 color: Colors.black,
                                 thickness: 2,
                               ),
                             ),
                             AspectRatio(
-                              aspectRatio: MediaQuery.of(context)
-                                  .size
-                                  .aspectRatio,
+                              aspectRatio:
+                                  MediaQuery.of(context).size.aspectRatio,
                               child: Container(
                                 color: Colors.grey.shade100,
                               ),
@@ -268,8 +281,7 @@ class ShimmerAddOrEditEstimate extends StatelessWidget {
 /*------------------Agreement DRAWING------------------*/
                     Container(
                       decoration: BoxDecoration(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(4)),
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(

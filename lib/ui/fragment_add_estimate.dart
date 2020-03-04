@@ -1994,7 +1994,10 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
         estimateId = json.decode(result.body)['Invoice']['InvoiceId'];
         return estimateId;
       } else {
-        showMessage(context, "Network error!", json.decode(result.body),
+        setState(() {
+          estimateId = "Server Error";
+        });
+        showMessage(context, "Network error!", json.decode(result.body)["Message"],
             Colors.redAccent, Icons.warning);
         return "";
       }
