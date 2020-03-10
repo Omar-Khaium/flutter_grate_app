@@ -160,60 +160,6 @@ getDeleteDialog(context) {
   );
 }
 
-errorDialog(context) {
-  return BackdropFilter(
-    filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-    child: SimpleDialog(
-      contentPadding: EdgeInsets.all(0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      children: <Widget>[
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              width: 400,
-              height: 400,
-              child: Image.asset(
-                "images/error.jpg",
-                fit: BoxFit.cover,
-              ),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Expanded(
-                  child: InkWell(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8)),
-                        color: Colors.black,
-                      ),
-                      height: 64,
-                      child: Center(
-                        child: Text(
-                          "Close",
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .button
-                              .copyWith(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    onTap: () => Navigator.of(context).pop(),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
-
 //var currencyFormat = new NumberFormat.currency(locale: "en_US", name: "USD", decimalDigits: 2);
 var currencyFormat = new NumberFormat("#,###.##", "en_US");
 var numberFormat = new NumberFormat("#,###", "en_US");

@@ -41,7 +41,7 @@ class Product {
   }
 
   String get Date {
-    return date==null ? DateFormat('MM/dd/yyyy').format(DateTime.now()) : date;
+    return date==null ? DateFormat("yyyy-MM-dd'T'hh:mm:ss").format(DateTime.now()) : date;
   }
 
   Product.fromMap(Map<String, dynamic> map, bool isAutoComplete) {

@@ -16,6 +16,7 @@ import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/list_row_item.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
+import 'package:flutter_grate_app/widgets/widget_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -150,12 +151,11 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
 
   var _key = GlobalKey<FormState>();
 
-  ImageCache cache = new ImageCache();
+  var future;
 
   void initState() {
     super.initState();
-    cache.clear();
-    Future.delayed(Duration.zero, () => getDropDownData());
+    future = getDropDownData();
   }
 
   @override
@@ -226,15 +226,10 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
                                       ? Container(
                                           height: 140,
                                           width: 150,
-                                          child: FadeInImage.assetNetwork(
-                                            placeholder: "images/loading.gif",
-                                            image: buildCustomerImageUrl(
-                                                widget.customer.CustomerId,
-                                                widget.loggedInUser.CompanyGUID,
-                                                widget.login.username,
-                                                Uuid().v1()),
-                                            fit: BoxFit.cover,
-                                          ),
+                                          child: LoadImageWidget(
+                                              widget.customer.CustomerId,
+                                              widget.loggedInUser.CompanyGUID,
+                                                widget.login.username),
                                         )
                                       : Icon(
                                           Icons.person,
@@ -308,1868 +303,1825 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
                   SizedBox(
                     height: 8,
                   ),
-                  Column(
-                    children: <Widget>[
+                  FutureBuilder(
+                    future: future,
+                    builder: (context, snapshot) => Column(
+                      children: <Widget>[
 /*------------------RELATIVE HUMIDITY / TEMPERATURE READINGS------------------*/
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              offset: Offset(
-                                0,
-                                0,
-                              ),
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.all(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "Relative Humidity / Temperature Readings",
-                                style: cardTitleStyle(),
-                              ),
-                              Container(
-                                width: 200,
-                                margin: EdgeInsets.only(top: 8, bottom: 8),
-                                child: Divider(
-                                  color: Colors.grey,
-                                  thickness: .5,
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                offset: Offset(
+                                  0,
+                                  0,
                                 ),
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    CurrentOutsideConditionsSelection == 0 ||
-                                            CurrentOutsideConditionsSelection ==
-                                                null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Current Outside Conditions*",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items: List.generate(
-                                    CurrentOutsideConditionsArray.length,
-                                    (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child: Text(
-                                          CurrentOutsideConditionsArray[index]
-                                              .DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
+                              )
+                            ],
+                          ),
+                          margin: EdgeInsets.all(4),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  "Relative Humidity / Temperature Readings",
+                                  style: cardTitleStyle(),
+                                ),
+                                Container(
+                                  width: 200,
+                                  margin: EdgeInsets.only(top: 8, bottom: 8),
+                                  child: Divider(
+                                    color: Colors.grey,
+                                    thickness: .5,
+                                  ),
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      CurrentOutsideConditionsSelection == 0 ||
+                                              CurrentOutsideConditionsSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Current Outside Conditions*",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(
+                                      CurrentOutsideConditionsArray.length,
+                                      (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            CurrentOutsideConditionsArray[index]
+                                                .DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
                                     CurrentOutsideConditionsSelection = index;
-                                  });
-                                },
-                                value: CurrentOutsideConditionsSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              new TextFormField(
-                                controller: _OutsideRelativeHumidityController,
-                                validator: (val) =>
-                                    val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.phone,
-                                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "Outside Relative Humidity *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              new TextFormField(
-                                controller: _OutsideTemperatureController,
-                                validator: (val) =>
-                                    val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                                keyboardType: TextInputType.numberWithOptions(
-                                    decimal: false, signed: false),
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "Outside Temperature *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              new TextField(
-                                controller: _1stFloorRelativeHumidityController,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                                keyboardType: TextInputType.numberWithOptions(
-                                    decimal: false, signed: false),
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "1st Floor Relative Humidity",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              new TextField(
-                                controller: _1stFloorTemperatureController,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                                keyboardType: TextInputType.numberWithOptions(
-                                    decimal: false, signed: false),
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "1st Floor Temperature",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              Card(
-                                elevation: 2,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        "Current Inside Condition",
-                                        style: cardTitleStyle(),
-                                      ),
-                                      Container(
-                                        width: 200,
-                                        margin:
-                                            EdgeInsets.only(top: 8, bottom: 8),
-                                        child: Divider(
-                                          color: Colors.grey,
-                                          thickness: .5,
+                                  },
+                                  value: CurrentOutsideConditionsSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                new TextFormField(
+                                  controller:
+                                      _OutsideRelativeHumidityController,
+                                  validator: (val) =>
+                                      val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [
+                                    WhitelistingTextInputFormatter.digitsOnly
+                                  ],
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "Outside Relative Humidity *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                new TextFormField(
+                                  controller: _OutsideTemperatureController,
+                                  validator: (val) =>
+                                      val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  inputFormatters: [
+                                    WhitelistingTextInputFormatter.digitsOnly
+                                  ],
+                                  keyboardType: TextInputType.numberWithOptions(
+                                      decimal: false, signed: false),
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "Outside Temperature *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                new TextField(
+                                  controller:
+                                      _1stFloorRelativeHumidityController,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  inputFormatters: [
+                                    WhitelistingTextInputFormatter.digitsOnly
+                                  ],
+                                  keyboardType: TextInputType.numberWithOptions(
+                                      decimal: false, signed: false),
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "1st Floor Relative Humidity",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                new TextField(
+                                  controller: _1stFloorTemperatureController,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  inputFormatters: [
+                                    WhitelistingTextInputFormatter.digitsOnly
+                                  ],
+                                  keyboardType: TextInputType.numberWithOptions(
+                                      decimal: false, signed: false),
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "1st Floor Temperature",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                Card(
+                                  elevation: 2,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          "Current Inside Condition",
+                                          style: cardTitleStyle(),
                                         ),
-                                      ),
-                                      DropdownButtonFormField(
-                                        isDense: true,
-                                        validator: (index) =>
-                                            index == 0 || HeatSelection == null
-                                                ? "Required"
-                                                : null,
-                                        decoration: new InputDecoration(
-                                            labelText: "Heat*",
-                                            labelStyle: customTextStyle(),
-                                            hintText: "e.g. hint",
-                                            hintStyle: customHintStyle(),
-                                            alignLabelWithHint: false,
-                                            isDense: true),
-                                        items: List.generate(HeatArray.length,
-                                            (index) {
-                                          return DropdownMenuItem(
-                                              value: index,
-                                              child: Text(HeatArray[index]
-                                                  .DisplayText));
-                                        }),
-                                        onChanged: (index) {
-                                          FocusScope.of(context)
-                                              .requestFocus(FocusNode());
-                                          setState(() {
+                                        Container(
+                                          width: 200,
+                                          margin: EdgeInsets.only(
+                                              top: 8, bottom: 8),
+                                          child: Divider(
+                                            color: Colors.grey,
+                                            thickness: .5,
+                                          ),
+                                        ),
+                                        DropdownButtonFormField(
+                                          isDense: true,
+                                          validator: (index) => HeatSelection == 0 ||
+                                                  HeatSelection == null
+                                              ? "Required"
+                                              : null,
+                                          decoration: new InputDecoration(
+                                              labelText: "Heat*",
+                                              labelStyle: customTextStyle(),
+                                              hintText: "e.g. hint",
+                                              hintStyle: customHintStyle(),
+                                              alignLabelWithHint: false,
+                                              isDense: true),
+                                          items: List.generate(HeatArray.length,
+                                              (index) {
+                                            return DropdownMenuItem(
+                                                value: index,
+                                                child: Text(HeatArray[index]
+                                                    .DisplayText));
+                                          }),
+                                          onChanged: (index) {
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
                                             HeatSelection = index;
-                                          });
-                                        },
-                                        value: HeatSelection,
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      DropdownButtonFormField(
-                                        isDense: true,
-                                        validator: (index) =>
-                                            AirSelection == 0 ||
-                                                    AirSelection == null
-                                                ? "Required"
-                                                : null,
-                                        decoration: new InputDecoration(
-                                            labelText: "Air *",
-                                            labelStyle: customTextStyle(),
-                                            hintText: "e.g. hint",
-                                            hintStyle: customHintStyle(),
-                                            alignLabelWithHint: false,
-                                            isDense: true),
-                                        items: List.generate(AirArray.length,
-                                            (index) {
-                                          return DropdownMenuItem(
-                                              value: index,
-                                              child: Text(
-                                                  AirArray[index].DisplayText));
-                                        }),
-                                        onChanged: (index) {
-                                          FocusScope.of(context)
-                                              .requestFocus(FocusNode());
-                                          setState(() {
+                                          },
+                                          value: HeatSelection,
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        DropdownButtonFormField(
+                                          isDense: true,
+                                          validator: (index) =>
+                                              AirSelection == 0 ||
+                                                      AirSelection == null
+                                                  ? "Required"
+                                                  : null,
+                                          decoration: new InputDecoration(
+                                              labelText: "Air *",
+                                              labelStyle: customTextStyle(),
+                                              hintText: "e.g. hint",
+                                              hintStyle: customHintStyle(),
+                                              alignLabelWithHint: false,
+                                              isDense: true),
+                                          items: List.generate(AirArray.length,
+                                              (index) {
+                                            return DropdownMenuItem(
+                                                value: index,
+                                                child: Text(AirArray[index]
+                                                    .DisplayText));
+                                          }),
+                                          onChanged: (index) {
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
                                             AirSelection = index;
-                                          });
-                                        },
-                                        value: AirSelection,
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      new TextField(
-                                        controller:
-                                            _BasementRelativeHumidityController,
-                                        obscureText: false,
-                                        cursorColor: Colors.black,
-                                        inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                                        keyboardType:
-                                            TextInputType.numberWithOptions(
-                                                decimal: false, signed: false),
-                                        maxLines: 1,
-                                        style: customTextStyle(),
-                                        decoration: new InputDecoration(
-                                            labelText:
-                                                "Basement Relative Humidity",
-                                            labelStyle: customTextStyle(),
-                                            hintText: "e.g. hint",
-                                            hintStyle: customHintStyle(),
-                                            alignLabelWithHint: false,
-                                            isDense: true),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      new TextField(
-                                        controller:
-                                            _BasementTemperatureController,
-                                        obscureText: false,
-                                        cursorColor: Colors.black,
-                                        inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                                        keyboardType:
-                                            TextInputType.numberWithOptions(
-                                                decimal: false, signed: false),
-                                        maxLines: 1,
-                                        style: customTextStyle(),
-                                        decoration: new InputDecoration(
-                                            labelText: "Basement Temperature",
-                                            labelStyle: customTextStyle(),
-                                            hintText: "e.g. hint",
-                                            hintStyle: customHintStyle(),
-                                            alignLabelWithHint: false,
-                                            isDense: true),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      DropdownButtonFormField(
+                                          },
+                                          value: AirSelection,
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        new TextField(
+                                          controller:
+                                              _BasementRelativeHumidityController,
+                                          obscureText: false,
+                                          cursorColor: Colors.black,
+                                          inputFormatters: [
+                                            WhitelistingTextInputFormatter
+                                                .digitsOnly
+                                          ],
+                                          keyboardType:
+                                              TextInputType.numberWithOptions(
+                                                  decimal: false,
+                                                  signed: false),
+                                          maxLines: 1,
+                                          style: customTextStyle(),
+                                          decoration: new InputDecoration(
+                                              labelText:
+                                                  "Basement Relative Humidity",
+                                              labelStyle: customTextStyle(),
+                                              hintText: "e.g. hint",
+                                              hintStyle: customHintStyle(),
+                                              alignLabelWithHint: false,
+                                              isDense: true),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        new TextField(
+                                          controller:
+                                              _BasementTemperatureController,
+                                          obscureText: false,
+                                          cursorColor: Colors.black,
+                                          inputFormatters: [
+                                            WhitelistingTextInputFormatter
+                                                .digitsOnly
+                                          ],
+                                          keyboardType:
+                                              TextInputType.numberWithOptions(
+                                                  decimal: false,
+                                                  signed: false),
+                                          maxLines: 1,
+                                          style: customTextStyle(),
+                                          decoration: new InputDecoration(
+                                              labelText: "Basement Temperature",
+                                              labelStyle: customTextStyle(),
+                                              hintText: "e.g. hint",
+                                              hintStyle: customHintStyle(),
+                                              alignLabelWithHint: false,
+                                              isDense: true),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        DropdownButtonFormField(
+                                          isDense: true,
+                                          validator: (index) =>
+                                              BasementDehumidifierSelection ==
+                                                          0 ||
+                                                      BasementDehumidifierSelection ==
+                                                          null
+                                                  ? "Required"
+                                                  : null,
+                                          decoration: new InputDecoration(
+                                              labelText:
+                                                  "Basement Dehumidifier *",
+                                              labelStyle: customTextStyle(),
+                                              hintText: "e.g. hint",
+                                              hintStyle: customHintStyle(),
+                                              alignLabelWithHint: false,
+                                              isDense: true),
+                                          items: List.generate(
+                                              BasementDehumidifierArray.length,
+                                              (index) {
+                                            return DropdownMenuItem(
+                                                value: index,
+                                                child: Text(
+                                                    BasementDehumidifierArray[
+                                                            index]
+                                                        .DisplayText));
+                                          }),
+                                          onChanged: (index) {
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
+                                            BasementDehumidifierSelection =
+                                                index;
+                                          },
+                                          value: BasementDehumidifierSelection,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                new TextField(
+                                  controller: _Other1Controller,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "Other",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                new TextField(
+                                  controller: _Other2Controller,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "Other",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+/*------------------VISUAL BASEMENT INSPECTION------------------*/
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                offset: Offset(
+                                  0,
+                                  0,
+                                ),
+                              )
+                            ],
+                          ),
+                          margin: EdgeInsets.all(4),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  "Visual Basement Inspection",
+                                  style: cardTitleStyle(),
+                                ),
+                                Container(
+                                  width: 200,
+                                  margin: EdgeInsets.only(top: 8, bottom: 8),
+                                  child: Divider(
+                                    color: Colors.grey,
+                                    thickness: .5,
+                                  ),
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      GroundWaterSelection == 0 ||
+                                              GroundWaterSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Ground Water *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    GroundWaterSelection = index;
+                                  },
+                                  value: GroundWaterSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  decoration: new InputDecoration(
+                                      labelText: "Ground Water Rating (1-10)",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(RatingArray.length,
+                                      (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            RatingArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    GroundWaterRatingSelection = index;
+                                  },
+                                  value: GroundWaterRatingSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      IronBacteriaSelection == 0 ||
+                                              IronBacteriaSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Iron Bacteria *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    IronBacteriaSelection = index;
+                                  },
+                                  value: IronBacteriaSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  decoration: new InputDecoration(
+                                      labelText: "Iron Bacteria Rating (1-10)",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(RatingArray.length,
+                                      (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            RatingArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    IronBacteriaRatingSelection = index;
+                                  },
+                                  value: IronBacteriaRatingSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      CondensationSelection == 0 ||
+                                              CondensationSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Condensation *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    CondensationSelection = index;
+                                  },
+                                  value: CondensationSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  decoration: new InputDecoration(
+                                      labelText: "Condensation Rating (1-10)",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(RatingArray.length,
+                                      (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            RatingArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    CondensationRatingSelection = index;
+                                  },
+                                  value: CondensationRatingSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      WallCracksSelection == 0 ||
+                                              WallCracksSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Wall Cracks *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    WallCracksSelection = index;
+                                  },
+                                  value: WallCracksSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  decoration: new InputDecoration(
+                                      labelText: "Wall Cracks Rating (1-10)",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(RatingArray.length,
+                                      (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            RatingArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    WallCracksRatingSelection = index;
+                                  },
+                                  value: WallCracksRatingSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      FloorCracksSelection == 0 ||
+                                              FloorCracksSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Floor Cracks *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    FloorCracksSelection = index;
+                                  },
+                                  value: FloorCracksSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  decoration: new InputDecoration(
+                                      labelText: "Floor Cracks Rating (1-10)",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(RatingArray.length,
+                                      (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            RatingArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    FloorCracksRatingSelection = index;
+                                  },
+                                  value: FloorCracksRatingSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      ExistingSumpPumpSelection == 0 ||
+                                              ExistingSumpPumpSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Existing Sump Pump *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    ExistingSumpPumpSelection = index;
+                                  },
+                                  value: ExistingSumpPumpSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      ExistingDrainageSystemSelection == 0 ||
+                                              ExistingDrainageSystemSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Existing Drainage System *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    ExistingDrainageSystemSelection = index;
+                                  },
+                                  value: ExistingDrainageSystemSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      ExistingRadonSystemSelection == 0 ||
+                                              ExistingRadonSystemSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Radon System (existing) *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    ExistingRadonSystemSelection = index;
+                                  },
+                                  value: ExistingRadonSystemSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      DryerVentToCodeSelection == 0 ||
+                                              DryerVentToCodeSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Dryer Vent To Code? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    DryerVentToCodeSelection = index;
+                                  },
+                                  value: DryerVentToCodeSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      FoundationTypeSelection == 0 ||
+                                              FoundationTypeSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Foundation Type? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(
+                                      FoundationTypeArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(FoundationTypeArray[index]
+                                            .DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    FoundationTypeSelection = index;
+                                  },
+                                  value: FoundationTypeSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      BulkheadSelection == 0 ||
+                                              BulkheadSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "Bulkhead? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    BulkheadSelection = index;
+                                  },
+                                  value: BulkheadSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                new TextField(
+                                  controller:
+                                      _VisualBasementInspectionOtherController,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "Other",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+/*------------------CUSTOMER BASEMENT EVALUATION------------------*/
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                offset: Offset(
+                                  0,
+                                  0,
+                                ),
+                              )
+                            ],
+                          ),
+                          margin: EdgeInsets.all(4),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  "Customer Basement Evaluation",
+                                  style: cardTitleStyle(),
+                                ),
+                                Container(
+                                  width: 200,
+                                  margin: EdgeInsets.only(top: 8, bottom: 8),
+                                  child: Divider(
+                                    color: Colors.grey,
+                                    thickness: .5,
+                                  ),
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      NoticedSmellsOrOdorsSelection == 0 ||
+                                              NoticedSmellsOrOdorsSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "1. Have you ever noticed smells/odors coming from the basement? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    NoticedSmellsOrOdorsSelection = index;
+                                  },
+                                  value: NoticedSmellsOrOdorsSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller: _NoticedSmellsCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "1. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      NoticedMoldOrMildewSelection == 0 ||
+                                              NoticedMoldOrMildewSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "2. Have you ever noticed mold/mildew on any item in the basement? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    NoticedMoldOrMildewSelection = index;
+                                  },
+                                  value: NoticedMoldOrMildewSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller: _NoticedMoldsCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "2. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      BasementGoDownSelection == 0 ||
+                                              BasementGoDownSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "3. How often do you go down in the basement? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(
+                                      GoDownBasementArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(GoDownBasementArray[index]
+                                            .DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    BasementGoDownSelection = index;
+                                  },
+                                  value: BasementGoDownSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      HomeSufferForRespiratoryProblemsSelection ==
+                                                  0 ||
+                                              HomeSufferForRespiratoryProblemsSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "4. Does anyone in the home suffer from respiratory problems? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    HomeSufferForRespiratoryProblemsSelection =
+                                        index;
+                                  },
+                                  value:
+                                      HomeSufferForRespiratoryProblemsSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller:
+                                      _SufferFromRespiratoryCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "4. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      ChildrenPlayInBasementSelection == 0 ||
+                                              ChildrenPlayInBasementSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "5. Do your children play in the basement? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    ChildrenPlayInBasementSelection = index;
+                                  },
+                                  value: ChildrenPlayInBasementSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller:
+                                      _ChildrenPlayInTheBasementCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "5. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      PetsGoInBasementSelection == 0 ||
+                                              PetsGoInBasementSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "6. Do you have pets that go in the basement? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    PetsGoInBasementSelection = index;
+                                  },
+                                  value: PetsGoInBasementSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller: _HavePetsCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "6. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      NoticedBugsOrRodentsSelection == 0 ||
+                                              NoticedBugsOrRodentsSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "7. Have you ever noticed bugs/rodents in the basement? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    NoticedBugsOrRodentsSelection = index;
+                                  },
+                                  value: NoticedBugsOrRodentsSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller: _NoticedBugsCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "7. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      GetWaterSelection == 0 ||
+                                              GetWaterSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText: "8. Do you get water? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    GetWaterSelection = index;
+                                  },
+                                  value: GetWaterSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller: _GetWaterCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "8. How high does the water level get?",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "9. How do you normally remove the water from basement?",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items: List.generate(RemoveWaterArray.length,
+                                      (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(RemoveWaterArray[index]
+                                            .DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    RemoveWaterSelection = index;
+                                  },
+                                  value: RemoveWaterSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      SeeCondensationPipesDrippingSelection ==
+                                                  0 ||
+                                              SeeCondensationPipesDrippingSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "10. Do you ever see pipes dripping (condensation)? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    SeeCondensationPipesDrippingSelection =
+                                        index;
+                                  },
+                                  value: SeeCondensationPipesDrippingSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller:
+                                      _EverSeePipesDrippingCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "10. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      RepairsTryAndFixSelection == 0 ||
+                                              RepairsTryAndFixSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "11. Have you done any repairs to try and fix these problems? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    RepairsTryAndFixSelection = index;
+                                  },
+                                  value: RepairsTryAndFixSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller:
+                                      _AnyRepairsToTryAndFixCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "11. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      LivingPlanSelection == 0 ||
+                                              LivingPlanSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "12. How long do you plan on living here? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    LivingPlanSelection = index;
+                                  },
+                                  value: LivingPlanSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      SellPlaningSelection == 0 ||
+                                              SellPlaningSelection == null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "12. Are you planning to sell*",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    SellPlaningSelection = index;
+                                  },
+                                  value: SellPlaningSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "13. What are your plans for the basement once it is dry?",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    PlansForBasementOnceSelection = index;
+                                  },
+                                  value: PlansForBasementOnceSelection,
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                DropdownButtonFormField(
+                                  isDense: true,
+                                  validator: (index) =>
+                                      HomeTestedForRadonSelection == 0 ||
+                                              HomeTestedForRadonSelection ==
+                                                  null
+                                          ? "Required"
+                                          : null,
+                                  decoration: new InputDecoration(
+                                      labelText:
+                                          "14. Has your home been tested for radon in the past 2 years? *",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                  items:
+                                      List.generate(YesNoArray.length, (index) {
+                                    return DropdownMenuItem(
+                                        value: index,
+                                        child: Text(
+                                            YesNoArray[index].DisplayText));
+                                  }),
+                                  onChanged: (index) {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    HomeTestedForRadonSelection = index;
+                                  },
+                                  value: HomeTestedForRadonSelection,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextFormField(
+                                  controller:
+                                      _TestedForRadonInThePast2YearsCommentController,
+//                                validator: (val)=> val.isEmpty ? "Required" : null,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "14. Comment",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: DropdownButtonFormField(
                                         isDense: true,
                                         validator: (index) =>
-                                            BasementDehumidifierSelection ==
-                                                        0 ||
-                                                    BasementDehumidifierSelection ==
-                                                        null
+                                            LosePowerSelection == 0 ||
+                                                    LosePowerSelection == null
                                                 ? "Required"
                                                 : null,
                                         decoration: new InputDecoration(
                                             labelText:
-                                                "Basement Dehumidifier *",
+                                                "15. Do you lose power? *",
                                             labelStyle: customTextStyle(),
                                             hintText: "e.g. hint",
                                             hintStyle: customHintStyle(),
                                             alignLabelWithHint: false,
                                             isDense: true),
                                         items: List.generate(
-                                            BasementDehumidifierArray.length,
-                                            (index) {
+                                            LosePowerArray.length, (index) {
                                           return DropdownMenuItem(
                                               value: index,
-                                              child: Text(
-                                                  BasementDehumidifierArray[
-                                                          index]
-                                                      .DisplayText));
+                                              child: Text(LosePowerArray[index]
+                                                  .DisplayText));
                                         }),
                                         onChanged: (index) {
                                           FocusScope.of(context)
                                               .requestFocus(FocusNode());
-                                          setState(() {
-                                            BasementDehumidifierSelection =
-                                                index;
-                                          });
-                                        },
-                                        value: BasementDehumidifierSelection,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              new TextField(
-                                controller: _Other1Controller,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "Other",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              new TextField(
-                                controller: _Other2Controller,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "Other",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-/*------------------VISUAL BASEMENT INSPECTION------------------*/
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              offset: Offset(
-                                0,
-                                0,
-                              ),
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.all(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "Visual Basement Inspection",
-                                style: cardTitleStyle(),
-                              ),
-                              Container(
-                                width: 200,
-                                margin: EdgeInsets.only(top: 8, bottom: 8),
-                                child: Divider(
-                                  color: Colors.grey,
-                                  thickness: .5,
-                                ),
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    GroundWaterSelection == 0 ||
-                                            GroundWaterSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Ground Water *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    GroundWaterSelection = index;
-                                  });
-                                },
-                                value: GroundWaterSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                decoration: new InputDecoration(
-                                    labelText: "Ground Water Rating (1-10)",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(RatingArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(RatingArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    GroundWaterRatingSelection = index;
-                                  });
-                                },
-                                value: GroundWaterRatingSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    IronBacteriaSelection == 0 ||
-                                            IronBacteriaSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Iron Bacteria *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    IronBacteriaSelection = index;
-                                  });
-                                },
-                                value: IronBacteriaSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                decoration: new InputDecoration(
-                                    labelText: "Iron Bacteria Rating (1-10)",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(RatingArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(RatingArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    IronBacteriaRatingSelection = index;
-                                  });
-                                },
-                                value: IronBacteriaRatingSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    CondensationSelection == 0 ||
-                                            CondensationSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Condensation *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    CondensationSelection = index;
-                                  });
-                                },
-                                value: CondensationSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                decoration: new InputDecoration(
-                                    labelText: "Condensation Rating (1-10)",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(RatingArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(RatingArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    CondensationRatingSelection = index;
-                                  });
-                                },
-                                value: CondensationRatingSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    WallCracksSelection == 0 ||
-                                            WallCracksSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Wall Cracks *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    WallCracksSelection = index;
-                                  });
-                                },
-                                value: WallCracksSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                decoration: new InputDecoration(
-                                    labelText: "Wall Cracks Rating (1-10)",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(RatingArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(RatingArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    WallCracksRatingSelection = index;
-                                  });
-                                },
-                                value: WallCracksRatingSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    FloorCracksSelection == 0 ||
-                                            FloorCracksSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Floor Cracks *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    FloorCracksSelection = index;
-                                  });
-                                },
-                                value: FloorCracksSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                decoration: new InputDecoration(
-                                    labelText: "Floor Cracks Rating (1-10)",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(RatingArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(RatingArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    FloorCracksRatingSelection = index;
-                                  });
-                                },
-                                value: FloorCracksRatingSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    ExistingSumpPumpSelection == 0 ||
-                                            ExistingSumpPumpSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Existing Sump Pump *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    ExistingSumpPumpSelection = index;
-                                  });
-                                },
-                                value: ExistingSumpPumpSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    ExistingDrainageSystemSelection == 0 ||
-                                            ExistingDrainageSystemSelection ==
-                                                null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Existing Drainage System *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    ExistingDrainageSystemSelection = index;
-                                  });
-                                },
-                                value: ExistingDrainageSystemSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    ExistingRadonSystemSelection == 0 ||
-                                            ExistingRadonSystemSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Radon System (existing) *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    ExistingRadonSystemSelection = index;
-                                  });
-                                },
-                                value: ExistingRadonSystemSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    DryerVentToCodeSelection == 0 ||
-                                            DryerVentToCodeSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Dryer Vent To Code? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    DryerVentToCodeSelection = index;
-                                  });
-                                },
-                                value: DryerVentToCodeSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    FoundationTypeSelection == 0 ||
-                                            FoundationTypeSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Foundation Type? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items: List.generate(FoundationTypeArray.length,
-                                    (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child: Text(FoundationTypeArray[index]
-                                          .DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    FoundationTypeSelection = index;
-                                  });
-                                },
-                                value: FoundationTypeSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) => BulkheadSelection == 0 ||
-                                        BulkheadSelection == null
-                                    ? "Required"
-                                    : null,
-                                decoration: new InputDecoration(
-                                    labelText: "Bulkhead? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    BulkheadSelection = index;
-                                  });
-                                },
-                                value: BulkheadSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              new TextField(
-                                controller:
-                                    _VisualBasementInspectionOtherController,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "Other",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-/*------------------CUSTOMER BASEMENT EVALUATION------------------*/
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              offset: Offset(
-                                0,
-                                0,
-                              ),
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.all(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "Customer Basement Evaluation",
-                                style: cardTitleStyle(),
-                              ),
-                              Container(
-                                width: 200,
-                                margin: EdgeInsets.only(top: 8, bottom: 8),
-                                child: Divider(
-                                  color: Colors.grey,
-                                  thickness: .5,
-                                ),
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    NoticedSmellsOrOdorsSelection == 0 ||
-                                            NoticedSmellsOrOdorsSelection ==
-                                                null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "1. Have you ever noticed smells/odors coming from the basement? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    NoticedSmellsOrOdorsSelection = index;
-                                  });
-                                },
-                                value: NoticedSmellsOrOdorsSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller: _NoticedSmellsCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "1. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    NoticedMoldOrMildewSelection == 0 ||
-                                            NoticedMoldOrMildewSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "2. Have you ever noticed mold/mildew on any item in the basement? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    NoticedMoldOrMildewSelection = index;
-                                  });
-                                },
-                                value: NoticedMoldOrMildewSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller: _NoticedMoldsCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "2. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    BasementGoDownSelection == 0 ||
-                                            BasementGoDownSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "3. How often do you go down in the basement? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items: List.generate(GoDownBasementArray.length,
-                                    (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child: Text(GoDownBasementArray[index]
-                                          .DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  setState(() {
-                                    BasementGoDownSelection = index;
-                                  });
-                                },
-                                value: BasementGoDownSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    HomeSufferForRespiratoryProblemsSelection ==
-                                                0 ||
-                                            HomeSufferForRespiratoryProblemsSelection ==
-                                                null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "4. Does anyone in the home suffer from respiratory problems? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    HomeSufferForRespiratoryProblemsSelection =
-                                        index;
-                                  });
-                                },
-                                value:
-                                    HomeSufferForRespiratoryProblemsSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller:
-                                    _SufferFromRespiratoryCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "4. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    ChildrenPlayInBasementSelection == 0 ||
-                                            ChildrenPlayInBasementSelection ==
-                                                null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "5. Do your children play in the basement? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    ChildrenPlayInBasementSelection = index;
-                                  });
-                                },
-                                value: ChildrenPlayInBasementSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller:
-                                    _ChildrenPlayInTheBasementCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "5. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    PetsGoInBasementSelection == 0 ||
-                                            PetsGoInBasementSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "6. Do you have pets that go in the basement? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    PetsGoInBasementSelection = index;
-                                  });
-                                },
-                                value: PetsGoInBasementSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller: _HavePetsCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "6. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    NoticedBugsOrRodentsSelection == 0 ||
-                                            NoticedBugsOrRodentsSelection ==
-                                                null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "7. Have you ever noticed bugs/rodents in the basement? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    NoticedBugsOrRodentsSelection = index;
-                                  });
-                                },
-                                value: NoticedBugsOrRodentsSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller: _NoticedBugsCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "7. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) => GetWaterSelection == 0 ||
-                                        GetWaterSelection == null
-                                    ? "Required"
-                                    : null,
-                                decoration: new InputDecoration(
-                                    labelText: "8. Do you get water? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    GetWaterSelection = index;
-                                  });
-                                },
-                                value: GetWaterSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller: _GetWaterCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "8. How high does the water level get?",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "9. How do you normally remove the water from basement?",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items: List.generate(RemoveWaterArray.length,
-                                    (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child: Text(
-                                          RemoveWaterArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    RemoveWaterSelection = index;
-                                  });
-                                },
-                                value: RemoveWaterSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    SeeCondensationPipesDrippingSelection ==
-                                                0 ||
-                                            SeeCondensationPipesDrippingSelection ==
-                                                null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "10. Do you ever see pipes dripping (condensation)? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    SeeCondensationPipesDrippingSelection =
-                                        index;
-                                  });
-                                },
-                                value: SeeCondensationPipesDrippingSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller:
-                                    _EverSeePipesDrippingCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "10. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    RepairsTryAndFixSelection == 0 ||
-                                            RepairsTryAndFixSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "11. Have you done any repairs to try and fix these problems? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    RepairsTryAndFixSelection = index;
-                                  });
-                                },
-                                value: RepairsTryAndFixSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller:
-                                    _AnyRepairsToTryAndFixCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "11. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    LivingPlanSelection == 0 ||
-                                            LivingPlanSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "12. How long do you plan on living here? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    LivingPlanSelection = index;
-                                  });
-                                },
-                                value: LivingPlanSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    SellPlaningSelection == 0 ||
-                                            SellPlaningSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText: "12. Are you planning to sell*",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    SellPlaningSelection = index;
-                                  });
-                                },
-                                value: SellPlaningSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "13. What are your plans for the basement once it is dry?",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    PlansForBasementOnceSelection = index;
-                                  });
-                                },
-                                value: PlansForBasementOnceSelection,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              DropdownButtonFormField(
-                                isDense: true,
-                                validator: (index) =>
-                                    HomeTestedForRadonSelection == 0 ||
-                                            HomeTestedForRadonSelection == null
-                                        ? "Required"
-                                        : null,
-                                decoration: new InputDecoration(
-                                    labelText:
-                                        "14. Has your home been tested for radon in the past 2 years? *",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                                items:
-                                    List.generate(YesNoArray.length, (index) {
-                                  return DropdownMenuItem(
-                                      value: index,
-                                      child:
-                                          Text(YesNoArray[index].DisplayText));
-                                }),
-                                onChanged: (index) {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  setState(() {
-                                    HomeTestedForRadonSelection = index;
-                                  });
-                                },
-                                value: HomeTestedForRadonSelection,
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextFormField(
-                                controller:
-                                    _TestedForRadonInThePast2YearsCommentController,
-//                                validator: (val)=> val.isEmpty ? "Required" : null,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "14. Comment",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: DropdownButtonFormField(
-                                      isDense: true,
-                                      validator: (index) =>
-                                          LosePowerSelection == 0 ||
-                                                  LosePowerSelection == null
-                                              ? "Required"
-                                              : null,
-                                      decoration: new InputDecoration(
-                                          labelText: "15. Do you lose power? *",
-                                          labelStyle: customTextStyle(),
-                                          hintText: "e.g. hint",
-                                          hintStyle: customHintStyle(),
-                                          alignLabelWithHint: false,
-                                          isDense: true),
-                                      items: List.generate(
-                                          LosePowerArray.length, (index) {
-                                        return DropdownMenuItem(
-                                            value: index,
-                                            child: Text(LosePowerArray[index]
-                                                .DisplayText));
-                                      }),
-                                      onChanged: (index) {
-                                        FocusScope.of(context)
-                                            .requestFocus(FocusNode());
-                                        setState(() {
                                           LosePowerSelection = index;
-                                        });
-                                      },
-                                      value: LosePowerSelection,
+                                        },
+                                        value: LosePowerSelection,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 24,
-                                  ),
-                                  Expanded(
-                                    child: DropdownButtonFormField(
-                                      isDense: true,
-                                      validator: (index) =>
-                                          LosePowerHowOftenSelection == 0 ||
-                                                  LosePowerHowOftenSelection ==
-                                                      null
-                                              ? "Required"
-                                              : null,
-                                      decoration: new InputDecoration(
-                                          labelText: "If so how often? *",
-                                          labelStyle: customTextStyle(),
-                                          hintText: "e.g. hint",
-                                          hintStyle: customHintStyle(),
-                                          alignLabelWithHint: false,
-                                          isDense: true),
-                                      items: List.generate(
-                                          LosePowerArray.length, (index) {
-                                        return DropdownMenuItem(
-                                            value: index,
-                                            child: Text(LosePowerArray[index]
-                                                .DisplayText));
-                                      }),
-                                      onChanged: (index) {
-                                        FocusScope.of(context)
-                                            .requestFocus(FocusNode());
-                                        setState(() {
+                                    SizedBox(
+                                      width: 24,
+                                    ),
+                                    Expanded(
+                                      child: DropdownButtonFormField(
+                                        isDense: true,
+                                        validator: (index) =>
+                                            LosePowerHowOftenSelection == 0 ||
+                                                    LosePowerHowOftenSelection ==
+                                                        null
+                                                ? "Required"
+                                                : null,
+                                        decoration: new InputDecoration(
+                                            labelText: "If so how often? *",
+                                            labelStyle: customTextStyle(),
+                                            hintText: "e.g. hint",
+                                            hintStyle: customHintStyle(),
+                                            alignLabelWithHint: false,
+                                            isDense: true),
+                                        items: List.generate(
+                                            LosePowerArray.length, (index) {
+                                          return DropdownMenuItem(
+                                              value: index,
+                                              child: Text(LosePowerArray[index]
+                                                  .DisplayText));
+                                        }),
+                                        onChanged: (index) {
+                                          FocusScope.of(context)
+                                              .requestFocus(FocusNode());
                                           LosePowerHowOftenSelection = index;
-                                        });
-                                      },
-                                      value: LosePowerHowOftenSelection,
+                                        },
+                                        value: LosePowerHowOftenSelection,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              new TextField(
-                                controller: _BasementEvaluationOtherController,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.text,
-                                maxLines: 1,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "16. Other",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              offset: Offset(
-                                0,
-                                0,
-                              ),
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.all(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Container(
-                                width: 200,
-                                margin: EdgeInsets.only(top: 8, bottom: 8),
-                                child: Divider(
-                                  color: Colors.grey,
-                                  thickness: .5,
+                                  ],
                                 ),
-                              ),
-                              new TextField(
-                                controller: _NotesController,
-                                obscureText: false,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.multiline,
-                                maxLines: null,
-                                minLines: 3,
-                                style: customTextStyle(),
-                                decoration: new InputDecoration(
-                                    labelText: "Notes",
-                                    labelStyle: customTextStyle(),
-                                    hintText: "e.g. hint",
-                                    hintStyle: customHintStyle(),
-                                    alignLabelWithHint: false,
-                                    isDense: true),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 32,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: InkWell(
-                          onTap: () {
-                            if (_key.currentState.validate()) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => loadingAlert());
-                              _checkConnectivity();
-                            }
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(36)),
-                              color: Colors.black,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black38,
-                                  blurRadius: 4,
-                                  spreadRadius: 4,
-                                  offset: Offset(
-                                    0,
-                                    0,
-                                  ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                new TextField(
+                                  controller:
+                                      _BasementEvaluationOtherController,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 1,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "16. Other",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
                                 )
                               ],
                             ),
-                            padding: EdgeInsets.only(
-                                left: 48, right: 48, top: 18, bottom: 18),
-                            margin: EdgeInsets.only(right: 16, bottom: 16),
-                            child: Text(
-                              "Submit",
-                              style: customButtonTextStyle(),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                offset: Offset(
+                                  0,
+                                  0,
+                                ),
+                              )
+                            ],
+                          ),
+                          margin: EdgeInsets.all(4),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Container(
+                                  width: 200,
+                                  margin: EdgeInsets.only(top: 8, bottom: 8),
+                                  child: Divider(
+                                    color: Colors.grey,
+                                    thickness: .5,
+                                  ),
+                                ),
+                                new TextField(
+                                  controller: _NotesController,
+                                  obscureText: false,
+                                  cursorColor: Colors.black,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  minLines: 3,
+                                  style: customTextStyle(),
+                                  decoration: new InputDecoration(
+                                      labelText: "Notes",
+                                      labelStyle: customTextStyle(),
+                                      hintText: "e.g. hint",
+                                      hintStyle: customHintStyle(),
+                                      alignLabelWithHint: false,
+                                      isDense: true),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: 32,
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: InkWell(
+                            onTap: () {
+                              if (_key.currentState.validate()) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => loadingAlert());
+                                _checkConnectivity();
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(36)),
+                                color: Colors.black,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black38,
+                                    blurRadius: 4,
+                                    spreadRadius: 4,
+                                    offset: Offset(
+                                      0,
+                                      0,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              padding: EdgeInsets.only(
+                                  left: 48, right: 48, top: 18, bottom: 18),
+                              margin: EdgeInsets.only(right: 16, bottom: 16),
+                              child: Text(
+                                "Submit",
+                                style: customButtonTextStyle(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -2185,7 +2137,7 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
   }
 
   Future getDropDownData() async {
-    showAlert();
+    Future.delayed(Duration.zero, () => showAlert());
     try {
       Map<String, String> headers = {
         'Authorization': widget.login.accessToken,

@@ -2147,9 +2147,13 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
   }
 
   refreshList(Product selectedProduct) async {
-    setState(() {
-      _productList.add(selectedProduct);
-    });
+    try {
+      setState(() {
+        _productList.add(selectedProduct);
+      });
+    } catch(error) {
+      print(error);
+    }
     estimateTotalCalculation();
   }
 
