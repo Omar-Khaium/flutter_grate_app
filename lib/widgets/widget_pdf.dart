@@ -1,18 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:html/dom.dart' as dom;
 
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fullpdfview/flutter_fullpdfview.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/utils.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SendMailFragment extends StatefulWidget {
@@ -38,12 +35,11 @@ class _SendMailFragmentState extends State<SendMailFragment> {
   TextEditingController _BodyEmailController = new TextEditingController();
 
   String emailUrl = "";
+  File pdfFile;
 
-//
   @override
   void initState() {
     super.initState();
-
     getFileFromUrl(widget.map['filepath']).then((f) {
       setState(() {
         widget.urlPDFPath = f.path;
@@ -53,17 +49,18 @@ class _SendMailFragmentState extends State<SendMailFragment> {
     _ToEmailController.text = widget.map['EstimateEmailModel']['email'];
     _SubjectEmailController.text = widget.map['EstimateEmailModel']['subject'];
     _BodyEmailController.text = widget.map['EstimateEmailModel']['bodycontent'];
+    _BodyEmailController.text = _BodyEmailController.text.replaceAll("\r\nView Estimate\r\n", "");
   }
 
   Future<File> getFileFromUrl(String url) async {
     try {
-      var data = await http.get(url);
+      var data = await get(url);
       var bytes = data.bodyBytes;
       var dir = await getApplicationDocumentsDirectory();
       File file = File("${dir.path}/mypdfonline.pdf");
 
-      File urlFile = await file.writeAsBytes(bytes);
-      return urlFile;
+      pdfFile = await file.writeAsBytes(bytes);
+      return pdfFile;
     } catch (e) {
       throw Exception("Error opening url file");
     }
@@ -179,20 +176,28 @@ class _SendMailFragmentState extends State<SendMailFragment> {
                 SizedBox(
                   height: 12,
                 ),
-                Html(
-                  data: widget.map['EstimateEmailModel']['bodycontent'],
-                  padding: EdgeInsets.all(8.0),
-                  onLinkTap: (url) {
-                    print("Opening $url...");
+                TextField(
+                  controller: _BodyEmailController,
+                  cursorColor: Colors.black87,
+                  enabled: true,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 8,
+                  onChanged: (val) {
+                    setState(() {});
                   },
-                  customRender: (node, children) {
-                    if (node is dom.Element) {
-                      switch (node.localName) {
-                        case "custom_tag": // using this, you can handle custom tags in your HTML
-                          return Column(children: children);
-                      }
-                    }
-                  },
+                  style: customTextStyle(),
+                  decoration: new InputDecoration(
+                    labelText: "Body",
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black87)),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
+                    errorText: _BodyEmailController.text.isNotEmpty
+                        ? null
+                        : "* Required",
+                    hintStyle: customHintStyle(),
+                    isDense: true,
+                  ),
                 ),
               ],
             ),
@@ -202,18 +207,16 @@ class _SendMailFragmentState extends State<SendMailFragment> {
           ),
           Expanded(
             flex: 1,
-            child: widget.urlPDFPath.isNotEmpty
-                ? PDFView(
-                    filePath: widget.urlPDFPath,
-                    enableSwipe: true,
-                    swipeHorizontal: false,
-                    autoSpacing: true,
-                    pageFling: false,
-                    onError: (err) {
-                      print(err);
-                    },
-                    onPageError: (val, err) {
-                      print(err);
+            child: pdfFile!=null
+                ? OrientationBuilder(
+                    builder: (context, orientation) {
+                      return PDFView(
+                      filePath: pdfFile.path,
+                      enableSwipe: true,
+                      swipeHorizontal: false,
+                      autoSpacing: true,
+                      pageFling: false,
+                    );
                     },
                   )
                 : Center(
@@ -238,10 +241,10 @@ class _SendMailFragmentState extends State<SendMailFragment> {
       };
 
       var url = "https://api.gratecrm.com/SendEmailEstimate";
-      http.post(url, headers: data).then((response) {
+      post(url, headers: data).then((response) {
         if (response.statusCode == 200) {
           Map map = json.decode(response.body);
-          http.get(map['EmailUrl']).then((responseResults) {
+          get(map['EmailUrl']).then((responseResults) {
             if (responseResults.statusCode == 200) {
               Navigator.of(context).pop();
               Navigator.of(context).pop();

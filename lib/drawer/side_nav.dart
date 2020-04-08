@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/drawer/sync_nav_item.dart';
 import 'package:flutter_grate_app/model/navigation_model.dart';
@@ -136,8 +135,10 @@ class SideNavUIState extends State<SideNavUI>
                   thickness: 1,
                 ),
                 Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  child: ListView(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    physics: ScrollPhysics(),
                     children: <Widget>[
                       ListView.builder(
                         shrinkWrap: true,

@@ -14,7 +14,7 @@ import 'package:flutter_grate_app/sqflite/model/BasementReport.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/ui/ui_login.dart';
-import 'package:flutter_grate_app/widgets/UsFormatter.dart';
+import 'package:flutter_grate_app/widgets/us_formatter.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
@@ -27,15 +27,13 @@ import '../utils.dart';
 class AddCustomerFragment extends StatefulWidget {
   ValueChanged<int> backToDashboard;
   Login login;
-  ValueChanged<bool> isLoading;
   LoggedInUser loggedInUser;
 
   AddCustomerFragment(
       {Key key,
       this.backToDashboard,
       this.login,
-      this.loggedInUser,
-      this.isLoading})
+      this.loggedInUser})
       : super(key: key);
 
   @override

@@ -1,10 +1,8 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:painter/painter.dart';
 
 class DrawingDialog extends StatefulWidget {
@@ -18,7 +16,6 @@ class DrawingDialog extends StatefulWidget {
 
 class _DrawingDialogState extends State<DrawingDialog> {
   PainterController _controller = new PainterController();
-  bool _isLoading = false;
   bool _isErasing = false;
   Color _lastColor = Colors.black;
   double _lastThickness = 2.0;
@@ -39,172 +36,161 @@ class _DrawingDialogState extends State<DrawingDialog> {
           backgroundColor: Colors.black,
           elevation: 8,
         ),
-        body: ModalProgressHUD(
-          child: Container(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Painter(_controller),
-                ),
-                Container(
-                  width: 88,
-                  color: Colors.black,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 12,
+        body: Container(
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Painter(_controller),
+              ),
+              Container(
+                width: 88,
+                color: Colors.black,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 12,
+                    ),
+                    CircleAvatar(
+                      backgroundColor: Colors.white10,
+                      radius: 32,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _controller.clear();
+                          });
+                        },
+                        icon: Icon(Icons.refresh, color: Colors.white),
                       ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white10,
-                        radius: 32,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _controller.clear();
-                            });
-                          },
-                          icon: Icon(Icons.refresh, color: Colors.white),
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    CircleAvatar(
+                      backgroundColor: Colors.white10,
+                      radius: 32,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _controller.undo();
+                          });
+                        },
+                        icon: Icon(Icons.undo, color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    CircleAvatar(
+                      backgroundColor: Colors.white10,
+                      radius: 32,
+                      child: IconButton(
+                        onPressed: () => _pickColor(),
+                        icon: Icon(
+                          Icons.color_lens,
+                          color: Colors.white,
                         ),
                       ),
-                      SizedBox(
-                        height: 12,
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    CircleAvatar(
+                      backgroundColor: Colors.white10,
+                      radius: 32,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            reset();
+                          });
+                        },
+                        icon: Icon(Icons.brush, color: Colors.white),
                       ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white10,
-                        radius: 32,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _controller.undo();
-                            });
-                          },
-                          icon: Icon(Icons.undo, color: Colors.white),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white10,
-                        radius: 32,
-                        child: IconButton(
-                          onPressed: () => _pickColor(),
-                          icon: Icon(
-                            Icons.color_lens,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white10,
-                        radius: 32,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              reset();
-                            });
-                          },
-                          icon: Icon(Icons.brush, color: Colors.white),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white10,
-                        radius: 32,
-                        child: IconButton(
-                          onPressed: () {
-                            if(!_isErasing) {
-                              if (_controller.thickness == 2.0) {
-                                _controller.thickness = 6.0;
-                              } else if (_controller.thickness == 6.0) {
-                                _controller.thickness = 12.0;
-                              } else if (_controller.thickness == 12.0) {
-                                _controller.thickness = 24.0;
-                              } else if (_controller.thickness == 24.0) {
-                                _controller.thickness = 2.0;
-                              }
-                              setState(() {});
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    CircleAvatar(
+                      backgroundColor: Colors.white10,
+                      radius: 32,
+                      child: IconButton(
+                        onPressed: () {
+                          if(!_isErasing) {
+                            if (_controller.thickness == 2.0) {
+                              _controller.thickness = 6.0;
+                            } else if (_controller.thickness == 6.0) {
+                              _controller.thickness = 12.0;
+                            } else if (_controller.thickness == 12.0) {
+                              _controller.thickness = 24.0;
+                            } else if (_controller.thickness == 24.0) {
+                              _controller.thickness = 2.0;
                             }
-                          },
-                          icon: Icon(
-                            _controller.thickness == 2.0
-                                ? MdiIcons.circleMedium
-                                : (_controller.thickness == 6.0
-                                    ? MdiIcons.circleOutline
-                                    : (_controller.thickness == 12.0
-                                        ? MdiIcons.circleDouble
-                                        : Icons.fiber_manual_record)),
-                            color: _isErasing ? Colors.blueAccent.shade100 :Colors.white,
-                          ),
+                            setState(() {});
+                          }
+                        },
+                        icon: Icon(
+                          _controller.thickness == 2.0
+                              ? MdiIcons.circleMedium
+                              : (_controller.thickness == 6.0
+                              ? MdiIcons.circleOutline
+                              : (_controller.thickness == 12.0
+                              ? MdiIcons.circleDouble
+                              : Icons.fiber_manual_record)),
+                          color: _isErasing ? Colors.blueAccent.shade100 :Colors.white,
                         ),
                       ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white10,
-                        radius: 32,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _lastColor = _controller.drawColor;
-                              _lastThickness = _controller.thickness;
-                              _isErasing = true;
-                              _controller.drawColor = Colors.white;
-                              _controller.thickness = 24;
-                            });
-                          },
-                          icon: Icon(
-                            MdiIcons.eraser,
-                            color: Colors.white,
-                          ),
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    CircleAvatar(
+                      backgroundColor: Colors.white10,
+                      radius: 32,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _lastColor = _controller.drawColor;
+                            _lastThickness = _controller.thickness;
+                            _isErasing = true;
+                            _controller.drawColor = Colors.white;
+                            _controller.thickness = 24;
+                          });
+                        },
+                        icon: Icon(
+                          MdiIcons.eraser,
+                          color: Colors.white,
                         ),
                       ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.blue,
-                            radius: 32,
-                            child: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                                PictureDetails pictureDetails =
-                                    _controller.finish();
-                                widget.picture(pictureDetails);
-                                Navigator.of(context).pop();
-                              },
-                              icon: Icon(
-                                MdiIcons.contentSave,
-                                color: Colors.white,
-                              ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.blue,
+                          radius: 32,
+                          child: IconButton(
+                            onPressed: () {
+                              PictureDetails pictureDetails =
+                              _controller.finish();
+                              widget.picture(pictureDetails);
+                              Navigator.of(context).pop();
+                            },
+                            icon: Icon(
+                              MdiIcons.contentSave,
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 12,
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          inAsyncCall: _isLoading,
-          progressIndicator: CupertinoTheme(
-            data: CupertinoTheme.of(context)
-                .copyWith(brightness: Brightness.dark),
-            child: CupertinoActivityIndicator(),
+                    ),
+                    SizedBox(
+                      height: 12,
+                    )
+                  ],
+                ),
+              )
+            ],
           ),
         ),
       ),

@@ -1,6 +1,4 @@
 
-import 'package:flutter/cupertino.dart';
-
 class Organization{
 
   String text;

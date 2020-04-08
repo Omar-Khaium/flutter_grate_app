@@ -4,13 +4,12 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/product.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/sqflite/model/user.dart';
-import 'package:flutter_grate_app/widgets/PDFScreen.dart';
+import 'package:flutter_grate_app/widgets/widget_pdf.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/drawing_placeholder.dart';
 import 'package:flutter_grate_app/widgets/list_row_item.dart';
@@ -1156,7 +1155,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                   labelStyle: customTextStyle(),
                                                   hintText: "e.g. hint",
                                                   hintStyle: customHintStyle(),
-                                                  alignLabelWithHint: false,
+                                                  alignLabelWithHint: true,
                                                   isDense: true),
                                             ),
                                             SizedBox(

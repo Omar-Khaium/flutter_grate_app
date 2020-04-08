@@ -9,30 +9,28 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  progress_dialog: ^1.2.0
-  cupertino_icons: ^0.1.2
-  http: ^0.12.0
-  modal_progress_hud: ^0.1.3
-  sqflite: ^1.1.3
+  cupertino_icons:
+  http:
+  sqflite:
   path_provider:
-  flushbar:
+  flushbar: 1.6.0
   material_design_icons_flutter:
   uuid:
   smooth_star_rating:
   shimmer:
-  flutter_colorpicker: any
+  flutter_colorpicker:
   intl:
   painter:
   popup_menu:
   flutter_typeahead:
-  connectivity: ^0.4.6+2
+  connectivity:
   video_player:
   image_picker:
   async:
   dotted_border:
   flutter_html:
   url_launcher:
-  flutter_pdfview:
+  flutter_fullpdfview:
   youtube_player_flutter:
   flutter_keyboard_visibility:
 

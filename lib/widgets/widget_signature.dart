@@ -1,11 +1,9 @@
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:painter/painter.dart';
 
 class SignatureDialog extends StatefulWidget {
@@ -19,7 +17,6 @@ class SignatureDialog extends StatefulWidget {
 
 class _SignatureDialogState extends State<SignatureDialog> {
   PainterController _controller = new PainterController();
-  bool _isLoading = false;
   @override
   void initState() {
     _controller.backgroundColor = Colors.white;
@@ -39,71 +36,65 @@ class _SignatureDialogState extends State<SignatureDialog> {
         ),
       ),
       body: SafeArea(
-        child: ModalProgressHUD(
-          child: Container(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Painter(_controller),
-                ),
-                Container(
-                  width: 88,
-                  color: Colors.black,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 12,
+        child: Container(
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Painter(_controller),
+              ),
+              Container(
+                width: 88,
+                color: Colors.black,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 12,
+                    ),
+                    CircleAvatar(
+                      backgroundColor: Colors.white24,
+                      radius: 32,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _controller.clear();
+                          });
+                        },
+                        icon: Icon(Icons.refresh, color: Colors.white),
                       ),
-                      CircleAvatar(
-                        backgroundColor: Colors.white24,
-                        radius: 32,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _controller.clear();
-                            });
-                          },
-                          icon: Icon(Icons.refresh, color: Colors.white),
-                        ),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: CircleAvatar(
-                        backgroundColor: Colors.blue,
-                        radius: 32,
-                            child: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                                PictureDetails pictureDetails =
-                                    _controller.finish();
-                                pictureDetails.toPNG().then((value) {
-                                  widget.picture(pictureDetails);
-                                  Navigator.of(context).pop();
-                                });
-                              },
-                              icon: Icon(
-                                MdiIcons.contentSave,
-                                color: Colors.white,
-                              ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.blue,
+                          radius: 32,
+                          child: IconButton(
+                            onPressed: () {
+                              PictureDetails pictureDetails =
+                              _controller.finish();
+                              pictureDetails.toPNG().then((value) {
+                                widget.picture(pictureDetails);
+                                Navigator.of(context).pop();
+                              });
+                            },
+                            icon: Icon(
+                              MdiIcons.contentSave,
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 12,
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ), inAsyncCall: _isLoading,
-          progressIndicator: CupertinoTheme( data: CupertinoTheme.of(context).copyWith(brightness: Brightness.dark), child: CupertinoActivityIndicator(), ),
+                    ),
+                    SizedBox(
+                      height: 12,
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

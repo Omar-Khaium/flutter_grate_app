@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
@@ -435,7 +434,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                                 widget.customer
                                                                         .HasInspectionReport
                                                                     ? MdiIcons
-                                                                        .fileDocumentBoxMultiple
+                                                                        .fileDocumentOutline
                                                                     : MdiIcons
                                                                         .plusBoxMultiple,
                                                                 color: Colors

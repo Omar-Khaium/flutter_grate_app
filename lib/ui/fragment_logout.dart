@@ -11,9 +11,8 @@ import 'package:flutter_grate_app/widgets/text_style.dart';
 class LogoutFragment extends StatefulWidget {
   Login login;
   ValueChanged<int> backToDashboard;
-  ValueChanged<bool> showLoading;
 
-  LogoutFragment({Key key, this.login, this.backToDashboard, this.showLoading})
+  LogoutFragment({Key key, this.login, this.backToDashboard})
       : super(key: key);
 
   @override
@@ -51,7 +50,6 @@ class _LogoutFragmentState extends State<LogoutFragment> {
           shouldIconPulse: false,
         )..show(context);
       } else {
-        widget.showLoading(false);
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => new LogInUI(widget.login)));
       }
@@ -153,7 +151,6 @@ class _LogoutFragmentState extends State<LogoutFragment> {
                           MaterialButton(
                             onPressed: () {
                               setState(() {
-                                widget.showLoading(true);
                                 widget.login.isAuthenticated = false;
                                 saveToDatabase();
                               });
