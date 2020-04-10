@@ -12,6 +12,7 @@ import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/customer_details_shimmer.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
+import 'package:flutter_grate_app/widgets/widget_image_alert.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -206,24 +207,31 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                                             .customer
                                                                             .ProfileImage
                                                                             .isNotEmpty
-                                                                    ? Container(
-                                                                        height:
-                                                                            128,
-                                                                        width:
-                                                                            128,
-                                                                        child: FadeInImage
-                                                                            .assetNetwork(
-                                                                          placeholder:
-                                                                              "images/loading.gif",
-                                                                          image: buildCustomerImageUrl(
-                                                                              widget.customer.CustomerId,
-                                                                              widget.loggedInUser.CompanyGUID,
-                                                                              widget.login.username,
-                                                                              Uuid().v1()),
-                                                                          fit: BoxFit
-                                                                              .cover,
+                                                                    ? InkWell(
+                                                              onTap: ()=>showDialog(context: context, builder: (context)=> imageAlert(context, buildCustomerImageUrl(
+                                                                  widget.customer.CustomerId,
+                                                                  widget.loggedInUser.CompanyGUID,
+                                                                  widget.login.username,
+                                                                  Uuid().v1()))),
+                                                                      child: Container(
+                                                                          height:
+                                                                              128,
+                                                                          width:
+                                                                              128,
+                                                                          child: FadeInImage
+                                                                              .assetNetwork(
+                                                                            placeholder:
+                                                                                "images/loading.gif",
+                                                                            image: buildCustomerImageUrl(
+                                                                                widget.customer.CustomerId,
+                                                                                widget.loggedInUser.CompanyGUID,
+                                                                                widget.login.username,
+                                                                                Uuid().v1()),
+                                                                            fit: BoxFit
+                                                                                .cover,
+                                                                          ),
                                                                         ),
-                                                                      )
+                                                                    )
                                                                     : Icon(
                                                                         Icons
                                                                             .person,

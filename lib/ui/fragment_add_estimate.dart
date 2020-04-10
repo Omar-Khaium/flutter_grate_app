@@ -9,7 +9,7 @@ import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/product.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/sqflite/model/user.dart';
-import 'package:flutter_grate_app/widgets/widget_pdf.dart';
+import 'package:flutter_grate_app/widgets/widget_send_mail.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/drawing_placeholder.dart';
 import 'package:flutter_grate_app/widgets/list_row_item.dart';
@@ -1864,7 +1864,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
     if(result!=null) {
       Navigator.of(context).push(new MaterialPageRoute<Null>(
           builder: (context) =>
-              SendMailFragment(result, estimateId, widget.login,
+              SendMail(result, estimateId, widget.login,
                   widget.customer, backToCustomerDetails),
           fullscreenDialog: true));
     }
@@ -2087,7 +2087,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       "Authorization": widget.login.accessToken
     };
     Map<String, String> body = <String, String>{
-      "filename": "file-from-omar.png",
+      "filename": "${DateTime.now().toIso8601String()}.png",
       "filepath": base64.encode(_imageFile.readAsBytesSync())
     };
     var result = await http.post(BASE_URL + API_UPLOAD_FILE,
@@ -2109,7 +2109,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       "Authorization": widget.login.accessToken
     };
     Map<String, String> body = <String, String>{
-      "filename": "file-from-omar.png",
+      "filename": "${DateTime.now().toIso8601String()}.png",
       "filepath": base64Drawing
     };
     var result = await http.post(BASE_URL + API_UPLOAD_FILE,
@@ -2131,7 +2131,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       "Authorization": widget.login.accessToken
     };
     Map<String, String> body = <String, String>{
-      "filename": "file-from-omar.png",
+      "filename": "${DateTime.now().toIso8601String()}.png",
       "filepath": base64HOSignature
     };
     var result = await http.post(BASE_URL + API_UPLOAD_FILE,

@@ -414,98 +414,104 @@ class _LogInUIState extends State<LogInUI> with SingleTickerProviderStateMixin {
     } else {
       await getData(login);
       await getOrganizationData(login);
-
       Navigator.of(context).pop();
-
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                child: WillPopScope(
-                  onWillPop: () async => false,
-                  child: AlertDialog(
-                    content: Container(
-                      height: 400,
-                      width: 500,
-                      child: ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: _list.length,
-                        separatorBuilder: (BuildContext context, index) =>
-                            Divider(),
-                        itemBuilder: (BuildContext context, index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                                color: _list[index].selected
-                                    ? Colors.white
-                                    : Colors.white),
-                            child: ListTile(
-                              onTap: () {
-                                resetSelection(index);
-                                showDialog(
-                                    context: context,
-                                    builder: (_) => loadingAlert());
-                                saveOrganization(index, login);
-                              },
-                              trailing: _list[index].selected
-                                  ? Icon(
-                                      MdiIcons.checkDecagram,
-                                      color: Colors.black,
-                                      size: 36,
-                                    )
-                                  : SizedBox(
-                                      width: 4,
-                                      height: 4,
-                                    ),
-                              title: Text(
-                                _list[index].text,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline
-                                    .copyWith(
-                                      color: Colors.black,
-                                    ),
-                                textDirection: TextDirection.ltr,
-                              ),
+      if (_list.length == 1) {
+        Navigator.of(context).pop();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => new DashboardUI(login, loggedInUser)));
+      } else {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: WillPopScope(
+                onWillPop: () async => false,
+                child: AlertDialog(
+                  content: Container(
+                    height: 400,
+                    width: 500,
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: _list.length,
+                      separatorBuilder: (BuildContext context, index) =>
+                          Divider(),
+                      itemBuilder: (BuildContext context, index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                              color: _list[index].selected
+                                  ? Colors.white
+                                  : Colors.white),
+                          child: ListTile(
+                            onTap: () {
+                              resetSelection(index);
+                              showDialog(
+                                  context: context,
+                                  builder: (_) => loadingAlert());
+                              saveOrganization(index, login);
+                            },
+                            trailing: _list[index].selected
+                                ? Icon(
+                              MdiIcons.checkDecagram,
+                              color: Colors.black,
+                              size: 36,
+                            )
+                                : SizedBox(
+                              width: 4,
+                              height: 4,
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    title: Text(
-                      "Please Choose A Company :",
-                      style: Theme.of(context).textTheme.headline.copyWith(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                    ),
-                    actions: <Widget>[
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: FlatButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          onPressed: () => Navigator.of(context).pop(),
-                          color: Colors.grey.shade200,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              "Close",
+                            title: Text(
+                              _list[index].text,
+                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(context)
                                   .textTheme
-                                  .subhead
+                                  .headline
                                   .copyWith(
-                                      color: Colors.grey.shade700,
-                                      fontWeight: FontWeight.bold),
+                                color: Colors.black,
+                              ),
+                              textDirection: TextDirection.ltr,
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  title: Text(
+                    "Please Choose A Company :",
+                    style: Theme.of(context).textTheme.headline.copyWith(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  actions: <Widget>[
+                    Container(
+                      margin: EdgeInsets.all(8),
+                      child: FlatButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        onPressed: () => Navigator.of(context).pop(),
+                        color: Colors.grey.shade200,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            "Close",
+                            style: Theme.of(context)
+                                .textTheme
+                                .subhead
+                                .copyWith(
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ));
+              ),
+            ));
+      }
     }
   }
 
@@ -581,13 +587,7 @@ class _LogInUIState extends State<LogInUI> with SingleTickerProviderStateMixin {
         _list = List.generate(map['orglist'].length, (index) {
           return Organization.fromMap(map['orglist'][index]);
         });
-        if (_list.length == 1) {
-          Navigator.of(context).pop();
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => new DashboardUI(login, loggedInUser)));
-        }
+
         return result;
       } else {
         showMessage(context, "Network error!", json.decode(result.body),

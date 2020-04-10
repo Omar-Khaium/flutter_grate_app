@@ -21,7 +21,7 @@ dependencies:
   flutter_colorpicker:
   intl:
   painter:
-  popup_menu:
+  cached_network_image:
   flutter_typeahead:
   connectivity:
   video_player:
@@ -30,9 +30,9 @@ dependencies:
   dotted_border:
   flutter_html:
   url_launcher:
-  flutter_fullpdfview:
   youtube_player_flutter:
   flutter_keyboard_visibility:
+  flutter_fullpdfview:
 
 dev_dependencies:
   flutter_test:
