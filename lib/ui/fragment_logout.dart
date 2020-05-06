@@ -1,18 +1,19 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/drawer/drawer_theme.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/sqflite/database_info.dart';
 import 'package:flutter_grate_app/sqflite/db_helper.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/ui/ui_login.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
+import 'package:hive/hive.dart';
 
 class LogoutFragment extends StatefulWidget {
-  Login login;
   ValueChanged<int> backToDashboard;
 
-  LogoutFragment({Key key, this.login, this.backToDashboard})
+  LogoutFragment({Key key, this.backToDashboard})
       : super(key: key);
 
   @override
@@ -20,40 +21,14 @@ class LogoutFragment extends StatefulWidget {
 }
 
 class _LogoutFragmentState extends State<LogoutFragment> {
-  DBHelper dbHelper = new DBHelper();
+  Box<User> userBox;
+  User user;
 
-  saveToDatabase() async {
-    Login log = await dbHelper.update(widget.login, DBInfo.TABLE_LOGIN);
-
-    setState(() {
-      if (log == null) {
-        Flushbar(
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.GROUNDED,
-          backgroundColor: Colors.redAccent,
-          icon: Icon(
-            Icons.error_outline,
-            size: 24.0,
-            color: Colors.white,
-          ),
-          duration: Duration(seconds: 4),
-          leftBarIndicatorColor: Colors.white70,
-          boxShadows: [
-            BoxShadow(
-              color: Colors.red[800],
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          title: "Offline Database ERROR!",
-          message: "Failed to save in offline-database.",
-          shouldIconPulse: false,
-        )..show(context);
-      } else {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => new LoginUI()));
-      }
-    });
+  @override
+  void initState() {
+    super.initState();
+    userBox = Hive.box("users");
+    user = userBox.get(0);
   }
 
   @override
@@ -150,10 +125,10 @@ class _LogoutFragmentState extends State<LogoutFragment> {
                           ),
                           MaterialButton(
                             onPressed: () {
-                              setState(() {
-                                widget.login.isAuthenticated = false;
-                                saveToDatabase();
-                              });
+                              user.isAuthenticated = false;
+                              userBox.putAt(0, user);
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => new LoginUI()));
                             },
                             child: Container(
                               decoration: BoxDecoration(

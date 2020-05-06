@@ -70,17 +70,17 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                 flex: 1,
                               ),
                               new Expanded(
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  physics: ScrollPhysics(),
-                                  scrollDirection: Axis.vertical,
-                                  children: <Widget>[
-                                    Container(
-                                      height: 504,
-                                      padding: const EdgeInsets.all(24),
-                                      decoration:
-                                          BoxDecoration(color: Colors.white),
-                                      child: Form(
+                                child: Container(
+                                  height: 600,
+                                  padding: const EdgeInsets.all(24),
+                                  decoration:
+                                  BoxDecoration(color: Colors.white),
+                                  child: ListView(
+                                    shrinkWrap: false,
+                                    physics: ScrollPhysics(),
+                                    scrollDirection: Axis.vertical,
+                                    children: <Widget>[
+                                      Form(
                                         key: _key,
                                         child: new Column(
                                           mainAxisAlignment:
@@ -316,37 +316,40 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                                 ),
                                               ],
                                             ),
-                                            InkWell(
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 16,
-                                                    top: 16,
-                                                    right: 16,
-                                                    bottom: 16),
-                                                child: TextWidget(
-                                                  "Forget Password",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subhead
-                                                      .copyWith(
-                                                          color: Colors.black),
+                                            Container(
+                                              margin: EdgeInsets.only(top: 36),
+                                              child: InkWell(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      left: 16,
+                                                      top: 16,
+                                                      right: 16,
+                                                      bottom: 16),
+                                                  child: TextWidget(
+                                                    "Forget Password",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subhead
+                                                        .copyWith(
+                                                            color: Colors.black),
+                                                  ),
                                                 ),
+                                                onTap: () {
+                                                  setState(() {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                new ForgetPasswordUI()));
+                                                  });
+                                                },
                                               ),
-                                              onTap: () {
-                                                setState(() {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              new ForgetPasswordUI()));
-                                                });
-                                              },
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 flex: 1,
                               ),
