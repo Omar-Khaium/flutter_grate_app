@@ -4,11 +4,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/customer_model.dart';
-import 'package:flutter_grate_app/sqflite/database_info.dart';
-import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/BasementReport.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/utils.dart';
 import 'package:flutter_grate_app/widgets/customer_list_shimmer.dart';
 import 'package:flutter_grate_app/widgets/list_row_item.dart';
@@ -16,21 +12,16 @@ import 'package:flutter_grate_app/widgets/list_shimmer_item_customer.dart';
 import 'package:flutter_grate_app/widgets/list_shimmer_item_multiline_customer.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+
+import '../constraints.dart';
 
 class DashboardFragment extends StatefulWidget {
   final ValueChanged<String> goToCustomerDetails;
   final ValueChanged<String> goToSearch;
-  final Login login;
-  final LoggedInUser loggedInUser;
 
-  DashboardFragment(
-      {Key key,
-      this.login,
-      this.goToCustomerDetails,
-      this.goToSearch,
-      this.loggedInUser})
-      : super(key: key);
+  DashboardFragment({this.goToCustomerDetails, this.goToSearch});
 
   @override
   _DashboardFragmentState createState() => _DashboardFragmentState();
@@ -47,15 +38,19 @@ class _DashboardFragmentState extends State<DashboardFragment>
   int _pageNo = 0;
   int _totalSize = 0;
 
-  DBHelper dbHelper = new DBHelper();
   var _paginationFocus = FocusNode();
   var _future;
+
+  Box<User> userBox;
+  User user;
 
   @override
   void initState() {
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     _showPaginationShimmer = false;
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
     _future = getData();
     super.initState();
   }
@@ -145,7 +140,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                widget.loggedInUser.CompanyName,
+                user.companyName,
                 style: new TextStyle(
                     fontWeight: FontWeight.normal,
                     color: Colors.black,
@@ -385,7 +380,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
   Future getData() async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'PageNo': (++_pageNo).toString(),
         'PageSize': '30',
         'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
@@ -423,7 +418,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
   Future fetchData() async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'PageNo': (++_pageNo).toString(),
         'PageSize': '30',
         'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
@@ -449,7 +444,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
         });
         showMessage(context, "Network error!", json.decode(result.body),
             Colors.redAccent, Icons.warning);
-        return [];
+        return "[]";
       }
     } catch (error) {
       if (error.toString().contains("SocketException")) {
@@ -457,7 +452,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
           offline = true;
         });
         showNoInternetConnection(context);
-        return [];
+        return "[]";
       }
     }
   }
@@ -466,7 +461,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
     showDialog(context: context, builder: (context) => loadingAlert());
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'PageNo': "1",
         'PageSize': '30',
         'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
@@ -489,6 +484,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
           arrayList.addAll(_arrayList);
         });
         Navigator.of(context).pop();
+        return "[]";
       } else {
         setState(() {
           offline = false;
@@ -496,6 +492,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
         Navigator.of(context).pop();
         showMessage(context, "Network error!", json.decode(result.body),
             Colors.redAccent, Icons.warning);
+        return "[]";
       }
     } catch (error) {
       Navigator.of(context).pop();
@@ -505,13 +502,14 @@ class _DashboardFragmentState extends State<DashboardFragment>
         });
         showNoInternetConnection(context);
       }
+      return "[]";
     }
   }
 
   Future deleteCustomer(int index) async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'customerid': arrayList[index].Id,
       };
 

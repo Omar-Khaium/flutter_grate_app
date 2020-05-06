@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/drawer/sync_nav_item.dart';
+import 'package:flutter_grate_app/model/hive/basement_report.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/model/navigation_model.dart';
-import 'package:flutter_grate_app/sqflite/database_info.dart';
-import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/BasementReport.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
+import 'package:hive/hive.dart';
 
 import '../utils.dart';
 import 'collapsing_list_tile.dart';
@@ -14,10 +12,8 @@ import 'drawer_theme.dart';
 
 class SideNavUI extends StatefulWidget {
   final ValueChanged<int> refreshEvent;
-  final Login login;
-  final LoggedInUser loggedInUser;
 
-  const SideNavUI({Key key, this.refreshEvent, this.login, this.loggedInUser})
+  const SideNavUI({Key key, this.refreshEvent})
       : super(key: key);
 
   @override
@@ -26,6 +22,10 @@ class SideNavUI extends StatefulWidget {
 
 class SideNavUIState extends State<SideNavUI>
     with SingleTickerProviderStateMixin {
+
+  Box<User> userBox;
+  User user;
+
   double maxWidth = 300;
   double maxSize = 16;
   double minWidth = 92;
@@ -38,15 +38,17 @@ class SideNavUIState extends State<SideNavUI>
   String fragmentTitle = "Dashboard";
   Widget fragment;
   Widget lastFragment;
-  DBHelper dbHelper = new DBHelper();
 
   bool isSyncing = false;
-  bool needToSync = false;
-  List<BasementReport> reports;
+
+  Box<BasementReport> reportBox;
 
   @override
   void initState() {
-    super.initState();
+
+    userBox = Hive.box("users");
+    reportBox = Hive.box("basement_reports");
+    user = userBox.getAt(0);
 
     _animationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 300));
@@ -55,7 +57,7 @@ class SideNavUIState extends State<SideNavUI>
     sizedBoxAnimation = Tween<double>(begin: maxSize, end: minSize)
         .animate(_animationController);
     isSyncing = false;
-    refresh();
+    super.initState();
   }
 
   updateSelection(int selection) {
@@ -86,14 +88,14 @@ class SideNavUIState extends State<SideNavUI>
                   ),
                   child: Row(
                     children: <Widget>[
-                      widget.loggedInUser.ProfilePicture == null ||
-                              widget.loggedInUser.ProfilePicture.isEmpty
+                      user.photo == null ||
+                              user.photo.isEmpty
                           ? CircleAvatar(
                               maxRadius: 14,
                               minRadius: 14,
                               backgroundColor: Colors.black,
                               child: Text(
-                                widget.loggedInUser.UserName
+                                "${user.firstName} ${user.lastName}"
                                     .substring(0, 1)
                                     .toUpperCase(),
                                 style: customButtonTextStyle(),
@@ -106,11 +108,11 @@ class SideNavUIState extends State<SideNavUI>
                                 borderRadius: BorderRadius.circular(28),
                                 child: FadeInImage.assetNetwork(
                                   placeholder: "images/loading.gif",
-                                  image: widget.loggedInUser.ProfilePicture
+                                  image: user.photo
                                           .startsWith("/Files")
                                       ? "https://www.gratecrm.com" +
-                                          widget.loggedInUser.ProfilePicture
-                                      : widget.loggedInUser.ProfilePicture,
+                                          user.photo
+                                      : user.photo,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -122,7 +124,7 @@ class SideNavUIState extends State<SideNavUI>
                           ? SizedBox(
                               width: 192,
                               child: Text(
-                                widget.loggedInUser.UserName,
+                                "${user.firstName} ${user.lastName}",
                                 style: defaultTextStyle,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -159,13 +161,13 @@ class SideNavUIState extends State<SideNavUI>
                         },
                         itemCount: navItems.length,
                       ),
-                      needToSync
+                      reportBox.length!=0
                           ? SyncNavItem(
                               title: "${isSyncing ? "Syncing" : "Sync"} Data",
                               icon: Icons.sync,
                               animationController: _animationController,
                               onTap: () {
-                                syncAlert(reports);
+                                syncAlert();
                               },
                             )
                           : Container()
@@ -201,7 +203,7 @@ class SideNavUIState extends State<SideNavUI>
 
   //-----------------------Offline DB-----------------------
 
-  void syncAlert(List<BasementReport> list) {
+  void syncAlert() {
     showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button!
@@ -240,10 +242,8 @@ class SideNavUIState extends State<SideNavUI>
                                 style: Theme.of(context).textTheme.body1.copyWith(color: Colors.black),
                               ),
                               onPressed: () {
-                                DBHelper dbHelper = new DBHelper();
-                                for (BasementReport item in list) {
-                                  dbHelper.delete(item.id,
-                                      DBInfo.TABLE_BASEMENT_INSPECTION);
+                                for(int i=0; i < reportBox.length; i++){
+                                  reportBox.deleteAt(i);
                                 }
                                 Navigator.of(context).pop();
                               },
@@ -268,7 +268,7 @@ class SideNavUIState extends State<SideNavUI>
                                 setState(() {
                                   isSyncing = true;
                                 });
-                                _syncToNetwork(list);
+                                _syncToNetwork();
                               },
                             ),
                           ),
@@ -283,29 +283,83 @@ class SideNavUIState extends State<SideNavUI>
     );
   }
 
-  _syncToNetwork(List<BasementReport> list) async {
+  _syncToNetwork() async {
     Navigator.of(context).pop();
     showDialog(context: context, builder: (context) => loadingAlert());
-    for (BasementReport item in list) {
-      await saveInspectionReport(
-          item.header.replaceAll("\n", ""), context, widget.login, item.id);
-      Navigator.of(context).pop();
+
+    for(int i=0; i < reportBox.length; i++){
+      BasementReport item = reportBox.getAt(i);
+      Map<String, String> headers = {};
+      headers['Authorization'] = user.accessToken;
+      headers['CustomerId'] = item.CustomerId;
+      headers['companyId'] = item.CompanyId;
+      headers['CurrentOutsideConditions'] =
+          item.CurrentOutsideConditions;
+      headers['OutsideRelativeHumidity'] =
+          item.OutsideRelativeHumidity.toString();
+      headers['OutsideTemperature'] = item.OutsideTemperature.toString();
+      headers['FirstFloorRelativeHumidity'] = item.FirstFloorRelativeHumidity.toString();
+      headers['FirstFloorTemperature'] = item.FirstFloorTemperature.toString();
+      headers['RelativeOther1'] = item.RelativeOther1;
+      headers['RelativeOther2'] = item.RelativeOther2;
+      headers['Heat'] = item.Heat;
+      headers['Air'] = item.Air;
+      headers['BasementRelativeHumidity'] =item.BasementRelativeHumidity.toString();
+      headers['BasementTemperature'] = item.BasementTemperature.toString();
+      headers['BasementDehumidifier'] =item.BasementDehumidifier;
+      headers['GroundWater'] = item.GroundWater;
+      headers['GroundWaterRating'] =item.GroundWaterRating.toString();
+      headers['IronBacteria'] = item.IronBacteria;
+      headers['IronBacteriaRating'] =item.IronBacteriaRating.toString();
+      headers['Condensation'] = item.Condensation;
+      headers['CondensationRating'] =item.CondensationRating.toString();
+      headers['WallCracks'] = item.WallCracks;
+      headers['WallCracksRating'] =item.WallCracksRating.toString();
+      headers['FloorCracks'] = item.FloorCracks;
+      headers['FloorCracksRating'] =item.FloorCracksRating.toString();
+      headers['ExistingSumpPump'] =item.ExistingSumpPump;
+      headers['ExistingDrainageSystem'] =item.ExistingDrainageSystem;
+      headers['ExistingRadonSystem'] =item.ExistingRadonSystem;
+      headers['DryerVentToCode'] =item.DryerVentToCode;
+      headers['FoundationType'] =item.FoundationType;
+      headers['Bulkhead'] = item.Bulkhead;
+      headers['VisualBasementOther'] =item.VisualBasementOther;
+      headers['NoticedSmellsOrOdors'] =item.NoticedSmellsOrOdors;
+      headers['NoticedSmellsOrOdorsComment'] =item.NoticedSmellsOrOdorsComment;
+      headers['NoticedMoldOrMildew'] =item.NoticedMoldOrMildew;
+      headers['NoticedMoldOrMildewComment'] =item.NoticedMoldOrMildewComment;
+      headers['BasementGoDown'] =item.BasementGoDown;
+      headers['HomeSufferForRespiratory'] =item.HomeSufferForRespiratory;
+      headers['HomeSufferForrespiratoryComment'] =item.HomeSufferForrespiratoryComment;
+      headers['ChildrenPlayInBasement'] =item.ChildrenPlayInBasement;
+      headers['ChildrenPlayInBasementComment'] =item.ChildrenPlayInBasementComment;
+      headers['PetsGoInBasement'] =item.PetsGoInBasement;
+      headers['PetsGoInBasementComment'] = item.PetsGoInBasementComment;
+      headers['NoticedBugsOrRodents'] =item.NoticedBugsOrRodents;
+      headers['NoticedBugsOrRodentsComment'] =item.NoticedBugsOrRodentsComment;
+      headers['GetWater'] = item.GetWater;
+      headers['GetWaterComment'] = item.GetWaterComment;
+      headers['RemoveWater'] = item.RemoveWater;
+      headers['SeeCondensationPipesDripping'] =item.SeeCondensationPipesDripping;
+      headers['SeeCondensationPipesDrippingComment'] =item.SeeCondensationPipesDrippingComment;
+      headers['RepairsProblems'] =item.RepairsProblems;
+      headers['RepairsProblemsComment'] =item.RepairsProblemsComment;
+      headers['LivingPlan'] = item.LivingPlan;
+      headers['SellPlaning'] = item.SellPlaning;
+      headers['PlansForBasementOnce'] =item.PlansForBasementOnce;
+      headers['HomeTestForPastRadon'] =item.HomeTestForPastRadon;
+      headers['HomeTestForPastRadonComment'] =item.HomeTestForPastRadonComment;
+      headers['LosePower'] = item.LosePower;
+      headers['LosePowerHowOften'] =item.LosePowerHowOften;
+      headers['CustomerBasementOther'] =item.CustomerBasementOther;
+      headers['Notes'] = item.Notes;
+      await saveInspectionReport(headers);
     }
+    reportBox.clear();
+    Navigator.of(context).pop();
     setState(() {
       isSyncing = false;
-      needToSync = false;
     });
-  }
-
-  void refresh() async {
-    while (true) {
-      reports = await dbHelper.getBasementData();
-      if (reports.isNotEmpty && reports.length != 0) {
-        setState(() {
-          needToSync = true;
-        });
-      }
-    }
   }
 //-----------------------Offline DB-----------------------
 }

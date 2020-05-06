@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/model/product.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/sqflite/model/user.dart';
@@ -23,24 +24,22 @@ import 'package:flutter_grate_app/widgets/widget_fav_product_list.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:flutter_grate_app/widgets/widget_signature.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:painter/painter.dart';
 
+import '../constraints.dart';
 import '../utils.dart';
 
 class AddEstimateFragment extends StatefulWidget {
-  Login login;
-  LoggedInUser loggedInUser;
   CustomerDetails customer;
   ValueChanged<CustomerDetails> backToCustomerDetailsFromEstimate;
 
   AddEstimateFragment(
       {Key key,
-      this.login,
-      this.loggedInUser,
       this.customer,
       this.backToCustomerDetailsFromEstimate})
       : super(key: key);
@@ -105,8 +104,13 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
 
   File _imageFile;
 
+  Box<User> userBox;
+  User user;
+
   @override
   void initState() {
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
     _future = getGeneratedEstimate();
     _Drawing = DrawingPlaceholder();
     _HOSignature = SignaturePlaceholder();
@@ -1864,7 +1868,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
     if(result!=null) {
       Navigator.of(context).push(new MaterialPageRoute<Null>(
           builder: (context) =>
-              SendMail(result, estimateId, widget.login,
+              SendMail(result, estimateId,
                   widget.customer, backToCustomerDetails),
           fullscreenDialog: true));
     }
@@ -1904,7 +1908,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
     try {
       if (pattern.isNotEmpty) {
         Map<String, String> headers = {
-          'Authorization': widget.login.accessToken,
+          'Authorization': user.accessToken,
           'Key': pattern.trim()
         };
 
@@ -1977,10 +1981,10 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
 
   Future getGeneratedEstimate() async {
     Map<String, String> headers = {
-      'Authorization': widget.login.accessToken,
+      'Authorization': user.accessToken,
       'CustomerId': widget.customer.Id,
-      'UserId': widget.loggedInUser.UserGUID,
-      'CompanyId': widget.loggedInUser.CompanyGUID,
+      'UserId': user.guid,
+      'CompanyId': user.companyGUID,
     };
     try {
       var result =
@@ -2013,7 +2017,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
 
   Future CreateEstimate(bool sentmail) async {
     Map<String, String> headers = {
-      'Authorization': widget.login.accessToken,
+      'Authorization': user.accessToken,
       'EstimateId': estimateIntId.toString(),
       'DiscountAmount': _EstimateDiscountModeIsPercentage
           ? "0.00"
@@ -2030,7 +2034,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       'DueDate': nextDate,
       'CreatedDate': formattedDate,
       'CustomerId': widget.customer.CustomerId,
-      'CompanyId': widget.loggedInUser.CompanyGUID,
+      'CompanyId': user.companyGUID,
       'Drawingimage': _drawingImagePath,
       'Cameraimage': _CameraImagePath,
       'Signimage': _HOSignatureImagePath,
@@ -2084,7 +2088,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       isCameraSaving = true;
     });
     Map<String, String> headers = <String, String>{
-      "Authorization": widget.login.accessToken
+      "Authorization": user.accessToken
     };
     Map<String, String> body = <String, String>{
       "filename": "${DateTime.now().toIso8601String()}.png",
@@ -2106,7 +2110,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       isDrawingSaving = true;
     });
     Map<String, String> headers = <String, String>{
-      "Authorization": widget.login.accessToken
+      "Authorization": user.accessToken
     };
     Map<String, String> body = <String, String>{
       "filename": "${DateTime.now().toIso8601String()}.png",
@@ -2128,7 +2132,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       isHOSignatureSaving = true;
     });
     Map<String, String> headers = <String, String>{
-      "Authorization": widget.login.accessToken
+      "Authorization": user.accessToken
     };
     Map<String, String> body = <String, String>{
       "filename": "${DateTime.now().toIso8601String()}.png",
@@ -2193,7 +2197,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
   showFavouriteList() {
     Navigator.of(context).push(new MaterialPageRoute<Null>(
         builder: (BuildContext context) {
-          return FavouriteProductListUI(widget.login, _fillProductInformation);
+          return FavouriteProductListUI(_fillProductInformation);
         },
         fullscreenDialog: true));
   }

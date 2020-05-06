@@ -1,18 +1,17 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/sqflite/database_info.dart';
 import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/BasementReport.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/ui/ui_login.dart';
 import 'package:flutter_grate_app/utils.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
-
 import 'package:http/http.dart' as http;
+
+import '../constraints.dart';
 
 class ChangePasswordFragment extends StatefulWidget {
   ValueChanged<int> backToDashboard;
@@ -575,7 +574,7 @@ class _ChangePasswordFragmentState extends State<ChangePasswordFragment> with Si
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              new LogInUI(widget.login)));
+                                              new LoginUI()));
                                 },
                               ),
                             ),

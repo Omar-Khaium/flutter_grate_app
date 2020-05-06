@@ -14,13 +14,13 @@ class PdfWidget extends StatelessWidget {
       appBar: AppBar(
         title: Text("Estimate"),
         centerTitle: false,
+        backgroundColor: Colors.blueGrey.shade900,
+        elevation: 4,
       ),
       body: PDFView(
         filePath: file.path,
         fitEachPage: true,
-        swipeHorizontal: false,
-        enableSwipe: true,
-        autoSpacing: true,
+        backgroundColor: bgcolors.BLACK,
       ),
     );
   }

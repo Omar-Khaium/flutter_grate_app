@@ -6,6 +6,7 @@ import 'package:flutter_grate_app/widgets/shimmer_upload.dart';
 import 'package:flutter_grate_app/widgets/widget_image_alert.dart';
 import 'package:http/http.dart';
 
+import '../constraints.dart';
 import '../utils.dart';
 
 class AttachmentItem extends StatefulWidget {
@@ -164,23 +165,24 @@ class _AttachmentItemState extends State<AttachmentItem> {
         await post(BASE_URL + API_UPLOAD_FILE, headers: headers, body: body);
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
-      widget.attachment.url = "https://api.gratecrm.com" + map['filePath'];
-      widget.attachment.isUploadSucceed = true;
+      setState(() {
+        widget.attachment.url = "https://api.gratecrm.com" + map['filePath'];
+        widget.attachment.isUploading = false;
+      });
       showAPIResponse(
         context,
         "Attachment Uploaded Successfully",
         Color(COLOR_SUCCESS),
       );
     } else {
-      widget.attachment.isUploadSucceed = false;
+      setState(() {
+        widget.attachment.isUploading = false;
+      });
       showAPIResponse(
         context,
         "Failed To Attach File",
         Color(COLOR_WARNING),
       );
     }
-    setState(() {
-      widget.attachment.isUploading = false;
-    });
   }
 }

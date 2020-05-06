@@ -10,6 +10,8 @@ import 'package:flutter_grate_app/widgets/widget_loading.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import 'constraints.dart';
+
 void showMessage(BuildContext context, String title, String message,
     Color color, IconData icon) {
   Flushbar(
@@ -165,42 +167,17 @@ var numberFormat = new NumberFormat("#,###", "en_US");
 RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
 Function mathFunc = (Match match) => '${match[1]},';
 
-const String BASE_URL = "https://api.gratecrm.com/";
-const String API_TOKEN = "token";
-const String API_USER_BY_USERNAME = "GetUserByUserName";
-const String API_EQUIPMENT_LIST = "GetEquipmentListByKey";
-const String API_CREATE_ESTIMATE = "CreateEstimate";
-const String API_UPLOAD_FILE = "UploadImageFile";
-const String API_GET_ESTIMATE = "GetEstimateById";
-const String API_GET_LOOK_UP = "GetLookupbyKey";
-const String API_GET_ZIP = "GetCityZipCodeLookupList";
-const String API_GET_BASEMENT_INSPECTION = "GetCustomerInspectionByCustomerId";
-const String API_SAVE_BASEMENT_INSPECTION = "SaveCustomerInspection";
-const String API_SAVE_RECOMMENDED_LEVEL = "RecommendedLevel";
-const String API_SAVE_CUSTOMER = "SaveCustomer";
-const String API_FORGET_PASSWORD = "ForgetPassword";
-const String API_CHANGE_PASSWORD = "ChangePassword";
-const String API_GET_ALL_CUSTOMER = "GetAllCustomer";
-const String API_DELETE_CUSTOMER = "DeleteCustomer";
-const String API_UPDATE_CUSTOMER = "GetCustomerByIdWithEstimateList";
-const String API_CUSTOMER_UPLOAD = "CustomerImageUpload";
-const String API_DUPLICATE_ESTIMATE = "EstimateDuplicate";
-const String API_DELETE_ESTIMATE = "DeleteEstimate";
-const String API_GENERATE_ESTIMATE = "GenerateEstimate";
-const String API_SEND_EMAIL = "SendEmailEstimate";
-const String API_SEARCH = "GlobalSearchCustomerAndLead";
+const int TABLE_USER = 0;
+const int TABLE_BASEMENT_REPORT = 1;
+
  int CURRENTSEGMENT = 0;
 
-Future<bool> saveInspectionReport(
-    String header, BuildContext context, Login login, int id) async {
+Future<bool> saveInspectionReport(Map<String, String> map) async {
   try {
-    Map<String, String> map = new Map<String, String>.from(json.decode(header));
     var response =
         await http.post(BASE_URL + API_SAVE_BASEMENT_INSPECTION, headers: map);
     try {
       if (response.statusCode == 200) {
-        DBHelper dbHelper = new DBHelper();
-        await dbHelper.delete(id, DBInfo.TABLE_BASEMENT_INSPECTION);
         return true;
       } else {
         return false;

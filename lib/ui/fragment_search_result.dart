@@ -10,6 +10,7 @@ import 'package:flutter_grate_app/widgets/list_row_item.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:http/http.dart' as http;
 
+import '../constraints.dart';
 import '../utils.dart';
 
 class SearchResultFragment extends StatefulWidget {

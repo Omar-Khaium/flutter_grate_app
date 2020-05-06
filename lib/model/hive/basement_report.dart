@@ -1,79 +1,136 @@
-class BasementInspection{
-  String Id;
-  String CompanyId;
-  String CustomerId;
-  String CurrentOutsideConditions;
-  double OutsideRelativeHumidity;
-  double OutsideTemperature;
-  double FirstFloorRelativeHumidity;
-  double FirstFloorTemperature;
-  String RelativeOther1;
-  String RelativeOther2;
-  String Heat;
-  String Air;
-  double BasementRelativeHumidity;
-  double BasementTemperature;
-  String BasementDehumidifier;
-  String GroundWater;
-  int GroundWaterRating;
-  String IronBacteria;
-  int IronBacteriaRating;
-  String Condensation;
-  int CondensationRating;
-  String WallCracks;
-  int WallCracksRating;
-  String FloorCracks;
-  int FloorCracksRating;
-  String ExistingSumpPump;
-  String ExistingDrainageSystem;
-  String ExistingRadonSystem;
-  String DryerVentToCode;
-  String FoundationType;
-  String Bulkhead;
-  String VisualBasementOther;
-  String NoticedSmellsOrOdors;
-  String NoticedSmellsOrOdorsComment;
-  String NoticedMoldOrMildew;
-  String NoticedMoldOrMildewComment;
-  String BasementGoDown;
-  String HomeSufferForRespiratory;
-  String HomeSufferForrespiratoryComment;
-  String ChildrenPlayInBasement;
-  String ChildrenPlayInBasementComment;
-  String PetsGoInBasement;
-  String PetsGoInBasementComment;
-  String NoticedBugsOrRodents;
-  String NoticedBugsOrRodentsComment;
-  String GetWater;
-  String GetWaterComment;
-  String RemoveWater;
-  String SeeCondensationPipesDripping;
-  String SeeCondensationPipesDrippingComment;
-  String RepairsProblems;
-  String RepairsProblemsComment;
-  String LivingPlan;
-  String SellPlaning;
-  String PlansForBasementOnce;
-  String HomeTestForPastRadon;
-  String HomeTestForPastRadonComment;
-  String LosePower;
-  String LosePowerHowOften;
-  String CustomerBasementOther;
-  String Drawing;
-  String Notes;
-  String PMSignature;
-  String PMSignatureDate;
-  String HomeOwnerSignature;
-  String HomeOwnerSignatureDate;
-  String CreatedBy;
-  String CreatedDate;
-  String LastUpdatedBy;
-  String LastUpdatedDate;
-  String InspectionPhoto;
-  String RowState;
 
-  BasementInspection(
-      this.Id,
+import 'package:hive/hive.dart';
+
+import '../../utils.dart';
+
+part 'basement_report.g.dart';
+
+@HiveType(typeId: TABLE_BASEMENT_REPORT)
+class BasementReport {
+  @HiveField(0)
+  String CompanyId;
+  @HiveField(1)
+  String CurrentOutsideConditions;
+  @HiveField(2)
+  double OutsideRelativeHumidity;
+  @HiveField(3)
+  double OutsideTemperature;
+  @HiveField(4)
+  double FirstFloorRelativeHumidity;
+  @HiveField(5)
+  double FirstFloorTemperature;
+  @HiveField(6)
+  String RelativeOther1;
+  @HiveField(7)
+  String RelativeOther2;
+  @HiveField(8)
+  String Heat;
+  @HiveField(9)
+  String Air;
+  @HiveField(10)
+  double BasementRelativeHumidity;
+  @HiveField(11)
+  double BasementTemperature;
+  @HiveField(12)
+  String BasementDehumidifier;
+  @HiveField(13)
+  String GroundWater;
+  @HiveField(14)
+  int GroundWaterRating;
+  @HiveField(15)
+  String IronBacteria;
+  @HiveField(16)
+  int IronBacteriaRating;
+  @HiveField(60)
+  String Condensation;
+  @HiveField(61)
+  int CondensationRating;
+  @HiveField(17)
+  String WallCracks;
+  @HiveField(18)
+  int WallCracksRating;
+  @HiveField(19)
+  String FloorCracks;
+  @HiveField(20)
+  int FloorCracksRating;
+  @HiveField(21)
+  String ExistingSumpPump;
+  @HiveField(22)
+  String ExistingDrainageSystem;
+  @HiveField(23)
+  String ExistingRadonSystem;
+  @HiveField(24)
+  String DryerVentToCode;
+  @HiveField(25)
+  String FoundationType;
+  @HiveField(26)
+  String Bulkhead;
+  @HiveField(27)
+  String VisualBasementOther;
+  @HiveField(28)
+  String NoticedSmellsOrOdors;
+  @HiveField(29)
+  String NoticedSmellsOrOdorsComment;
+  @HiveField(30)
+  String NoticedMoldOrMildew;
+  @HiveField(31)
+  String NoticedMoldOrMildewComment;
+  @HiveField(32)
+  String BasementGoDown;
+  @HiveField(33)
+  String HomeSufferForRespiratory;
+  @HiveField(34)
+  String HomeSufferForrespiratoryComment;
+  @HiveField(35)
+  String ChildrenPlayInBasement;
+  @HiveField(36)
+  String ChildrenPlayInBasementComment;
+  @HiveField(37)
+  String PetsGoInBasement;
+  @HiveField(38)
+  String PetsGoInBasementComment;
+  @HiveField(39)
+  String NoticedBugsOrRodents;
+  @HiveField(40)
+  String NoticedBugsOrRodentsComment;
+  @HiveField(41)
+  String GetWater;
+  @HiveField(45)
+  String GetWaterComment;
+  @HiveField(46)
+  String RemoveWater;
+  @HiveField(47)
+  String SeeCondensationPipesDripping;
+  @HiveField(48)
+  String SeeCondensationPipesDrippingComment;
+  @HiveField(49)
+  String RepairsProblems;
+  @HiveField(50)
+  String RepairsProblemsComment;
+  @HiveField(51)
+  String LivingPlan;
+  @HiveField(52)
+  String SellPlaning;
+  @HiveField(53)
+  String PlansForBasementOnce;
+  @HiveField(54)
+  String HomeTestForPastRadon;
+  @HiveField(55)
+  String HomeTestForPastRadonComment;
+  @HiveField(56)
+  String LosePower;
+  @HiveField(57)
+  String LosePowerHowOften;
+  @HiveField(58)
+  String CustomerBasementOther;
+  @HiveField(59)
+  String Notes;
+  @HiveField(62)
+  String CustomerId;
+
+  BasementReport(
+      {
+      this.CustomerId,
       this.CompanyId,
       this.OutsideRelativeHumidity,
       this.FirstFloorTemperature,
@@ -103,58 +160,5 @@ class BasementInspection{
       this.PlansForBasementOnce,
       this.HomeTestForPastRadonComment,
       this.LosePowerHowOften,
-      this.Drawing,
-      this.Notes,
-      this.PMSignature,
-      this.HomeOwnerSignature,
-      this.CreatedBy,
-      this.InspectionPhoto);
-
-  BasementInspection.fromMap(Map<String ,dynamic> map){
-    try {
-      Id = map['Id'].toString();
-      CompanyId = map['CompanyId'];
-      OutsideRelativeHumidity = map['OutsideRelativeHumidity'];
-      FirstFloorTemperature = map['FirstFloorTemperature'];
-      RelativeOther1 = map['RelativeOther1'];
-      RelativeOther2 = map['RelativeOther2'];
-      BasementRelativeHumidity = map['BasementRelativeHumidity'];
-      BasementTemperature = map['BasementTemperature'];
-      GroundWaterRating = map['GroundWaterRating'];
-      IronBacteria = map['IronBacteria'];
-      WallCracks = map['WallCracks'];
-      ExistingDrainageSystem = map['ExistingDrainageSystem'];
-      FoundationType = map['FoundationType'];
-      Bulkhead = map['Bulkhead'];
-      VisualBasementOther = map['VisualBasementOther'];
-      NoticedSmellsOrOdors = map['NoticedSmellsOrOdors'];
-      NoticedSmellsOrOdorsComment = map['NoticedSmellsOrOdorsComment'];
-      NoticedMoldOrMildewComment = map['NoticedMoldOrMildewComment'];
-      BasementGoDown = map['BasementGoDown'];
-      HomeSufferForrespiratoryComment = map['HomeSufferForrespiratoryComment'];
-      ChildrenPlayInBasement = map['ChildrenPlayInBasement'];
-      ChildrenPlayInBasementComment = map['ChildrenPlayInBasementComment'];
-      NoticedBugsOrRodentsComment = map['NoticedBugsOrRodentsComment'];
-      GetWaterComment = map['GetWaterComment'];
-      SeeCondensationPipesDrippingComment =
-      map['SeeCondensationPipesDrippingComment'];
-      LivingPlan = map['LivingPlan'];
-      SellPlaning = map['SellPlaning'];
-      PlansForBasementOnce = map['PlansForBasementOnce'];
-      HomeTestForPastRadonComment = map['HomeTestForPastRadonComment'];
-      LosePowerHowOften = map['LosePowerHowOften'];
-      Drawing = map['Drawing'];
-      Notes = map['Notes'];
-      PMSignature = map['PMSignature'];
-      HomeOwnerSignature = map['HomeOwnerSignature'];
-      CreatedBy = map['CreatedBy'];
-      InspectionPhoto = map['InspectionPhoto'];
-    }
-    catch(error){
-      print(error);
-    }
-
-  }
-
-
+      this.Notes});
 }

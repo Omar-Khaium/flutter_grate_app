@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
+import 'package:flutter_grate_app/model/hive/basement_report.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/ui/ui_dashboard.dart';
 import 'package:flutter_grate_app/ui/ui_login.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:hive/hive.dart';
 
 class LauncherUI extends StatefulWidget {
   @override
@@ -13,63 +12,66 @@ class LauncherUI extends StatefulWidget {
 }
 
 class _LauncherUIState extends State<LauncherUI> {
-  DBHelper dbHelper = new DBHelper();
-  Login login;
-  LoggedInUser loggedInUser;
-
-  begin() async {
-    await dbHelper.getAllFromLogin().then((result) async {
-      login = result;
-      if (login != null) {
-        if (login.isAuthenticated) {
-          await getLoggedInUser();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => new DashboardUI(login, loggedInUser),
-            ),
-          );
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => new LogInUI(login),
-            ),
-          );
-        }
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => new LogInUI(login),
-          ),
-        );
-      }
-    });
-  }
-
-  Future getLoggedInUser() async {
-    return await dbHelper.getAllFromLoggedInUser().then((result) {
-      loggedInUser = result;
-    });
-  }
+  Box<User> userBox;
+  User user;
+  Future<bool> _future;
+  Box<BasementReport> reportBox;
 
   @override
   void initState() {
     super.initState();
-    begin();
+    _future = getUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: CupertinoActivityIndicator(
-          animating: true,
-          radius: 14,
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: FutureBuilder(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data) {
+                return new DashboardUI();
+              } else {
+                return new LoginUI();
+              }
+            } else {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Image.asset(
+                      "images/logo.png",
+                      width: 144,
+                      height: 144,
+                    ),
+                    SizedBox(
+                      height: 32,
+                    ),
+                    CircularProgressIndicator(
+                      backgroundColor: Colors.grey.shade300,
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).primaryColor),
+                    )
+                  ],
+                ),
+              );
+            }
+          },
         ),
       ),
     );
+  }
+
+  Future<bool> getUser() async {
+    userBox = await Hive.openBox("users");
+    reportBox = await Hive.openBox("basement_reports");
+    return userBox.length == 0
+        ? false
+        : userBox.getAt(0).isAuthenticated ? true : false;
   }
 }

@@ -6,41 +6,37 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_grate_app/model/dropdown_item.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/model/product.dart';
 import 'package:flutter_grate_app/model/zip_model.dart';
-import 'package:flutter_grate_app/sqflite/database_info.dart';
 import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/BasementReport.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
-import 'package:flutter_grate_app/ui/ui_login.dart';
-import 'package:flutter_grate_app/widgets/us_formatter.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
+import 'package:flutter_grate_app/widgets/us_formatter.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../constraints.dart';
+import '../services.dart';
 import '../utils.dart';
 
 class AddCustomerFragment extends StatefulWidget {
   ValueChanged<int> backToDashboard;
-  Login login;
-  LoggedInUser loggedInUser;
 
-  AddCustomerFragment(
-      {Key key,
-      this.backToDashboard,
-      this.login,
-      this.loggedInUser})
-      : super(key: key);
+  AddCustomerFragment({
+    Key key,
+    this.backToDashboard,
+  }) : super(key: key);
 
   @override
   _AddCustomerState createState() => _AddCustomerState();
 }
 
-class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProviderStateMixin {
+class _AddCustomerState extends State<AddCustomerFragment>
+    with SingleTickerProviderStateMixin {
   DBHelper dbHelper = new DBHelper();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Zip zipData;
@@ -66,8 +62,13 @@ class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProv
   Product selectedProduct;
   final _UsNumberTextInputFormatter = UsNumberTextInputFormatter();
 
+  Box<User> userBox;
+  User user;
+
   @override
   void initState() {
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
     super.initState();
     Future.delayed(Duration.zero, () => getData());
   }
@@ -75,38 +76,39 @@ class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Column(
-            children: <Widget>[
-              SizedBox(
-                height: 16,
-              ),
-              Align(
-                alignment: Alignment.topLeft,
-                child: Container(
-                  margin: EdgeInsets.only(left: 32),
-                  child: Row(
-                    children: <Widget>[
-                      CustomBackButton(
-                        onTap: () => widget.backToDashboard(0),
-                      ),
-                      SizedBox(
-                        width: 16,
-                      ),
-                      Text(offline ? "Offline" : "Add Customer", style: fragmentTitleStyle()),
-                    ],
-                  ),
+      children: <Widget>[
+        SizedBox(
+          height: 16,
+        ),
+        Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            margin: EdgeInsets.only(left: 32),
+            child: Row(
+              children: <Widget>[
+                CustomBackButton(
+                  onTap: () => widget.backToDashboard(0),
                 ),
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Container(
-                child: Divider(),
-                margin: EdgeInsets.only(left: 32, right: 32),
-              ),
-              Expanded(
-                child: offline
-                    ? NoInternetConnectionWidget(refreshConnectivity)
-                    : Container(
+                SizedBox(
+                  width: 16,
+                ),
+                Text(offline ? "Offline" : "Add Customer",
+                    style: fragmentTitleStyle()),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Container(
+          child: Divider(),
+          margin: EdgeInsets.only(left: 32, right: 32),
+        ),
+        Expanded(
+          child: offline
+              ? NoInternetConnectionWidget(refreshConnectivity)
+              : Container(
                   margin: EdgeInsets.only(right: 32, left: 32),
                   child: Form(
                     key: _formKey,
@@ -592,9 +594,9 @@ class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProv
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
+        ),
+      ],
+    );
   }
 
   refreshConnectivity(bool flag) {
@@ -606,7 +608,7 @@ class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProv
   getData() async {
     showDialog(context: context, builder: (_) => loadingAlert());
     Map<String, String> headers = {
-      'Authorization': widget.login.accessToken,
+      'Authorization': user.accessToken,
       'Key': 'CustomerType'
     };
     try {
@@ -654,9 +656,8 @@ class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProv
           'appname': "GrateApp",
         };
 
-        var result = await http.get(
-            "http://zipcodelookup.rmrcloud.com/1.0/GetCityZipCodeLookupList",
-            headers: headers);
+        var result = await getZipCodeService(headers);
+
         if (result.statusCode == 200) {
           var map = json.decode(result.body);
           List<Zip> _zipList = List.generate(map.length, (index) {
@@ -693,9 +694,8 @@ class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProv
 
   makeRequest() async {
     try {
-      Map<String, String> data = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'authorization': widget.login.accessToken,
+      Map<String, String> headers = {
+        'authorization': user.accessToken,
         'FirstName': '${_firstNameController.text}',
         'LastName': '${_lastNameController.text}',
         'BusinessName': '${_businessTypeController.text}',
@@ -711,21 +711,21 @@ class _AddCustomerState extends State<AddCustomerFragment> with SingleTickerProv
         "LeadSource": "-1",
         "Id": "0",
       };
-      http.post(BASE_URL + API_SAVE_CUSTOMER, headers: data).then((response) {
-        setState(() {
-          offline = false;
-        });
-        if (response.statusCode == 200) {
-          Navigator.of(context).pop();
-          widget.backToDashboard(0);
-          showMessage(context, "Congratulations!",
-              "New customer added successfully", Colors.green, Icons.check);
-        } else {
-          Navigator.of(context).pop();
-          showMessage(context, "Error!", "Something went wrong",
-              Colors.redAccent, Icons.warning);
-        }
+
+      var response = await saveCustomerService(headers);
+      setState(() {
+        offline = false;
       });
+      if (response.statusCode == 200) {
+        Navigator.of(context).pop();
+        widget.backToDashboard(0);
+        showMessage(context, "Congratulations!",
+            "New customer added successfully", Colors.green, Icons.check);
+      } else {
+        Navigator.of(context).pop();
+        showMessage(context, "Error!", "Something went wrong", Colors.redAccent,
+            Icons.warning);
+      }
     } catch (error) {
       Navigator.of(context).pop();
       setState(() {

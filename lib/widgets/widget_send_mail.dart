@@ -7,27 +7,26 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/attachment.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/utils.dart';
 import 'package:flutter_grate_app/widgets/widget_attachment_item.dart';
 import 'package:flutter_grate_app/widgets/widget_pdf.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SendMail extends StatefulWidget {
   Map map;
   String estimateId;
   String urlPDFPath = "";
-  Login accessToken;
-  LoggedInUser loggedInUser;
   CustomerDetails customerId;
   ValueChanged<int> backToCustomerDetails;
 
-  SendMail(this.map, this.estimateId, this.accessToken, this.customerId,
-      this.backToCustomerDetails);
+  SendMail(
+      this.map, this.estimateId, this.customerId, this.backToCustomerDetails);
 
   @override
   _SendMailState createState() => _SendMailState();
@@ -46,15 +45,20 @@ class _SendMailState extends State<SendMail>
   File pdfFile;
   var base64 = const Base64Codec();
 
+  Box<User> userBox;
+  User user;
+
   @override
   void initState() {
-    super.initState();
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
 
+    super.initState();
     _ToEmailController.text = widget.map['EstimateEmailModel']['email'];
     _SubjectEmailController.text = widget.map['EstimateEmailModel']['subject'];
     _BodyEmailController.text = widget.map['EstimateEmailModel']['bodycontent'];
     _BodyEmailController.text =
-        _BodyEmailController.text.replaceAll("\r\nView Estimate\r\n", "");
+        _BodyEmailController.text.replaceAll("View Estimate", "View Estimate - ${widget.map['filepath']}");
     _saveAsFile();
   }
 
@@ -71,6 +75,20 @@ class _SendMailState extends State<SendMail>
         ),
         iconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            child: FlatButton(
+              onPressed: ()=> launch("mailto:${widget.map['EstimateEmailModel']['email']}?subject=${widget.map['EstimateEmailModel']['subject']}&body=${_BodyEmailController.text}"),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text("Go to Mail app", style: Theme.of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(color: Colors.black, fontWeight: FontWeight.normal),),
+              color: Colors.grey.shade200,
+            ),
+          ),
           Padding(
             padding: EdgeInsets.only(right: 26),
             child: InkWell(
@@ -267,7 +285,9 @@ class _SendMailState extends State<SendMail>
                 ),
               ),
               FlatButton.icon(
-                onPressed: () => attachments.length<5 ? _showDialog(context) : _showMaxLimitError(context),
+                onPressed: () => attachments.length < 5
+                    ? _showDialog(context)
+                    : _showMaxLimitError(context),
                 color: Colors.black,
                 padding:
                     EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
@@ -392,7 +412,7 @@ class _SendMailState extends State<SendMail>
                   .lastIndexOf("/", cameraOutput.path.lastIndexOf("."))),
               true,
               false,
-              widget.accessToken.accessToken));
+              user.accessToken));
         });
       }
     } catch (error) {
@@ -414,7 +434,7 @@ class _SendMailState extends State<SendMail>
                 .lastIndexOf("/", pickFromGallery.path.lastIndexOf("."))),
             true,
             false,
-            widget.accessToken.accessToken));
+            user.accessToken));
       });
     }
     Navigator.of(context).pop();
@@ -440,40 +460,61 @@ class _SendMailState extends State<SendMail>
 
   Future<String> postData() async {
     try {
-      Map<String, String> data = {
-        'Authorization': widget.accessToken.accessToken,
+      String imageUrls = "";
+      for (Attachment item in attachments) {
+        if (item.isUploading) {
+          Navigator.of(context).pop();
+          return "";
+        } else {
+          imageUrls += ",${item.url}";
+        }
+      }
+      imageUrls = imageUrls.substring(
+          (imageUrls.startsWith(",") ? 1 : 0), imageUrls.length);
+
+      Map<String, String> header = {
+        'Authorization': user.accessToken,
         'customerid': widget.customerId.CustomerId,
         'invoiceid': widget.estimateId.toString(),
         'toemail': _ToEmailController.text.toString(),
         'ccmail': _CCEmailController.text.toString(),
         'subject': _SubjectEmailController.text.toString(),
-        'body': _BodyEmailController.text.toString(),
+        'body': "<p>${_BodyEmailController.text.toString().replaceAll("\r", "").replaceAll("\n", "</br>")}</p>",
+        'imageurl': imageUrls,
       };
 
       var url = "https://api.gratecrm.com/SendEmailEstimate";
-      post(url, headers: data).then((response) {
-        if (response.statusCode == 200) {
-          Map map = json.decode(response.body);
-          get(map['EmailUrl']).then((responseResults) {
-            if (responseResults.statusCode == 200) {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-              widget.backToCustomerDetails(0);
-              showAPIResponse(
-                  context, "Email Successfully Sent", Colors.green.shade600);
-            } else {
-              Navigator.of(context).pop();
-              showAPIResponse(context, "Email Not Sent", Colors.red.shade600);
-            }
-          });
+      var response = await post(url, headers: header);
+      if (response.statusCode == 200) {
+        Map map = json.decode(response.body);
+
+        Map<String, String> emailHeader = {
+          'Authorization': user.accessToken,
+          'customerid': widget.customerId.CustomerId,
+          'invoiceid': widget.estimateId.toString(),
+        };
+        var emailResponse = await get(map['EmailUrl'], headers: emailHeader);
+
+        if (emailResponse.statusCode==200) {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+          widget.backToCustomerDetails(0);
+          showAPIResponse(
+              context, "Email Sent", Colors.green.shade600);
         } else {
           Navigator.of(context).pop();
-          showAPIResponse(
-              context, json.decode(response.body), Colors.red.shade600);
+          showAPIResponse(context, "Email Not Sent", Colors.red.shade600);
         }
-      });
+        return "";
+      } else {
+        Navigator.of(context).pop();
+        showAPIResponse(
+            context, json.decode(response.body), Colors.red.shade600);
+        return "";
+      }
     } catch (error) {
       Navigator.of(context).pop();
+      return "";
     }
   }
 
@@ -509,9 +550,5 @@ class _SendMailState extends State<SendMail>
             ));
       },
     );
-  }
-
-  void showError(String message) {
-
   }
 }

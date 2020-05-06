@@ -13,7 +13,7 @@ dependencies:
   http:
   sqflite:
   path_provider:
-  flushbar: 1.6.0
+  flushbar: ^1.10.0
   material_design_icons_flutter:
   uuid:
   smooth_star_rating:
@@ -33,10 +33,14 @@ dependencies:
   youtube_player_flutter:
   flutter_keyboard_visibility:
   flutter_fullpdfview:
+  hive:
+  hive_flutter:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  hive_generator:
+  build_runner:
 
 flutter:
 

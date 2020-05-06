@@ -51,7 +51,7 @@ class _LogoutFragmentState extends State<LogoutFragment> {
         )..show(context);
       } else {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => new LogInUI(widget.login)));
+            MaterialPageRoute(builder: (context) => new LoginUI()));
       }
     });
   }

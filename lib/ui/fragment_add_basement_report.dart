@@ -8,32 +8,28 @@ import 'package:flutter/services.dart';
 import 'package:flutter_grate_app/model/BasementInspection.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/dropdown_item.dart';
+import 'package:flutter_grate_app/model/hive/basement_report.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/BasementReport.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/list_row_item.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
 import 'package:flutter_grate_app/widgets/widget_image.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:uuid/uuid.dart';
 
+import '../constraints.dart';
 import '../utils.dart';
 
 class AddBasementReportFragment extends StatefulWidget {
-  Login login;
-  LoggedInUser loggedInUser;
   CustomerDetails customer;
   ValueChanged<CustomerDetails> backToCustomerDetails;
   BasementInspection basementInspection;
 
   AddBasementReportFragment(
       {Key key,
-      this.login,
-      this.loggedInUser,
       this.customer,
       this.backToCustomerDetails})
       : super(key: key);
@@ -146,13 +142,20 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
   Map<String, String> headers = <String, String>{};
 
   File _imageFile;
-  BasementReport basementReport;
 
   var _key = GlobalKey<FormState>();
 
   var future;
 
+  Box<User> userBox;
+  Box<BasementReport> reportBox;
+  User user;
+  BasementReport report;
+
   void initState() {
+    userBox = Hive.box("users");
+    reportBox = Hive.box("basement_reports");
+    user = userBox.getAt(0);
     super.initState();
     future = getDropDownData();
   }
@@ -227,8 +230,8 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
                                           width: 150,
                                           child: LoadImageWidget(
                                               widget.customer.CustomerId,
-                                              widget.loggedInUser.CompanyGUID,
-                                                widget.login.username),
+                                              user.companyGUID,
+                                                user.email),
                                         )
                                       : Icon(
                                           Icons.person,
@@ -244,21 +247,20 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
                                 children: <Widget>[
                                   ListRowItem(
                                     icon: Icons.pin_drop,
-                                    text: widget.loggedInUser.CompanyAddress,
+                                    text: user.companyAddress,
                                   ),
                                   ListRowItem(
                                     icon: Icons.email,
                                     text:
-                                        widget.loggedInUser.CompanyEmailAddress,
+                                        user.companyEmail,
                                   ),
                                   ListRowItem(
                                     icon: Icons.phone,
-                                    text: widget
-                                        .loggedInUser.CompanyContactNumber,
+                                    text: user.companyPhone,
                                   ),
                                   ListRowItem(
                                     icon: MdiIcons.fax,
-                                    text: widget.loggedInUser.CompanyFaxNumber,
+                                    text: user.companyFax,
                                   ),
                                 ],
                               ),
@@ -2086,9 +2088,6 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
                           child: InkWell(
                             onTap: () {
                               if (_key.currentState.validate()) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => loadingAlert());
                                 _checkConnectivity();
                               }
                             },
@@ -2139,7 +2138,7 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
     Future.delayed(Duration.zero, () => showAlert());
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'Key':
             'CurrentOutsideConditions,Heat,Air,BasementDehumidifier,FoundationType,RemoveWater,LosePower,LosePowerHowOften,YesNo,Rating,GoDownBasement'
       };
@@ -2204,9 +2203,9 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
 
   Future saveInspectionReport() async {
     try {
-      headers['Authorization'] = widget.login.accessToken;
+      headers['Authorization'] = user.accessToken;
       headers['CustomerId'] = widget.customer.CustomerId;
-      headers['companyId'] = widget.loggedInUser.CompanyGUID;
+      headers['companyId'] = user.companyGUID;
       headers['CurrentOutsideConditions'] =
           CurrentOutsideConditionsArray[CurrentOutsideConditionsSelection]
               .DataValue;
@@ -2334,128 +2333,101 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
 
   saveToDatabase() async {
     try {
-      headers['Authorization'] = widget.login.accessToken;
-      headers['CustomerId'] = widget.customer.CustomerId;
-      headers['companyId'] = widget.loggedInUser.CompanyGUID;
-      headers['CurrentOutsideConditions'] =
+      report.CustomerId = widget.customer.CustomerId;
+      report.CompanyId = user.companyGUID;
+      report.CurrentOutsideConditions =
           CurrentOutsideConditionsArray[CurrentOutsideConditionsSelection]
               .DataValue;
-      headers['OutsideRelativeHumidity'] =
-          _OutsideRelativeHumidityController.text;
-      headers['OutsideTemperature'] = _OutsideTemperatureController.text;
-      headers['FirstFloorRelativeHumidity'] =
-          _1stFloorRelativeHumidityController.text;
-      headers['FirstFloorTemperature'] = _1stFloorTemperatureController.text;
-      headers['RelativeOther1'] = _Other1Controller.text;
-      headers['RelativeOther2'] = _Other2Controller.text;
-      headers['Heat'] = HeatArray[HeatSelection].DataValue;
-      headers['Air'] = AirArray[AirSelection].DataValue;
-      headers['BasementRelativeHumidity'] =
-          _BasementRelativeHumidityController.text;
-      headers['BasementTemperature'] = _BasementTemperatureController.text;
-      headers['BasementDehumidifier'] =
+      report.OutsideRelativeHumidity =
+          double.parse(_OutsideRelativeHumidityController.text);
+      report.OutsideTemperature =
+          double.parse(_OutsideTemperatureController.text);
+      report.FirstFloorRelativeHumidity =
+          double.parse(_1stFloorRelativeHumidityController.text);
+      report.FirstFloorTemperature =
+          double.parse(_1stFloorTemperatureController.text);
+      report.RelativeOther1 = _Other1Controller.text;
+      report.RelativeOther2 = _Other2Controller.text;
+      report.Heat = HeatArray[HeatSelection].DataValue;
+      report.Air = AirArray[AirSelection].DataValue;
+      report.BasementRelativeHumidity =
+          double.parse(_BasementRelativeHumidityController.text);
+      report.BasementTemperature =
+          double.parse(_BasementTemperatureController.text);
+      report.BasementDehumidifier =
           BasementDehumidifierArray[BasementDehumidifierSelection].DataValue;
-      headers['GroundWater'] = YesNoArray[GroundWaterSelection].DataValue;
-      headers['GroundWaterRating'] =
-          RatingArray[GroundWaterRatingSelection].DataValue;
-      headers['IronBacteria'] = YesNoArray[IronBacteriaSelection].DataValue;
-      headers['IronBacteriaRating'] =
-          RatingArray[IronBacteriaRatingSelection].DataValue;
-      headers['Condensation'] = YesNoArray[CondensationSelection].DataValue;
-      headers['CondensationRating'] =
-          RatingArray[CondensationRatingSelection].DataValue;
-      headers['WallCracks'] = YesNoArray[WallCracksSelection].DataValue;
-      headers['WallCracksRating'] =
-          RatingArray[WallCracksRatingSelection].DataValue;
-      headers['FloorCracks'] = YesNoArray[FloorCracksSelection].DataValue;
-      headers['FloorCracksRating'] =
-          RatingArray[FloorCracksRatingSelection].DataValue;
-      headers['ExistingSumpPump'] =
-          YesNoArray[ExistingSumpPumpSelection].DataValue;
-      headers['ExistingDrainageSystem'] =
+      report.GroundWater = YesNoArray[GroundWaterSelection].DataValue;
+      report.GroundWaterRating =
+          int.parse(RatingArray[GroundWaterRatingSelection].DataValue);
+      report.IronBacteria = YesNoArray[IronBacteriaSelection].DataValue;
+      report.IronBacteriaRating =
+          int.parse(RatingArray[IronBacteriaRatingSelection].DataValue);
+      report.Condensation = YesNoArray[CondensationSelection].DataValue;
+      report.CondensationRating =
+          int.parse(RatingArray[CondensationRatingSelection].DataValue);
+      report.WallCracks = YesNoArray[WallCracksSelection].DataValue;
+      report.WallCracksRating =
+          int.parse(RatingArray[WallCracksRatingSelection].DataValue);
+      report.FloorCracks = YesNoArray[FloorCracksSelection].DataValue;
+      report.FloorCracksRating =
+          int.parse(RatingArray[FloorCracksRatingSelection].DataValue);
+      report.ExistingSumpPump = YesNoArray[ExistingSumpPumpSelection].DataValue;
+      report.ExistingDrainageSystem =
           YesNoArray[ExistingDrainageSystemSelection].DataValue;
-      headers['ExistingRadonSystem'] =
+      report.ExistingRadonSystem =
           YesNoArray[ExistingRadonSystemSelection].DataValue;
-      headers['DryerVentToCode'] =
-          YesNoArray[DryerVentToCodeSelection].DataValue;
-      headers['FoundationType'] =
+      report.DryerVentToCode = YesNoArray[DryerVentToCodeSelection].DataValue;
+      report.FoundationType =
           FoundationTypeArray[FoundationTypeSelection].DataValue;
-      headers['Bulkhead'] = YesNoArray[BulkheadSelection].DataValue;
-      headers['VisualBasementOther'] =
+      report.Bulkhead = YesNoArray[BulkheadSelection].DataValue;
+      report.VisualBasementOther =
           _VisualBasementInspectionOtherController.text;
-      headers['NoticedSmellsOrOdors'] =
+      report.NoticedSmellsOrOdors =
           YesNoArray[NoticedSmellsOrOdorsSelection].DataValue;
-      headers['NoticedSmellsOrOdorsComment'] =
-          _NoticedSmellsCommentController.text;
-      headers['NoticedMoldOrMildew'] =
+      report.NoticedSmellsOrOdorsComment = _NoticedSmellsCommentController.text;
+      report.NoticedMoldOrMildew =
           YesNoArray[NoticedMoldOrMildewSelection].DataValue;
-      headers['NoticedMoldOrMildewComment'] =
-          _NoticedMoldsCommentController.text;
-      headers['BasementGoDown'] =
+      report.NoticedMoldOrMildewComment = _NoticedMoldsCommentController.text;
+      report.BasementGoDown =
           GoDownBasementArray[BasementGoDownSelection].DataValue;
-      headers['HomeSufferForRespiratory'] =
+      report.HomeSufferForRespiratory =
           YesNoArray[HomeSufferForRespiratoryProblemsSelection].DataValue;
-      headers['HomeSufferForrespiratoryComment'] =
+      report.HomeSufferForrespiratoryComment =
           _SufferFromRespiratoryCommentController.text;
-      headers['ChildrenPlayInBasement'] =
+      report.ChildrenPlayInBasement =
           YesNoArray[ChildrenPlayInBasementSelection].DataValue;
-      headers['ChildrenPlayInBasementComment'] =
+      report.ChildrenPlayInBasementComment =
           _ChildrenPlayInTheBasementCommentController.text;
-      headers['PetsGoInBasement'] =
-          YesNoArray[PetsGoInBasementSelection].DataValue;
-      headers['PetsGoInBasementComment'] = _HavePetsCommentController.text;
-      headers['NoticedBugsOrRodents'] =
+      report.PetsGoInBasement = YesNoArray[PetsGoInBasementSelection].DataValue;
+      report.PetsGoInBasementComment = _HavePetsCommentController.text;
+      report.NoticedBugsOrRodents =
           YesNoArray[NoticedBugsOrRodentsSelection].DataValue;
-      headers['NoticedBugsOrRodentsComment'] =
-          _NoticedBugsCommentController.text;
-      headers['GetWater'] = YesNoArray[GetWaterSelection].DataValue;
-      headers['GetWaterComment'] = _GetWaterCommentController.text;
-      headers['RemoveWater'] = RemoveWaterArray[RemoveWaterSelection].DataValue;
-      headers['SeeCondensationPipesDripping'] =
+      report.NoticedBugsOrRodentsComment = _NoticedBugsCommentController.text;
+      report.GetWater = YesNoArray[GetWaterSelection].DataValue;
+      report.GetWaterComment = _GetWaterCommentController.text;
+      report.RemoveWater = RemoveWaterArray[RemoveWaterSelection].DataValue;
+      report.SeeCondensationPipesDripping =
           YesNoArray[SeeCondensationPipesDrippingSelection].DataValue;
-      headers['SeeCondensationPipesDrippingComment'] =
+      report.SeeCondensationPipesDrippingComment =
           _EverSeePipesDrippingCommentController.text;
-      headers['RepairsProblems'] =
-          YesNoArray[RepairsTryAndFixSelection].DataValue;
-      headers['RepairsProblemsComment'] =
+      report.RepairsProblems = YesNoArray[RepairsTryAndFixSelection].DataValue;
+      report.RepairsProblemsComment =
           _AnyRepairsToTryAndFixCommentController.text;
-      headers['LivingPlan'] = YesNoArray[LivingPlanSelection].DataValue;
-      headers['SellPlaning'] = YesNoArray[SellPlaningSelection].DataValue;
-      headers['PlansForBasementOnce'] =
+      report.LivingPlan = YesNoArray[LivingPlanSelection].DataValue;
+      report.SellPlaning = YesNoArray[SellPlaningSelection].DataValue;
+      report.PlansForBasementOnce =
           YesNoArray[PlansForBasementOnceSelection].DataValue;
-      headers['HomeTestForPastRadon'] =
+      report.HomeTestForPastRadon =
           YesNoArray[HomeTestedForRadonSelection].DataValue;
-      headers['HomeTestForPastRadonComment'] =
+      report.HomeTestForPastRadonComment =
           _TestedForRadonInThePast2YearsCommentController.text;
-      headers['LosePower'] = LosePowerArray[LosePowerSelection].DataValue;
-      headers['LosePowerHowOften'] =
+      report.LosePower = LosePowerArray[LosePowerSelection].DataValue;
+      report.LosePowerHowOften =
           LosePowerArray[LosePowerHowOftenSelection].DataValue;
-      headers['CustomerBasementOther'] =
-          _BasementEvaluationOtherController.text;
-      headers['Drawing'] = "";
-      headers['Notes'] = _NotesController.text;
-      headers['PMSignature'] = "";
-      headers['PMSignatureDate'] = "";
-      headers['HomeOwnerSignature'] = "";
-      headers['HomeOwnerSignatureDate'] = "";
-      headers['InspectionPhoto'] = "";
-      basementReport = new BasementReport(null, json.encode(headers));
-      BasementReport basementreport =
-          await dbHelper.saveBasementReport(basementReport);
-
-      if (basementreport == null) {
-        showMessage(
-            context,
-            "Offline Database ERROR!",
-            "Failed to save in offline-database.",
-            Colors.redAccent,
-            Icons.error_outline);
-      } else {
-        showMessage(context, "Success!", "Offline Database Saved Successfully!",
-            Colors.greenAccent, Icons.done);
-
-        widget.backToCustomerDetails(widget.customer);
-      }
+      report.CustomerBasementOther = _BasementEvaluationOtherController.text;
+      report.Notes = _NotesController.text;
+      reportBox.add(report);
+      widget.backToCustomerDetails(widget.customer);
     } catch (error) {
       print(error);
     }
@@ -2469,6 +2441,9 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
       Navigator.pop(context);
       widget.backToCustomerDetails(widget.customer);
     } else {
+      showDialog(
+          context: context,
+          builder: (context) => loadingAlert());
       await saveInspectionReport();
       Navigator.pop(context);
       widget.backToCustomerDetails(widget.customer);

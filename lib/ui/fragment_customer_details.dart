@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/estimate.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
@@ -14,15 +15,16 @@ import 'package:flutter_grate_app/widgets/customer_details_shimmer.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
 import 'package:flutter_grate_app/widgets/widget_image_alert.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../constraints.dart';
 import '../utils.dart';
 
 class CustomerDetailsFragment extends StatefulWidget {
-  final Login login;
   final String customerID;
   final String searchText;
   final ValueChanged<int> backToDashboard;
@@ -35,11 +37,9 @@ class CustomerDetailsFragment extends StatefulWidget {
   final ValueChanged<CustomerDetails> goToEditCustomer;
   final bool fromSearch;
   CustomerDetails customer;
-  LoggedInUser loggedInUser;
 
   CustomerDetailsFragment(
       {Key key,
-      this.login,
       this.customerID,
       this.searchText,
       this.customer,
@@ -51,8 +51,7 @@ class CustomerDetailsFragment extends StatefulWidget {
       this.goToUpdateEstimate,
       this.goToRecommendedLevel,
       this.goToEditCustomer,
-      this.fromSearch,
-      this.loggedInUser})
+      this.fromSearch})
       : super(key: key);
 
   @override
@@ -69,8 +68,13 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
   File _imageFile;
   bool offline = false;
 
+  Box<User> userBox;
+  User user;
+
   @override
   void initState() {
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
     super.initState();
     getData();
   }
@@ -210,8 +214,8 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                                     ? InkWell(
                                                               onTap: ()=>showDialog(context: context, builder: (context)=> imageAlert(context, buildCustomerImageUrl(
                                                                   widget.customer.CustomerId,
-                                                                  widget.loggedInUser.CompanyGUID,
-                                                                  widget.login.username,
+                                                                  user.companyGUID,
+                                                                  user.email,
                                                                   Uuid().v1()))),
                                                                       child: Container(
                                                                           height:
@@ -224,8 +228,8 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                                                 "images/loading.gif",
                                                                             image: buildCustomerImageUrl(
                                                                                 widget.customer.CustomerId,
-                                                                                widget.loggedInUser.CompanyGUID,
-                                                                                widget.login.username,
+                                                                                user.companyGUID,
+                                                                                user.email,
                                                                                 Uuid().v1()),
                                                                             fit: BoxFit
                                                                                 .cover,
@@ -886,7 +890,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
   Future getData() async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'CustomerIntId': '${widget.customerID}',
         'PageNo': '1',
         'PageSize': '10',
@@ -927,7 +931,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
   uploadCustomerImage() async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'CustomerId': '${widget.customerID}',
       };
       Map<String, String> body = <String, String>{
@@ -967,9 +971,9 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
   Future duplicateEstimate(int index) async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'EstimateId': _list[index].Id,
-        'CompanyId': widget.loggedInUser.CompanyGUID,
+        'CompanyId': user.companyGUID,
       };
 
       var result =
@@ -1094,7 +1098,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
   Future deleteEstimate(int index) async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'EstimateId': _list[index].Id
       };
 

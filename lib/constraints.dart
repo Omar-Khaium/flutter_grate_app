@@ -1,0 +1,27 @@
+const String BASE_URL = "https://api.gratecrm.com/";
+const String ZIP_LOOKUP_URL = "http://zipcodelookup.rmrcloud.com/1.0/GetCityZipCodeLookupList";
+const String API_POST_LOGIN = "token";
+const String API_GET_USER_INFO = "GetUserByUserName";
+const String API_GET_ORGANIZATION = "GetOrganizationList";
+const String API_POST_CHANGE_COMPANY = "ChangeDefaultCompany";
+const String API_POST_SAVE_CUSTOMER = "SaveCustomer";
+
+const String API_EQUIPMENT_LIST = "GetEquipmentListByKey";
+const String API_CREATE_ESTIMATE = "CreateEstimate";
+const String API_UPLOAD_FILE = "UploadImageFile";
+const String API_GET_ESTIMATE = "GetEstimateById";
+const String API_GET_LOOK_UP = "GetLookupbyKey";
+const String API_GET_BASEMENT_INSPECTION = "GetCustomerInspectionByCustomerId";
+const String API_SAVE_BASEMENT_INSPECTION = "SaveCustomerInspection";
+const String API_SAVE_RECOMMENDED_LEVEL = "RecommendedLevel";
+const String API_FORGET_PASSWORD = "ForgetPassword";
+const String API_CHANGE_PASSWORD = "ChangePassword";
+const String API_GET_ALL_CUSTOMER = "GetAllCustomer";
+const String API_DELETE_CUSTOMER = "DeleteCustomer";
+const String API_UPDATE_CUSTOMER = "GetCustomerByIdWithEstimateList";
+const String API_CUSTOMER_UPLOAD = "CustomerImageUpload";
+const String API_DUPLICATE_ESTIMATE = "EstimateDuplicate";
+const String API_DELETE_ESTIMATE = "DeleteEstimate";
+const String API_GENERATE_ESTIMATE = "GenerateEstimate";
+const String API_SEND_EMAIL = "SendEmailEstimate";
+const String API_SEARCH = "GlobalSearchCustomerAndLead";

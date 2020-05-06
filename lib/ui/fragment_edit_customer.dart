@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/dropdown_item.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/model/product.dart';
 import 'package:flutter_grate_app/model/zip_model.dart';
 import 'package:flutter_grate_app/sqflite/db_helper.dart';
@@ -19,13 +20,16 @@ import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../constraints.dart';
+import '../services.dart';
 import '../utils.dart';
 
 class EditCustomerFragment extends StatefulWidget {
-  final Login login;
+  CustomerDetails customer;
   final String customerID;
   final ValueChanged<CustomerDetails> backToCustomerDetails;
   final ValueChanged<CustomerDetails> goToAddBasementReport;
@@ -33,14 +37,11 @@ class EditCustomerFragment extends StatefulWidget {
   final ValueChanged<CustomerDetails> goToAddEstimate;
   final ValueChanged<CustomerDetails> goToUpdateEstimate;
   final ValueChanged<CustomerDetails> goToRecommendedLevel;
-  CustomerDetails customer;
-  LoggedInUser loggedInUser;
 
 
-  EditCustomerFragment({this.login, this.customerID, this.backToCustomerDetails,
+  EditCustomerFragment({this.customer, this.customerID, this.backToCustomerDetails,
     this.goToAddBasementReport, this.goToUpdateBasementReport,
-    this.goToAddEstimate, this.goToUpdateEstimate, this.goToRecommendedLevel,
-    this.customer, this.loggedInUser});
+    this.goToAddEstimate, this.goToUpdateEstimate, this.goToRecommendedLevel});
 
   @override
   _AddCustomerState createState() => _AddCustomerState();
@@ -73,14 +74,19 @@ class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerPro
 
   bool offline = false;
 
+  Box<User> userBox;
+  User user;
+
   @override
   void initState() {
     _checkBasementData();
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
     super.initState();
     Future.delayed(Duration.zero, () => getData());
-    if (!widget.login.isAuthenticated) {
+    if (!user.isAuthenticated) {
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => LogInUI(widget.login)));
+          MaterialPageRoute(builder: (context) => LoginUI()));
     }
   }
 
@@ -615,7 +621,7 @@ class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerPro
   getData() async {
     showDialog(context: context, builder: (_) => loadingAlert());
     Map<String, String> headers = {
-      'Authorization': widget.login.accessToken,
+      'Authorization': user.accessToken,
       'Key': 'CustomerType'
     };
     try {
@@ -723,6 +729,7 @@ class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerPro
     if (basementsDatas.isNotEmpty && basementsDatas.length != 0) {
     } else {}
   }
+
   alertLoading() {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
@@ -780,9 +787,9 @@ class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerPro
 
   makeRequest() async {
     try {
-      Map<String, String> data = {
+      Map<String, String> headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'authorization': widget.login.accessToken,
+        'authorization': user.accessToken,
         'FirstName': '${_firstNameController.text}',
         'LastName': '${_lastNameController.text}',
         'BusinessName': '${_businessTypeController.text}',
@@ -794,11 +801,11 @@ class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerPro
         'City': '${_cityController.text}',
         'State': '${_stateController.text}',
         'ZipCode': '${_zipController.text}',
-        'IsLead': 'false',
+        'IsLead': "false",
         "LeadSource": "-1",
         "Id": "${widget.customer.Id}",
       };
-      var response = await http.post(BASE_URL + API_SAVE_CUSTOMER, headers: data);
+      var response = await saveCustomerService(headers);
       setState(() {
         offline = false;
       });

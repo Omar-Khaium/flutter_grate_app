@@ -9,6 +9,8 @@ import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../constraints.dart';
+
 class ForgetPasswordUI extends StatefulWidget {
   @override
   ForgetPasswordUIState createState() => ForgetPasswordUIState();
@@ -35,7 +37,7 @@ class ForgetPasswordUIState extends State<ForgetPasswordUI>
         setState(() {
           Navigator.of(context).pop();
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => new LogInUI(null)));
+              MaterialPageRoute(builder: (context) => new LoginUI()));
         });
       } else {
         Navigator.of(context).pop();
@@ -224,7 +226,7 @@ class ForgetPasswordUIState extends State<ForgetPasswordUI>
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      new LogInUI(null)));
+                                                      new LoginUI()));
                                         },
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,

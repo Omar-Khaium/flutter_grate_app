@@ -296,8 +296,6 @@ class _RecommendedLevelState extends State<RecommendedLevel>
         context,
         MaterialPageRoute(
           builder: (context) => new RecommendedLevelDetails(
-            loggedInUser: widget.loggedInUser,
-            login: widget.login,
             index: index,
             customer: widget.customer,
             backToCustomerDetails: backToCustomerDetails,
