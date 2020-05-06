@@ -76,7 +76,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                   decoration:
                                   BoxDecoration(color: Colors.white),
                                   child: ListView(
-                                    shrinkWrap: false,
+                                    shrinkWrap: true,
                                     physics: ScrollPhysics(),
                                     scrollDirection: Axis.vertical,
                                     children: <Widget>[
@@ -116,205 +116,208 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                                 ),
                                               ],
                                             ),
-                                            ListView(
-                                              scrollDirection: Axis.vertical,
-                                              shrinkWrap: true,
-                                              physics: ScrollPhysics(),
-                                              children: <Widget>[
-                                                new TextFormField(
-                                                  controller: _emailController,
-                                                  obscureText: false,
-                                                  autocorrect: false,
-                                                  autofocus: false,
-                                                  cursorColor: Colors.black,
-                                                  keyboardType: TextInputType
-                                                      .emailAddress,
-                                                  maxLines: 1,
-                                                  validator: (val) {
-                                                    return val.isNotEmpty
-                                                        ? null
-                                                        : "* Required";
-                                                  },
-                                                  style: customTextStyle(),
-                                                  decoration:
-                                                      new InputDecoration(
-                                                    isDense: true,
-                                                    icon: new Icon(
-                                                      Icons.mail_outline,
+                                            Container(
+                                              margin: EdgeInsets.only(top: 48),
+                                              child: ListView(
+                                                scrollDirection: Axis.vertical,
+                                                shrinkWrap: true,
+                                                physics: ScrollPhysics(),
+                                                children: <Widget>[
+                                                  new TextFormField(
+                                                    controller: _emailController,
+                                                    obscureText: false,
+                                                    autocorrect: false,
+                                                    autofocus: false,
+                                                    cursorColor: Colors.black,
+                                                    keyboardType: TextInputType
+                                                        .emailAddress,
+                                                    maxLines: 1,
+                                                    validator: (val) {
+                                                      return val.isNotEmpty
+                                                          ? null
+                                                          : "* Required";
+                                                    },
+                                                    style: customTextStyle(),
+                                                    decoration:
+                                                        new InputDecoration(
+                                                      isDense: true,
+                                                      icon: new Icon(
+                                                        Icons.mail_outline,
+                                                      ),
+                                                      labelText: "Username",
+                                                      labelStyle:
+                                                          customTextStyle(),
+                                                      hintText:
+                                                          "e.g. example@mail.com",
+                                                      hintStyle:
+                                                          customHintStyle(),
+                                                      alignLabelWithHint: false,
                                                     ),
-                                                    labelText: "Username",
-                                                    labelStyle:
-                                                        customTextStyle(),
-                                                    hintText:
-                                                        "e.g. example@mail.com",
-                                                    hintStyle:
-                                                        customHintStyle(),
-                                                    alignLabelWithHint: false,
                                                   ),
-                                                ),
-                                                SizedBox(
-                                                  height: 16,
-                                                ),
-                                                new TextFormField(
-                                                  controller:
-                                                      _passwordController,
-                                                  obscureText: _isObscureText,
-                                                  cursorColor: Colors.black,
-                                                  autocorrect: false,
-                                                  autofocus: false,
-                                                  keyboardType: TextInputType
-                                                      .emailAddress,
-                                                  maxLines: 1,
-                                                  validator: (val) {
-                                                    return val.isNotEmpty
-                                                        ? null
-                                                        : "* Required";
-                                                  },
-                                                  style: customTextStyle(),
-                                                  decoration:
-                                                      new InputDecoration(
-                                                    isDense: true,
-                                                    icon: new Icon(
-                                                      Icons.lock_outline,
+                                                  SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  new TextFormField(
+                                                    controller:
+                                                        _passwordController,
+                                                    obscureText: _isObscureText,
+                                                    cursorColor: Colors.black,
+                                                    autocorrect: false,
+                                                    autofocus: false,
+                                                    keyboardType: TextInputType
+                                                        .emailAddress,
+                                                    maxLines: 1,
+                                                    validator: (val) {
+                                                      return val.isNotEmpty
+                                                          ? null
+                                                          : "* Required";
+                                                    },
+                                                    style: customTextStyle(),
+                                                    decoration:
+                                                        new InputDecoration(
+                                                      isDense: true,
+                                                      icon: new Icon(
+                                                        Icons.lock_outline,
+                                                      ),
+                                                      labelText: "Password",
+                                                      labelStyle:
+                                                          customTextStyle(),
+                                                      hintText: "e.g. ******",
+                                                      hintStyle:
+                                                          customHintStyle(),
+                                                      alignLabelWithHint: false,
+                                                      suffixIcon: new IconButton(
+                                                        icon: _isObscureText
+                                                            ? new Icon(
+                                                                Icons.visibility,
+                                                              )
+                                                            : new Icon(
+                                                                Icons
+                                                                    .visibility_off,
+                                                              ),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            _isObscureText =
+                                                                _isObscureText
+                                                                    ? false
+                                                                    : true;
+                                                          });
+                                                        },
+                                                        iconSize: 24,
+                                                      ),
                                                     ),
-                                                    labelText: "Password",
-                                                    labelStyle:
-                                                        customTextStyle(),
-                                                    hintText: "e.g. ******",
-                                                    hintStyle:
-                                                        customHintStyle(),
-                                                    alignLabelWithHint: false,
-                                                    suffixIcon: new IconButton(
-                                                      icon: _isObscureText
-                                                          ? new Icon(
-                                                              Icons.visibility,
-                                                            )
-                                                          : new Icon(
-                                                              Icons
-                                                                  .visibility_off,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  new Stack(
+                                                    children: <Widget>[
+                                                      Align(
+                                                        child: new Row(
+                                                          children: <Widget>[
+                                                            Checkbox(
+                                                              activeColor:
+                                                                  Colors.black,
+                                                              checkColor:
+                                                                  Colors.white,
+                                                              value:
+                                                                  _isRemembered,
+                                                              materialTapTargetSize:
+                                                                  MaterialTapTargetSize
+                                                                      .padded,
+                                                              onChanged:
+                                                                  (bool value) {
+                                                                setState(() {
+                                                                  _isRemembered =
+                                                                      value;
+                                                                });
+                                                              },
                                                             ),
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          _isObscureText =
-                                                              _isObscureText
-                                                                  ? false
-                                                                  : true;
-                                                        });
-                                                      },
-                                                      iconSize: 24,
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 16,
-                                                ),
-                                                new Stack(
-                                                  children: <Widget>[
-                                                    Align(
-                                                      child: new Row(
-                                                        children: <Widget>[
-                                                          Checkbox(
-                                                            activeColor:
-                                                                Colors.black,
-                                                            checkColor:
-                                                                Colors.white,
-                                                            value:
-                                                                _isRemembered,
-                                                            materialTapTargetSize:
-                                                                MaterialTapTargetSize
-                                                                    .padded,
-                                                            onChanged:
-                                                                (bool value) {
-                                                              setState(() {
-                                                                _isRemembered =
-                                                                    value;
-                                                              });
-                                                            },
+                                                            InkWell(
+                                                              child: TextWidget(
+                                                                "Remember Me",
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .subhead
+                                                                    .copyWith(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold),
+                                                              ),
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  _isRemembered =
+                                                                      !_isRemembered;
+                                                                });
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        alignment:
+                                                            Alignment.centerLeft,
+                                                      ),
+                                                      Align(
+                                                        child: MaterialButton(
+                                                          elevation: 4,
+                                                          color: Colors.black,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                new BorderRadius
+                                                                        .circular(
+                                                                    36.0),
+                                                            side: BorderSide(
+                                                                color: Colors
+                                                                    .white12),
                                                           ),
-                                                          InkWell(
+                                                          textColor: Colors.white,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    left: 32,
+                                                                    right: 32,
+                                                                    top: 16,
+                                                                    bottom: 16),
                                                             child: TextWidget(
-                                                              "Remember Me",
+                                                              "Login",
                                                               style: Theme.of(
                                                                       context)
                                                                   .textTheme
-                                                                  .subhead
+                                                                  .title
                                                                   .copyWith(
                                                                       color: Colors
-                                                                          .black,
+                                                                          .white,
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .bold),
                                                             ),
-                                                            onTap: () {
-                                                              setState(() {
-                                                                _isRemembered =
-                                                                    !_isRemembered;
-                                                              });
-                                                            },
                                                           ),
-                                                        ],
-                                                      ),
-                                                      alignment:
-                                                          Alignment.centerLeft,
-                                                    ),
-                                                    Align(
-                                                      child: MaterialButton(
-                                                        elevation: 4,
-                                                        color: Colors.black,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              new BorderRadius
-                                                                      .circular(
-                                                                  36.0),
-                                                          side: BorderSide(
-                                                              color: Colors
-                                                                  .white12),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              if (_key
+                                                                  .currentState
+                                                                  .validate()) {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder: (_) =>
+                                                                        loadingAlert());
+                                                                login();
+                                                              }
+                                                            });
+                                                          },
                                                         ),
-                                                        textColor: Colors.white,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 32,
-                                                                  right: 32,
-                                                                  top: 16,
-                                                                  bottom: 16),
-                                                          child: TextWidget(
-                                                            "Login",
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .title
-                                                                .copyWith(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                          ),
-                                                        ),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            if (_key
-                                                                .currentState
-                                                                .validate()) {
-                                                              showDialog(
-                                                                  context:
-                                                                      context,
-                                                                  builder: (_) =>
-                                                                      loadingAlert());
-                                                              login();
-                                                            }
-                                                          });
-                                                        },
+                                                        alignment:
+                                                            Alignment.centerRight,
                                                       ),
-                                                      alignment:
-                                                          Alignment.centerRight,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                             Container(
                                               margin: EdgeInsets.only(top: 36),
