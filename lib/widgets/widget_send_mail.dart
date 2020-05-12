@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_fullpdfview/flutter_fullpdfview.dart';
 import 'package:flutter_grate_app/model/attachment.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
@@ -16,7 +17,9 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:printing/printing.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class SendMail extends StatefulWidget {
   Map map;
@@ -48,10 +51,20 @@ class _SendMailState extends State<SendMail>
   Box<User> userBox;
   User user;
 
+  Printer selectedPrinter;
+  PrintingInfo printingInfo;
+  final GlobalKey<State<StatefulWidget>> shareWidget = GlobalKey();
+
   @override
   void initState() {
     userBox = Hive.box("users");
     user = userBox.getAt(0);
+
+    Printing.info().then((PrintingInfo info) {
+      setState(() {
+        printingInfo = info;
+      });
+    });
 
     super.initState();
     _ToEmailController.text = widget.map['EstimateEmailModel']['email'];
@@ -277,7 +290,8 @@ class _SendMailState extends State<SendMail>
                   color: Colors.white,
                 ),
                 label: Text(
-                  "View Estimate",
+                  pdfFile != null && pdfFile.path.isNotEmpty
+                      ? "View Estimate" : "Loading Estimate",
                   style: Theme.of(context)
                       .textTheme
                       .subtitle
@@ -285,20 +299,24 @@ class _SendMailState extends State<SendMail>
                 ),
               ),
               FlatButton.icon(
-                onPressed: () => attachments.length < 5
+                /*onPressed: () => attachments.length < 5
                     ? _showDialog(context)
-                    : _showMaxLimitError(context),
+                    : _showMaxLimitError(context),*/
+                onPressed: pdfFile == null || pdfFile.path.isEmpty
+                    ? () {}
+                    : (){_printDocument();},
                 color: Colors.black,
                 padding:
                     EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(24))),
                 icon: Icon(
-                  Icons.add_photo_alternate,
+                  MdiIcons.printer,
                   color: Colors.white,
                 ),
                 label: Text(
-                  "Add Attachment",
+                  pdfFile != null && pdfFile.path.isNotEmpty
+                      ? "Print" : "Loading PDF",
                   style: Theme.of(context)
                       .textTheme
                       .subtitle
@@ -307,7 +325,7 @@ class _SendMailState extends State<SendMail>
               ),
             ],
           ),
-          SizedBox(
+          /*SizedBox(
             height: 8,
           ),
           Align(
@@ -351,7 +369,7 @@ class _SendMailState extends State<SendMail>
                       physics: ScrollPhysics(),
                     ),
             ),
-          )
+          )*/
         ],
       ),
     );
@@ -548,6 +566,17 @@ class _SendMailState extends State<SendMail>
                 )
               ],
             ));
+      },
+    );
+  }
+
+
+  void _printDocument() {
+    print("printing");
+//    Printing.sharePdf(bytes: pdfFile.readAsBytesSync());
+    Printing.layoutPdf(
+      onLayout: (pageFormat) {
+        return pdfFile.readAsBytesSync();
       },
     );
   }

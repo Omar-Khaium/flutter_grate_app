@@ -35,6 +35,7 @@ dependencies:
   flutter_fullpdfview:
   hive:
   hive_flutter:
+  printing:
 
 dev_dependencies:
   flutter_test:
