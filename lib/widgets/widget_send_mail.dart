@@ -86,10 +86,55 @@ class _SendMailState extends State<SendMail>
           style: Theme.of(context).textTheme.headline.copyWith(
               color: Colors.grey.shade900, fontWeight: FontWeight.bold),
         ),
+        centerTitle: false,
         iconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9),
+            child: FlatButton(
+              onPressed: pdfFile == null || pdfFile.path.isEmpty
+                  ? () {}
+                  : (){_printDocument();},
+              color: pdfFile != null && pdfFile.path.isNotEmpty
+                  ? Colors.grey.shade200
+                  : Colors.grey,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                pdfFile != null && pdfFile.path.isNotEmpty
+                    ? "Print" : "Processing",
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(color: Colors.black, fontWeight: FontWeight.normal),),),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9),
+            child: FlatButton(
+              onPressed: pdfFile == null || pdfFile.path.isEmpty
+                  ? () {}
+                  : () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => PdfWidget(
+                    file: pdfFile,
+                  ),
+                  fullscreenDialog: true)),
+              color: pdfFile != null && pdfFile.path.isNotEmpty
+                  ? Colors.grey.shade200
+                  : Colors.grey,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                pdfFile != null && pdfFile.path.isNotEmpty
+                    ? "View Estimate" : "Loading Estimate",
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(color: Colors.black, fontWeight: FontWeight.normal),),),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9),
             child: FlatButton(
               onPressed: ()=> launch("mailto:${widget.map['EstimateEmailModel']['email']}?subject=${widget.map['EstimateEmailModel']['subject']}&body=${_BodyEmailController.text}"),
               shape: RoundedRectangleBorder(
@@ -103,21 +148,26 @@ class _SendMailState extends State<SendMail>
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(right: 26),
-            child: InkWell(
-              onTap: () {
+            padding: EdgeInsets.symmetric(horizontal: 26, vertical: 9),
+            child: FlatButton.icon(
+              onPressed: () {
                 showDialog(
                     context: context, builder: (context) => loadingAlert());
                 postData();
               },
-              child: CircleAvatar(
-                backgroundColor: Colors.grey.shade200,
-                child: Icon(
-                  Icons.send,
-                  color: Colors.black,
-                  size: 18,
-                ),
+              icon: Icon(
+                Icons.mail,
+                color: Colors.white,
+                size: 18,
               ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              label: Text("Send", style: Theme.of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(color: Colors.white, fontWeight: FontWeight.normal),),
+              color: Colors.blue,
             ),
           ),
         ],
@@ -267,109 +317,6 @@ class _SendMailState extends State<SendMail>
           SizedBox(
             height: 16,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FlatButton.icon(
-                onPressed: pdfFile == null || pdfFile.path.isEmpty
-                    ? () {}
-                    : () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PdfWidget(
-                              file: pdfFile,
-                            ),
-                        fullscreenDialog: true)),
-                color: pdfFile != null && pdfFile.path.isNotEmpty
-                    ? Colors.black
-                    : Colors.grey,
-                padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(24))),
-                icon: Icon(
-                  MdiIcons.filePdf,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  pdfFile != null && pdfFile.path.isNotEmpty
-                      ? "View Estimate" : "Loading Estimate",
-                  style: Theme.of(context)
-                      .textTheme
-                      .subtitle
-                      .copyWith(color: Colors.white),
-                ),
-              ),
-              FlatButton.icon(
-                /*onPressed: () => attachments.length < 5
-                    ? _showDialog(context)
-                    : _showMaxLimitError(context),*/
-                onPressed: pdfFile == null || pdfFile.path.isEmpty
-                    ? () {}
-                    : (){_printDocument();},
-                color: Colors.black,
-                padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(24))),
-                icon: Icon(
-                  MdiIcons.printer,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  pdfFile != null && pdfFile.path.isNotEmpty
-                      ? "Print" : "Loading PDF",
-                  style: Theme.of(context)
-                      .textTheme
-                      .subtitle
-                      .copyWith(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-          /*SizedBox(
-            height: 8,
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              "${attachments.length}/5 attachment${attachments.length >= 2 ? "s" : ""}",
-              style: Theme.of(context)
-                  .textTheme
-                  .body1
-                  .copyWith(color: Colors.black),
-            ),
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Container(
-            height: 164,
-            decoration: BoxDecoration(color: Colors.grey.shade100),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: attachments.length == 0
-                  ? Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(Icons.attach_file),
-                          Text("No Attachment Yet"),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      itemBuilder: (context, index) {
-                        return AttachmentItem(
-                            attachments[index], removeAttachment);
-                      },
-                      itemCount: attachments.length,
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      physics: ScrollPhysics(),
-                    ),
-            ),
-          )*/
         ],
       ),
     );
@@ -536,44 +483,7 @@ class _SendMailState extends State<SendMail>
     }
   }
 
-  _showMaxLimitError(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: true, // user must tap button!
-      builder: (BuildContext context) {
-        return new BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-            child: AlertDialog(
-              title: Text(
-                "Error",
-                style: Theme.of(context).textTheme.title.copyWith(
-                    color: Colors.redAccent.shade700,
-                    fontWeight: FontWeight.bold),
-              ),
-              content: Text("You've reached max limit of file attachments."),
-              contentTextStyle: Theme.of(context).textTheme.headline.copyWith(
-                  color: Colors.grey.shade900, fontWeight: FontWeight.bold),
-              actions: <Widget>[
-                OutlineButton(
-                  textColor: Colors.red,
-                  child: Text(
-                    "Close",
-                    style: Theme.of(context).textTheme.subhead.copyWith(
-                        color: Colors.redAccent.shade700,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  onPressed: () => Navigator.of(context).pop(),
-                )
-              ],
-            ));
-      },
-    );
-  }
-
-
   void _printDocument() {
-    print("printing");
-//    Printing.sharePdf(bytes: pdfFile.readAsBytesSync());
     Printing.layoutPdf(
       onLayout: (pageFormat) {
         return pdfFile.readAsBytesSync();
