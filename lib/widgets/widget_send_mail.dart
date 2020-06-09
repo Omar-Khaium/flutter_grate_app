@@ -70,8 +70,8 @@ class _SendMailState extends State<SendMail>
     _ToEmailController.text = widget.map['EstimateEmailModel']['email'];
     _SubjectEmailController.text = widget.map['EstimateEmailModel']['subject'];
     _BodyEmailController.text = widget.map['EstimateEmailModel']['bodycontent'];
-    _BodyEmailController.text =
-        _BodyEmailController.text.replaceAll("View Estimate", "View Estimate - ${widget.map['filepath']}");
+    _BodyEmailController.text = _BodyEmailController.text.replaceAll(
+        "View Estimate", "View Estimate - ${widget.map['filepath']}");
     _saveAsFile();
   }
 
@@ -94,7 +94,9 @@ class _SendMailState extends State<SendMail>
             child: FlatButton(
               onPressed: pdfFile == null || pdfFile.path.isEmpty
                   ? () {}
-                  : (){_printDocument();},
+                  : () {
+                      _printDocument();
+                    },
               color: pdfFile != null && pdfFile.path.isNotEmpty
                   ? Colors.grey.shade200
                   : Colors.grey,
@@ -103,11 +105,12 @@ class _SendMailState extends State<SendMail>
               ),
               child: Text(
                 pdfFile != null && pdfFile.path.isNotEmpty
-                    ? "Print" : "Processing",
-                style: Theme.of(context)
-                    .textTheme
-                    .subhead
-                    .copyWith(color: Colors.black, fontWeight: FontWeight.normal),),),
+                    ? "Print"
+                    : "Processing",
+                style: Theme.of(context).textTheme.subhead.copyWith(
+                    color: Colors.black, fontWeight: FontWeight.normal),
+              ),
+            ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9),
@@ -115,10 +118,10 @@ class _SendMailState extends State<SendMail>
               onPressed: pdfFile == null || pdfFile.path.isEmpty
                   ? () {}
                   : () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => PdfWidget(
-                    file: pdfFile,
-                  ),
-                  fullscreenDialog: true)),
+                      builder: (context) => PdfWidget(
+                            file: pdfFile,
+                          ),
+                      fullscreenDialog: true)),
               color: pdfFile != null && pdfFile.path.isNotEmpty
                   ? Colors.grey.shade200
                   : Colors.grey,
@@ -127,23 +130,39 @@ class _SendMailState extends State<SendMail>
               ),
               child: Text(
                 pdfFile != null && pdfFile.path.isNotEmpty
-                    ? "View Estimate" : "Loading Estimate",
-                style: Theme.of(context)
-                    .textTheme
-                    .subhead
-                    .copyWith(color: Colors.black, fontWeight: FontWeight.normal),),),
+                    ? "View Estimate"
+                    : "Loading Estimate",
+                style: Theme.of(context).textTheme.subhead.copyWith(
+                    color: Colors.black, fontWeight: FontWeight.normal),
+              ),
+            ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9),
             child: FlatButton(
-              onPressed: ()=> launch("mailto:${widget.map['EstimateEmailModel']['email']}?subject=${widget.map['EstimateEmailModel']['subject']}&body=${_BodyEmailController.text}"),
+              onPressed: () async {
+                final String email = widget.map['EstimateEmailModel']['email'];
+                final String subject = widget.map['EstimateEmailModel']
+                        ['subject'];
+                final String body =
+                    _BodyEmailController.text;
+                String uri =
+                    'mailto:$email?subject=${Uri.encodeComponent(subject)}&body=${Uri
+                    .encodeComponent(body)}';
+                if (await canLaunch(uri)) {
+                  await launch(uri);
+                } else {
+                  print("No email client found");
+                }
+              },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text("Go to Mail app", style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.black, fontWeight: FontWeight.normal),),
+              child: Text(
+                "Go to Mail app",
+                style: Theme.of(context).textTheme.subhead.copyWith(
+                    color: Colors.black, fontWeight: FontWeight.normal),
+              ),
               color: Colors.grey.shade200,
             ),
           ),
@@ -163,10 +182,11 @@ class _SendMailState extends State<SendMail>
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
-              label: Text("Send", style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white, fontWeight: FontWeight.normal),),
+              label: Text(
+                "Send",
+                style: Theme.of(context).textTheme.subhead.copyWith(
+                    color: Colors.white, fontWeight: FontWeight.normal),
+              ),
               color: Colors.blue,
             ),
           ),
@@ -444,7 +464,8 @@ class _SendMailState extends State<SendMail>
         'toemail': _ToEmailController.text.toString(),
         'ccmail': _CCEmailController.text.toString(),
         'subject': _SubjectEmailController.text.toString(),
-        'body': "<p>${_BodyEmailController.text.toString().replaceAll("\r", "").replaceAll("\n", "</br>")}</p>",
+        'body':
+            "<p>${_BodyEmailController.text.toString().replaceAll("\r", "").replaceAll("\n", "</br>")}</p>",
         'imageurl': imageUrls,
       };
 
@@ -460,12 +481,11 @@ class _SendMailState extends State<SendMail>
         };
         var emailResponse = await get(map['EmailUrl'], headers: emailHeader);
 
-        if (emailResponse.statusCode==200) {
+        if (emailResponse.statusCode == 200) {
           Navigator.of(context).pop();
           Navigator.of(context).pop();
           widget.backToCustomerDetails(0);
-          showAPIResponse(
-              context, "Email Sent", Colors.green.shade600);
+          showAPIResponse(context, "Email Sent", Colors.green.shade600);
         } else {
           Navigator.of(context).pop();
           showAPIResponse(context, "Email Not Sent", Colors.red.shade600);

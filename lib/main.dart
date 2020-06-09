@@ -15,6 +15,12 @@ void main() async {
     new MaterialApp(
       home: new LauncherUI(),
       debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return MediaQuery(
+          child: child,
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+        );
+      },
       theme: ThemeData(primaryColor: Colors.blueGrey.shade900),
     ),
   );
