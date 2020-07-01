@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
+import 'package:hive/hive.dart';
 
 import 'fragment_recommended_level_details.dart';
 
 class RecommendedLevel extends StatefulWidget {
-  final Login login;
   int selectedLevel = 3;
-  final LoggedInUser loggedInUser;
   final CustomerDetails customer;
   final ValueChanged<CustomerDetails> backToCustomerDetails;
 
   RecommendedLevel(
       {Key key,
-      this.login,
-      this.loggedInUser,
       this.customer,
       this.backToCustomerDetails})
       : super(key: key);
@@ -36,6 +32,9 @@ class _RecommendedLevelState extends State<RecommendedLevel>
       widget.customer.RecommendedLevel = level.toDouble();
     });
   }
+
+  Box<User> userBox;
+  User user;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +86,7 @@ class _RecommendedLevelState extends State<RecommendedLevel>
           ),
           Text(
             "Step towards a " +
-                widget.loggedInUser.CompanyName +
+                user.companyName +
                 " and a nationally backend warranty",
             style: Theme.of(context).textTheme.body1.copyWith(
                 color: Colors.black,),
@@ -97,7 +96,7 @@ class _RecommendedLevelState extends State<RecommendedLevel>
           ),
           Text(
             "All of our  " +
-                widget.loggedInUser.CompanyName +
+                user.companyName +
                 " /Crawl space Contractors are trained and certified",
             style: Theme.of(context).textTheme.body1.copyWith(
                 color: Colors.grey.shade700,
@@ -310,5 +309,7 @@ class _RecommendedLevelState extends State<RecommendedLevel>
   @override
   void initState() {
     selectedLevel = widget.selectedLevel;
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
   }
 }

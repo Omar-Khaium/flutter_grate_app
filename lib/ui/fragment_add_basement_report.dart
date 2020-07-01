@@ -10,7 +10,6 @@ import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/dropdown_item.dart';
 import 'package:flutter_grate_app/model/hive/basement_report.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
-import 'package:flutter_grate_app/sqflite/db_helper.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/list_row_item.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
@@ -93,8 +92,6 @@ class _AddBasementReportFragmentState extends State<AddBasementReportFragment> {
       YesNoArray = [],
       RatingArray = [],
       GoDownBasementArray = [];
-
-  DBHelper dbHelper = new DBHelper();
 
   int CurrentOutsideConditionsSelection = 0,
       HeatSelection = 0,

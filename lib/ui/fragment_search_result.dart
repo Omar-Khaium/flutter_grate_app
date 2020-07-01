@@ -3,11 +3,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/customer_model.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/customer_list_shimmer.dart';
 import 'package:flutter_grate_app/widgets/list_row_item.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 import '../constraints.dart';
@@ -15,11 +16,10 @@ import '../utils.dart';
 
 class SearchResultFragment extends StatefulWidget {
   final String searchText;
-  final Login login;
   final ValueChanged<String> gotoDetails;
   final ValueChanged<int> backToDashboard;
 
-  SearchResultFragment({this.searchText, this.login, this.gotoDetails, this.backToDashboard});
+  SearchResultFragment({this.searchText, this.gotoDetails, this.backToDashboard});
 
   @override
   _SearchResultFragmentState createState() => _SearchResultFragmentState();
@@ -33,9 +33,14 @@ class _SearchResultFragmentState extends State<SearchResultFragment> with Single
   StreamController<List<Customer>> _controller =
       StreamController<List<Customer>>();
 
+  Box<User> userBox;
+  User user;
+
   @override
   void initState() {
     super.initState();
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
     getData();
   }
 
@@ -185,7 +190,7 @@ class _SearchResultFragmentState extends State<SearchResultFragment> with Single
   Future getData() async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'searchkey': '${widget.searchText}'
       };
 

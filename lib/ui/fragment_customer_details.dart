@@ -8,8 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/estimate.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/customer_details_shimmer.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';

@@ -3,9 +3,6 @@ import 'dart:ui';
 
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_grate_app/sqflite/database_info.dart';
-import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
 import 'package:flutter_grate_app/widgets/widget_loading.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -169,8 +166,6 @@ Function mathFunc = (Match match) => '${match[1]},';
 
 const int TABLE_USER = 0;
 const int TABLE_BASEMENT_REPORT = 1;
-
- int CURRENTSEGMENT = 0;
 
 Future<bool> saveInspectionReport(Map<String, String> map) async {
   try {

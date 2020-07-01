@@ -3,11 +3,11 @@ import 'dart:ui';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/model/video_preview.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/widget_media_player.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -15,16 +15,12 @@ import '../constraints.dart';
 import '../utils.dart';
 
 class RecommendedLevelDetails extends StatefulWidget {
-  final Login login;
   final ValueChanged<int> backToCustomerDetails;
-  final LoggedInUser loggedInUser;
   final CustomerDetails customer;
   final int index;
 
   RecommendedLevelDetails({
     Key key,
-    this.login,
-    this.loggedInUser,
     this.index,
     this.customer,
     this.backToCustomerDetails,
@@ -49,10 +45,15 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> with Singl
 
   var key = GlobalKey();
 
+  Box<User> userBox;
+  User user;
+
   @override
   void initState() {
     super.initState();
     _checkConnectivity();
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
   }
 
   @override
@@ -401,10 +402,10 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> with Singl
   Future _save() async {
     try {
       Map<String, String> headers = {
-        'Authorization': widget.login.accessToken,
+        'Authorization': user.accessToken,
         'Id': widget.customer.Id,
         'RecommendedLevel': (widget.index).toString(),
-        'CompanyId': widget.loggedInUser.CompanyGUID,
+        'CompanyId': user.companyGUID,
       };
 
       var result = await http.post(BASE_URL + API_SAVE_RECOMMENDED_LEVEL,

@@ -10,10 +10,6 @@ import 'package:flutter_grate_app/model/dropdown_item.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/model/product.dart';
 import 'package:flutter_grate_app/model/zip_model.dart';
-import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/BasementReport.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/ui/ui_login.dart';
 import 'package:flutter_grate_app/widgets/us_formatter.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
@@ -48,7 +44,6 @@ class EditCustomerFragment extends StatefulWidget {
 }
 
 class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerProviderStateMixin {
-  DBHelper dbHelper = new DBHelper();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Zip zipData;
 
@@ -68,7 +63,6 @@ class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerPro
   List<DropDownSingleItem> TypeArray = [];
   int TypeDropdown;
 
-  static String ACCESS_TOKEN = "";
   Product selectedProduct;
   final _UsNumberTextInputFormatter = UsNumberTextInputFormatter();
 
@@ -79,7 +73,6 @@ class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerPro
 
   @override
   void initState() {
-    _checkBasementData();
     userBox = Hive.box("users");
     user = userBox.getAt(0);
     super.initState();
@@ -722,12 +715,6 @@ class _AddCustomerState extends State<EditCustomerFragment> with SingleTickerPro
       }
       return [];
     }
-  }
-
-  void _checkBasementData() async {
-    List<BasementReport> basementsDatas = await dbHelper.getBasementData();
-    if (basementsDatas.isNotEmpty && basementsDatas.length != 0) {
-    } else {}
   }
 
   alertLoading() {

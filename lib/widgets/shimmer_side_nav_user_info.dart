@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/drawer/drawer_theme.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
 
 import 'list_shimmer_item_without_icon.dart';
 

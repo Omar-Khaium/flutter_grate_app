@@ -156,27 +156,6 @@ class _DashboardFragmentState extends State<DashboardFragment>
             ],
           ),
           SizedBox(
-            height: 8,
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: CupertinoSlidingSegmentedControl(
-              children: <int, Widget>{
-                0: Padding(
-                  child: Text("Leads"),
-                  padding: EdgeInsets.all(8),
-                ),
-                1: Padding(
-                  child: Text("Customers"),
-                  padding: EdgeInsets.all(8),
-                ),
-              },
-              onValueChanged: onValueChanged,
-              groupValue: CURRENTSEGMENT,
-              backgroundColor: CupertinoColors.tertiarySystemFill,
-            ),
-          ),
-          SizedBox(
             height: 16,
           ),
           Expanded(
@@ -383,7 +362,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
         'Authorization': user.accessToken,
         'PageNo': (++_pageNo).toString(),
         'PageSize': '30',
-        'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
+        'ResultType': 'Customer'
       };
 
       var result =
@@ -421,7 +400,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
         'Authorization': user.accessToken,
         'PageNo': (++_pageNo).toString(),
         'PageSize': '30',
-        'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
+        'ResultType': 'Customer'
       };
 
       var result =
@@ -464,7 +443,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
         'Authorization': user.accessToken,
         'PageNo': "1",
         'PageSize': '30',
-        'ResultType': CURRENTSEGMENT == 1 ? 'Customer' : 'Lead'
+        'ResultType': 'Customer'
       };
 
       var result =
@@ -750,12 +729,5 @@ class _DashboardFragmentState extends State<DashboardFragment>
   Future<void> _refresh() async {
     _pageNo = 0;
     await getData();
-  }
-
-  void onValueChanged(int newValue) {
-    setState(() {
-      CURRENTSEGMENT = newValue;
-      resetData();
-    });
   }
 }

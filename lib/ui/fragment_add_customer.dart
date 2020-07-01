@@ -9,7 +9,6 @@ import 'package:flutter_grate_app/model/dropdown_item.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/model/product.dart';
 import 'package:flutter_grate_app/model/zip_model.dart';
-import 'package:flutter_grate_app/sqflite/db_helper.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
 import 'package:flutter_grate_app/widgets/us_formatter.dart';
@@ -37,7 +36,6 @@ class AddCustomerFragment extends StatefulWidget {
 
 class _AddCustomerState extends State<AddCustomerFragment>
     with SingleTickerProviderStateMixin {
-  DBHelper dbHelper = new DBHelper();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Zip zipData;
 

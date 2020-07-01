@@ -418,6 +418,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
         await getUserInfo();
         await getOrganizationData();
       } else {
+        Navigator.of(context).pop();
         user = User(
             email: _emailController.text,
             password: _passwordController.text,
@@ -427,7 +428,8 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
           userBox.add(user);
         else
           userBox.putAt(0, user);
-        Navigator.of(context).pop();
+        showMessage(context, "Network error!", "Wrong Credentials",
+            Colors.redAccent, Icons.warning);
       }
       return "";
     } catch (error) {
@@ -440,6 +442,8 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
         userBox.add(user);
       else
         userBox.putAt(0, user);
+      showMessage(context, "Network error!", "Something Went Wrong",
+          Colors.redAccent, Icons.warning);
       Navigator.of(context).pop();
       setState(() {
         offline = true;

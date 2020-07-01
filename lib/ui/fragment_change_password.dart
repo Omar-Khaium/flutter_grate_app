@@ -1,23 +1,21 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_grate_app/sqflite/database_info.dart';
-import 'package:flutter_grate_app/sqflite/db_helper.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
+import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/ui/ui_login.dart';
 import 'package:flutter_grate_app/utils.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/text_style.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 import '../constraints.dart';
 
 class ChangePasswordFragment extends StatefulWidget {
   ValueChanged<int> backToDashboard;
-  Login login;
 
-  ChangePasswordFragment({Key key, this.backToDashboard, this.login})
+  ChangePasswordFragment({Key key, this.backToDashboard})
       : super(key: key);
 
   @override
@@ -30,13 +28,14 @@ class _ChangePasswordFragmentState extends State<ChangePasswordFragment> with Si
   TextEditingController _oldPasswordController = new TextEditingController();
   TextEditingController _newPasswordController = new TextEditingController();
   TextEditingController _confirmPasswordController = new TextEditingController();
-
-  DBHelper dbHelper = new DBHelper();
   bool _isOldPasswordObscureText = true;
   bool _isNewPasswordObscureText = true;
   bool _isConfirmPasswordObscureText = true;
 
   bool offline = false;
+
+  Box<User> userBox;
+  User user;
 
   Future getPasswordChanged() async {
     showDialog(
@@ -44,8 +43,8 @@ class _ChangePasswordFragmentState extends State<ChangePasswordFragment> with Si
         builder: (_) => loadingAlert());
 
     Map<String, String> headers = {
-      'Authorization': widget.login.accessToken,
-      'UserName': '${widget.login.username}',
+      'Authorization': user.accessToken,
+      'UserName': '${user.email}',
       'Password': '${_oldPasswordController.text}',
       'NewPassword': '${_newPasswordController.text}',
     };
@@ -77,6 +76,8 @@ class _ChangePasswordFragmentState extends State<ChangePasswordFragment> with Si
   @override
   void initState() {
     super.initState();
+    userBox = Hive.box("users");
+    user = userBox.getAt(0);
   }
 
   @override
@@ -428,7 +429,7 @@ class _ChangePasswordFragmentState extends State<ChangePasswordFragment> with Si
                                       fontFamily: "Roboto"),
                                 ),
                                 onPressed: () {
-                                  if (widget.login.isRemembered) {
+                                  if (user.isRemembered) {
                                     Navigator.of(context).pop();
                                     showPopupLogout(
                                         "Do you want to logout ?", "Logout");
@@ -564,12 +565,11 @@ class _ChangePasswordFragmentState extends State<ChangePasswordFragment> with Si
                                       fontFamily: "Roboto"),
                                 ),
                                 onPressed: () {
-                                  widget.login.password =
+                                  user.password =
                                       _newPasswordController.text;
-                                  dbHelper.update(
-                                      widget.login, DBInfo.TABLE_LOGIN);
+                                  user.isAuthenticated = false;
+                                  userBox.putAt(0, user);
                                   Navigator.of(context).pop();
-                                  widget.login.isAuthenticated = false;
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(

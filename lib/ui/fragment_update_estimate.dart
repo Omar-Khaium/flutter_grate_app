@@ -8,8 +8,6 @@ import 'package:flutter_grate_app/model/ProductImage.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/model/product.dart';
-import 'package:flutter_grate_app/sqflite/model/Login.dart';
-import 'package:flutter_grate_app/sqflite/model/user.dart';
 import 'package:flutter_grate_app/widgets/custome_back_button.dart';
 import 'package:flutter_grate_app/widgets/drawing_placeholder.dart';
 import 'package:flutter_grate_app/widgets/list_row_item.dart';
@@ -40,9 +38,7 @@ class UpdateEstimateFragment extends StatefulWidget {
   final ValueChanged<CustomerDetails> backToCustomerDetailsFromEstimate;
 
   UpdateEstimateFragment(
-      {Key key,
-      this.customer,
-      this.backToCustomerDetailsFromEstimate})
+      {Key key, this.customer, this.backToCustomerDetailsFromEstimate})
       : super(key: key);
 
   @override
@@ -772,35 +768,50 @@ class _UpdateEstimateFragmentState extends State<UpdateEstimateFragment>
                                                           Radius.circular(
                                                               5.0))),
                                               child: InkWell(
-                                                child: Stack(
-                                                    children: <Widget>[
-                                                      _imageFile != null
-                                                          ? Container(
-                                                        height: double.infinity,
-                                                        width: double.infinity,
-                                                        child: Image.file(
-                                                          _imageFile,
-                                                          fit: BoxFit.cover,
+                                                child: Stack(children: <Widget>[
+                                                  _imageFile != null
+                                                      ? Container(
+                                                          height:
+                                                              double.infinity,
+                                                          width:
+                                                              double.infinity,
+                                                          child: Image.file(
+                                                            _imageFile,
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        )
+                                                      : Container(
+                                                          height:
+                                                              double.infinity,
+                                                          width:
+                                                              double.infinity,
+                                                          child: _CameraImagePath ==
+                                                                      null ||
+                                                                  _CameraImagePath
+                                                                      .isEmpty
+                                                              ? Icon(
+                                                                  Icons
+                                                                      .camera_enhance,
+                                                                  size: 48,
+                                                                )
+                                                              : FadeInImage
+                                                                  .assetNetwork(
+                                                                  placeholder:
+                                                                      "images/loading.gif",
+                                                                  image:
+                                                                      _CameraImagePath,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
                                                         ),
-                                                      )
-                                                          : Container(
-                                                        height: double.infinity,
-                                                        width: double.infinity,
-                                                        child: _CameraImagePath == null || _CameraImagePath.isEmpty ? Icon(Icons.camera_enhance, size: 48,) : FadeInImage
-                                                            .assetNetwork(
-                                                          placeholder:
-                                                          "images/loading.gif",
-                                                          image: _CameraImagePath,
-                                                          fit: BoxFit
-                                                              .cover,
-                                                        ),
-                                                      ),
-                                                      isCameraSaving
-                                                          ? Center(
-                                                        child: ShimmerUploadIcon(64),
-                                                      )
-                                                          : Container(),
-                                                    ]),
+                                                  isCameraSaving
+                                                      ? Center(
+                                                          child:
+                                                              ShimmerUploadIcon(
+                                                                  64),
+                                                        )
+                                                      : Container(),
+                                                ]),
                                                 onTap: () {
                                                   FocusScope.of(context)
                                                       .requestFocus(
@@ -2170,6 +2181,9 @@ class _UpdateEstimateFragmentState extends State<UpdateEstimateFragment>
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
       _CameraImagePath = "https://api.gratecrm.com" + map['filePath'];
+    } else {
+      showMessage(context, "Network error!", json.decode(result.body),
+          Colors.redAccent, Icons.warning);
     }
     setState(() {
       isCameraSaving = false;
@@ -2184,7 +2198,7 @@ class _UpdateEstimateFragmentState extends State<UpdateEstimateFragment>
       "Authorization": user.accessToken
     };
     Map<String, String> body = <String, String>{
-      "filename": "${DateTime.now().toIso8601String()}.png",
+      "filename": "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg",
       "filepath": base64Drawing
     };
     var result = await http.post(BASE_URL + API_UPLOAD_FILE,
@@ -2192,6 +2206,9 @@ class _UpdateEstimateFragmentState extends State<UpdateEstimateFragment>
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
       _drawingImagePath = "https://api.gratecrm.com" + map['filePath'];
+    } else {
+      showMessage(context, "Network error!", json.decode(result.body),
+          Colors.redAccent, Icons.warning);
     }
     setState(() {
       isDrawingSaving = false;
@@ -2206,7 +2223,7 @@ class _UpdateEstimateFragmentState extends State<UpdateEstimateFragment>
       "Authorization": user.accessToken
     };
     Map<String, String> body = <String, String>{
-      "filename": "${DateTime.now().toIso8601String()}.png",
+      "filename": "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg",
       "filepath": base64HOSignature
     };
     var result = await http.post(BASE_URL + API_UPLOAD_FILE,
@@ -2214,6 +2231,9 @@ class _UpdateEstimateFragmentState extends State<UpdateEstimateFragment>
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
       _HOSignatureImagePath = "https://api.gratecrm.com" + map['filePath'];
+    } else {
+      showMessage(context, "Network error!", json.decode(result.body),
+          Colors.redAccent, Icons.warning);
     }
     setState(() {
       isHOSignatureSaving = false;
@@ -2240,7 +2260,8 @@ class _UpdateEstimateFragmentState extends State<UpdateEstimateFragment>
             List.generate(mapForEditData['EstimateDetails'].length, (index) {
           return Product.fromMap(
               mapForEditData['EstimateDetails'][index], false);
-        }));
+        }),
+        );
         _productListForImage.addAll(
           List.generate(mapForEditData['EstimateImage'].length, (index) {
             return ProductImage.fromMap(mapForEditData['EstimateImage'][index]);
@@ -2251,25 +2272,25 @@ class _UpdateEstimateFragmentState extends State<UpdateEstimateFragment>
           switch (product.ImageType) {
             case "Draw":
               {
-                _Drawing = DrawingPlaceholder(
-                    url: product.ImageLoc.startsWith("/Files")
-                        ? "https://api.gratecrm.com" + product.ImageLoc
-                        : product.ImageLoc);
+                base64Drawing = product.ImageLoc.startsWith("/Files")
+                    ? "https://api.gratecrm.com" + product.ImageLoc
+                    : product.ImageLoc;
+                _Drawing = DrawingPlaceholder(url: base64Drawing);
               }
               break;
             case "Sign":
               {
-                _HOSignature = SignaturePlaceholder(
-                    url: product.ImageLoc.startsWith("/Files")
-                        ? "https://api.gratecrm.com" + product.ImageLoc
-                        : product.ImageLoc);
+                base64HOSignature = product.ImageLoc.startsWith("/Files")
+                    ? "https://api.gratecrm.com" + product.ImageLoc
+                    : product.ImageLoc;
+                _HOSignature = SignaturePlaceholder(url: base64HOSignature);
               }
               break;
             case "Camera":
               {
                 _CameraImagePath = product.ImageLoc.startsWith("/Files")
-                        ? "https://api.gratecrm.com" + product.ImageLoc
-                        : product.ImageLoc;
+                    ? "https://api.gratecrm.com" + product.ImageLoc
+                    : product.ImageLoc;
               }
               break;
           }
