@@ -45,6 +45,8 @@ class _AddCustomerState extends State<AddCustomerFragment>
   TextEditingController _firstNameController = new TextEditingController();
   TextEditingController _lastNameController = new TextEditingController();
   TextEditingController _businessTypeController = new TextEditingController();
+  TextEditingController _customerAccountController =
+      new TextEditingController();
   TextEditingController _primaryPhoneController = new TextEditingController();
   TextEditingController _cellPhoneController = new TextEditingController();
   TextEditingController _emailController = new TextEditingController();
@@ -251,6 +253,41 @@ class _AddCustomerState extends State<AddCustomerFragment>
                                 borderSide: BorderSide(color: Colors.grey)),
                             icon: new Icon(
                               Icons.business,
+                              color: Colors.grey,
+                            ),
+                            isDense: true,
+                            hintStyle: customHintStyle(),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        TextFormField(
+                          cursorColor: Colors.black87,
+                          style: customTextStyle(),
+                          controller: _customerAccountController,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          maxLines: 1,
+                          autofocus: false,
+                          onChanged: (val) {
+                            setState(() {});
+                          },
+                          validator: (val) {
+                            return TypeDropdown == 1
+                                ? (_customerAccountController.text.isNotEmpty
+                                    ? null
+                                    : "* Required")
+                                : null;
+                          },
+                          decoration: new InputDecoration(
+                            labelText: "Customer Account Number",
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black87)),
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            icon: new Icon(
+                              Icons.account_circle,
                               color: Colors.grey,
                             ),
                             isDense: true,
@@ -696,6 +733,7 @@ class _AddCustomerState extends State<AddCustomerFragment>
         'authorization': user.accessToken,
         'FirstName': '${_firstNameController.text}',
         'LastName': '${_lastNameController.text}',
+        'AccountNo': '${_customerAccountController.text}',
         'BusinessName': '${_businessTypeController.text}',
         'Type': TypeArray[TypeDropdown].DataValue,
         'PrimaryPhone': '${_primaryPhoneController.text}',

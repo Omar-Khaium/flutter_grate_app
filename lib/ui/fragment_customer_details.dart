@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:dio/dio.dart';
+import 'package:ext_storage/ext_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
@@ -17,6 +20,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 
 import '../constraints.dart';
@@ -57,7 +61,8 @@ class CustomerDetailsFragment extends StatefulWidget {
       _CustomerDetailsFragmentState();
 }
 
-class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with SingleTickerProviderStateMixin{
+class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
+    with SingleTickerProviderStateMixin {
   List<Estimate> _list;
   var _base64Image;
 
@@ -69,12 +74,42 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
   Box<User> userBox;
   User user;
 
+  List<bool> downloadingList = [];
+  /*final url = "https://pdfkit.org/docs/guide.pdf";*/
+
+  var progressString = "";
+
   @override
   void initState() {
     userBox = Hive.box("users");
     user = userBox.getAt(0);
     super.initState();
     getData();
+  }
+
+  Future<void> downloadFile(String url, int index, String invoiceId) async {
+    Dio dio = Dio();
+
+    if (await Permission.storage.request().isGranted) {
+      try {
+        var dir = await ExtStorage.getExternalStoragePublicDirectory(
+            ExtStorage.DIRECTORY_DCIM);
+        await dio.download(url, "${dir}/${invoiceId}.pdf",
+            onReceiveProgress: (rec, total) {
+          print("Directory: $dir");
+        });
+      } catch (e) {
+        print(e);
+      }
+      setState(() {
+        downloadingList[index] = false;
+        progressString = "Completed";
+      });
+      showDialog(context: context, builder: (context) => deleteSuccess());
+      print("Completed");
+    } else {
+      await Permission.storage.isRestricted;
+    }
   }
 
   Future<void> _showDialog(BuildContext context) {
@@ -133,10 +168,12 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                     width: 16,
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width/2,
+                    width: MediaQuery.of(context).size.width / 2,
                     child: Text(
-                        "${offline ? "Offline" : widget.customer == null ? "Loading" : "${widget.customer.ProfileName}'s Profile"}",
-                        style: fragmentTitleStyle(), overflow: TextOverflow.ellipsis,),
+                      "${offline ? "Offline" : widget.customer == null ? "Loading" : "${widget.customer.ProfileName}'s Profile"}",
+                      style: fragmentTitleStyle(),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -169,8 +206,8 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                       ),
                                     ),
                                     Container(
-                                      margin:
-                                          EdgeInsets.only(left: 16, right: 16, top: 8),
+                                      margin: EdgeInsets.only(
+                                          left: 16, right: 16, top: 8),
                                       child: Column(
                                         children: <Widget>[
                                           Row(
@@ -210,18 +247,19 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                                             .ProfileImage
                                                                             .isNotEmpty
                                                                     ? InkWell(
-                                                              onTap: ()=>showDialog(context: context, builder: (context)=> imageAlert(context, buildCustomerImageUrl(
-                                                                  widget.customer.CustomerId,
-                                                                  user.companyGUID,
-                                                                  user.email,
-                                                                  Uuid().v1()))),
-                                                                      child: Container(
+                                                                        onTap: () => showDialog(
+                                                                            context:
+                                                                                context,
+                                                                            builder: (context) =>
+                                                                                imageAlert(context, buildCustomerImageUrl(widget.customer.CustomerId, user.companyGUID, user.email, Uuid().v1()))),
+                                                                        child:
+                                                                            Container(
                                                                           height:
                                                                               128,
                                                                           width:
                                                                               128,
-                                                                          child: FadeInImage
-                                                                              .assetNetwork(
+                                                                          child:
+                                                                              FadeInImage.assetNetwork(
                                                                             placeholder:
                                                                                 "images/loading.gif",
                                                                             image: buildCustomerImageUrl(
@@ -229,11 +267,11 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                                                 user.companyGUID,
                                                                                 user.email,
                                                                                 Uuid().v1()),
-                                                                            fit: BoxFit
-                                                                                .cover,
+                                                                            fit:
+                                                                                BoxFit.cover,
                                                                           ),
                                                                         ),
-                                                                    )
+                                                                      )
                                                                     : Icon(
                                                                         Icons
                                                                             .person,
@@ -251,7 +289,8 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                               Colors.black54,
                                                           child: InkWell(
                                                             child: Icon(
-                                                              MdiIcons.imageEdit,
+                                                              MdiIcons
+                                                                  .imageEdit,
                                                               size: 18,
                                                               color:
                                                                   Colors.white,
@@ -277,11 +316,15 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                     children: <Widget>[
                                                       Text(
                                                         widget.customer.Name,
-                                                        style: Theme.of(context).textTheme.title.copyWith(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                        overflow: TextOverflow.ellipsis,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .title
+                                                            .copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                       ),
                                                       widget.customer.Type ==
                                                                   null ||
@@ -389,9 +432,12 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                 ],
                                               ),
                                               CircleAvatar(
-                                                backgroundColor: Colors.grey.shade100,
+                                                backgroundColor:
+                                                    Colors.grey.shade100,
                                                 child: IconButton(
-                                                  icon: Icon(MdiIcons.accountEdit, color: Colors.black),
+                                                  icon: Icon(
+                                                      MdiIcons.accountEdit,
+                                                      color: Colors.black),
                                                   onPressed: () =>
                                                       widget.goToEditCustomer(
                                                           widget.customer),
@@ -605,6 +651,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                           scrollDirection: Axis.vertical,
                                           shrinkWrap: true,
                                           itemBuilder: (context, index) {
+                                            bool downloading = false;
                                             return InkWell(
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -803,6 +850,76 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
                                                                     ),
                                                                   ),
                                                                 ),
+                                                                SizedBox(
+                                                                  width: 8,
+                                                                ),
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    setState(
+                                                                        () {
+                                                                      downloadingList[
+                                                                              index] =
+                                                                          true;
+                                                                    });
+                                                                    downloadFile(
+                                                                        _list[index]
+                                                                            .pdfUrl,
+                                                                        index,
+                                                                        _list[index]
+                                                                            .InvoiceId);
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    height: 48,
+                                                                    width: 48,
+                                                                    child:
+                                                                        Stack(
+                                                                      children: [
+                                                                        Positioned(
+                                                                          top:
+                                                                              2,
+                                                                          right:
+                                                                              2,
+                                                                          bottom:
+                                                                              2,
+                                                                          left:
+                                                                              2,
+                                                                          child:
+                                                                              CircleAvatar(
+                                                                            backgroundColor:
+                                                                                Colors.grey.shade300,
+                                                                            child:
+                                                                                Icon(
+                                                                              Icons.file_download,
+                                                                              color: Colors.black,
+                                                                              size: 18,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        Positioned(
+                                                                          top:
+                                                                              0,
+                                                                          right:
+                                                                              0,
+                                                                          bottom:
+                                                                              0,
+                                                                          left:
+                                                                              0,
+                                                                          child:
+                                                                              Visibility(
+                                                                            visible:
+                                                                                downloadingList[index],
+                                                                            child:
+                                                                                CircularProgressIndicator(),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 8,
+                                                                ),
                                                               ],
                                                             ),
                                                           ),
@@ -903,6 +1020,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment> with 
         widget.customer = CustomerDetails.fromMap(json.decode(result.body));
         _list = [];
         _list.addAll(widget.customer.estimates);
+        downloadingList = List.generate(_list.length, (index) => false);
         setState(() {
           offline = false;
         });

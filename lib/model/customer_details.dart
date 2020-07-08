@@ -8,6 +8,7 @@ class CustomerDetails {
   String FirstName;
   String LastName;
   String BusinessName;
+  String _CustomerAccountNo;
   String PrimaryPhone;
   String SecondaryPhone;
   String EmailAddress;
@@ -40,7 +41,8 @@ class CustomerDetails {
       this.RecommendedLevel,
       this.estimates,
       this._ProfileImage,
-      {this.EstimateId, this.EstimateIntId});
+      {this.EstimateId,
+      this.EstimateIntId});
 
   String get Name {
     return _CheckNames().trim();
@@ -51,6 +53,10 @@ class CustomerDetails {
   }
 
   String get ProfileImage => _ProfileImage;
+
+  String get CustomerAccountNumber {
+    return _CheckCustomerAccountNo().trim();
+  }
 
   set ProfileImage(String value) {
     _ProfileImage = value;
@@ -72,11 +78,23 @@ class CustomerDetails {
     return val == null || val.isEmpty ? false : true;
   }
 
-  String _CheckBusinessName(){
-    return Type!=null&&Type=="Commercial" ? (BusinessName!=null&&BusinessName.isNotEmpty ? _CheckName(BusinessName) : _CheckName(Title) + " " + _CheckName(FirstName) + " " + _CheckName(LastName)) : _CheckName(Title) + " " + _CheckName(FirstName) + " " + _CheckName(LastName);
+  String _CheckBusinessName() {
+    return Type != null && Type == "Commercial"
+        ? (BusinessName != null && BusinessName.isNotEmpty
+            ? _CheckName(BusinessName)
+            : _CheckName(Title) +
+                " " +
+                _CheckName(FirstName) +
+                " " +
+                _CheckName(LastName))
+        : _CheckName(Title) +
+            " " +
+            _CheckName(FirstName) +
+            " " +
+            _CheckName(LastName);
   }
 
-  String _CheckNames(){
+  String _CheckNames() {
     return _CheckName(FirstName) + " " + _CheckName(LastName);
   }
 
@@ -116,6 +134,10 @@ class CustomerDetails {
     return _validate(EmailAddress) ? EmailAddress : "-";
   }
 
+  String _CheckCustomerAccountNo() {
+    return _validate(_CustomerAccountNo) ? _CustomerAccountNo : "-";
+  }
+
   CustomerDetails.fromMap(Map<String, dynamic> map) {
     Id = map["CustomerDetails"]['Id'].toString();
     CustomerId = map["CustomerDetails"]['CustomerId'].toString();
@@ -124,6 +146,7 @@ class CustomerDetails {
     FirstName = map["CustomerDetails"]['FirstName'];
     LastName = map["CustomerDetails"]['LastName'];
     BusinessName = map["CustomerDetails"]['BusinessName'];
+    _CustomerAccountNo = map["CustomerDetails"]['AccountNo'];
     PrimaryPhone = map["CustomerDetails"]['PrimaryPhone'];
     SecondaryPhone = map["CustomerDetails"]['CellNo'];
     EmailAddress = map["CustomerDetails"]['EmailAddress'];

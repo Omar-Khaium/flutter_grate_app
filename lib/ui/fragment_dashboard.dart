@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/customer_model.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
@@ -44,6 +45,7 @@ class _DashboardFragmentState extends State<DashboardFragment>
   Box<User> userBox;
   User user;
 
+  String pathPDF = "";
   @override
   void initState() {
     _scrollController = ScrollController();
