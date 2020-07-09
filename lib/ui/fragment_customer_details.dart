@@ -75,7 +75,6 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
   User user;
 
   List<bool> downloadingList = [];
-  /*final url = "https://pdfkit.org/docs/guide.pdf";*/
 
   var progressString = "";
 
@@ -93,7 +92,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
     if (await Permission.storage.request().isGranted) {
       try {
         var dir = await ExtStorage.getExternalStoragePublicDirectory(
-            ExtStorage.DIRECTORY_DCIM);
+            ExtStorage.DIRECTORY_DOWNLOADS);
         await dio.download(url, "${dir}/${invoiceId}.pdf",
             onReceiveProgress: (rec, total) {
           print("Directory: $dir");
