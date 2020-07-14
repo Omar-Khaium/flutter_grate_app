@@ -392,8 +392,8 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
 
   Future<String> login() async {
     Map body = {
-      'username': '${_emailController.text}',
-      'password': '${_passwordController.text}',
+      'username': '${_emailController.text.trim()}',
+      'password': '${_passwordController.text.trim()}',
       'grant_type': 'password'
     };
     HttpClient client = new HttpClient();
@@ -402,14 +402,15 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
 
     try {
       var response = await loginService(body);
+      print(response.statusCode);
       setState(() {
         offline = false;
       });
       if (response.statusCode == 200) {
         Map map = json.decode(response.body);
         user = User(
-            email: _emailController.text,
-            password: _passwordController.text,
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
             isRemembered: _isRemembered,
             isAuthenticated: true,
             accessToken: map['token_type'] + " " + map['access_token'],

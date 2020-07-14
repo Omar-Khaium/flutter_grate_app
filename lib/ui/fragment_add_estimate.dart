@@ -591,10 +591,10 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment>
                                                                   width: 16,
                                                                 ),
                                                                 Text(
-                                                                  formatDate(
+
                                                                       _productList[
                                                                               index]
-                                                                          .Date),
+                                                                          .Date,
                                                                   style:
                                                                       listTextStyle(),
                                                                 )
@@ -740,8 +740,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
+                                        Stack(
+                                          alignment: Alignment.center,
                                           children: <Widget>[
                                             Container(
                                               width: orientation ==
@@ -756,19 +756,16 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment>
                                                   color: Colors.grey.shade200,
                                                   shape: BoxShape.rectangle,
                                                   border: Border.all(
-                                                      width: 1.0,
-                                                      color: Colors.black26),
+                                                      width: 1.0, color: Colors.black26),
                                                   borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(
-                                                              5.0))),
+                                                  BorderRadius.all(Radius.circular(5.0))),
                                               child: InkWell(
                                                 child: _imageFile == null
                                                     ? Icon(Icons.camera_enhance)
                                                     : Image.file(
-                                                        _imageFile,
-                                                        fit: BoxFit.cover,
-                                                      ),
+                                                  _imageFile,
+                                                  fit: BoxFit.cover,
+                                                ),
                                                 onTap: () {
                                                   FocusScope.of(context)
                                                       .requestFocus(
@@ -777,6 +774,10 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment>
                                                 },
                                               ),
                                             ),
+                                            isCameraSaving
+                                                ? ShimmerUploadIcon(
+                                                48)
+                                                : Container(),
                                           ],
                                         ),
                                         SizedBox(

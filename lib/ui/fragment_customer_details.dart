@@ -86,6 +86,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
   }
 
   Future<void> downloadFile(String url, int index, String invoiceId) async {
+    try{
     var response = await http.get(url);
     final output = await getTemporaryDirectory();
     final file = File("${output.path}/$invoiceId.pdf");
@@ -96,6 +97,11 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
       downloadingList[index] = false;
       progressString = "Completed";
     });
+    showDialog(context: context, builder: (context)=>deleteSuccess());
+  } catch(error){
+
+      showDialog(context: context, builder: (context)=>deleteFailed());
+    }
   }
 
   Future<void> _showDialog(BuildContext context) {
@@ -649,7 +655,7 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
                                                     columnWidths: {
                                                       0: FlexColumnWidth(3.25),
                                                       1: FlexColumnWidth(1.75),
-                                                      2: FlexColumnWidth(1),
+                                                      2: FlexColumnWidth(1.25),
                                                     },
                                                     defaultVerticalAlignment:
                                                         TableCellVerticalAlignment

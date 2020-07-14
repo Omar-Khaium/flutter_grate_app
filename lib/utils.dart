@@ -71,6 +71,7 @@ void showNoInternetConnection(BuildContext context) {
 }
 
 String formatDate(String date) {
+print("Khaium : $date");
   DateFormat inputFormat = DateFormat("yyyy-MM-dd'T'hh:mm:ss");
   DateTime dateTime = inputFormat.parse(date);
   DateFormat outputFormat = DateFormat(

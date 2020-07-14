@@ -41,7 +41,7 @@ class Product {
   }
 
   String get Date {
-    return date==null ? DateFormat("yyyy-MM-dd'T'hh:mm:ss").format(DateTime.now()) : date;
+    return date==null ? DateFormat('MM/dd/yyyy').format(DateTime.now()) : date;
   }
 
   Product.fromMap(Map<String, dynamic> map, bool isAutoComplete) {
@@ -69,7 +69,7 @@ class Product {
     discount = map['DiscountAmount']== null ? 0 : map['DiscountAmount'];
     discountPercent = map['DiscountPercent']== null ? 0 : map['DiscountPercent'];
     discountAsPercentage = map['DiscountType']== 'amount' ? false : true;
-    date = "";
+    date = DateFormat('MM/dd/yyyy').format(DateTime.now());
   }
 
   Map<String, dynamic> toJson() =>
