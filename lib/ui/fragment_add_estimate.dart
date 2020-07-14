@@ -37,16 +37,15 @@ class AddEstimateFragment extends StatefulWidget {
   ValueChanged<CustomerDetails> backToCustomerDetailsFromEstimate;
 
   AddEstimateFragment(
-      {Key key,
-      this.customer,
-      this.backToCustomerDetailsFromEstimate})
+      {Key key, this.customer, this.backToCustomerDetailsFromEstimate})
       : super(key: key);
 
   @override
   _AddEstimateFragmentState createState() => _AddEstimateFragmentState();
 }
 
-class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTickerProviderStateMixin {
+class _AddEstimateFragmentState extends State<AddEstimateFragment>
+    with SingleTickerProviderStateMixin {
   String dollar = "\$";
   TextEditingController _productNameController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
@@ -129,8 +128,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
               child: Row(
                 children: <Widget>[
                   CustomBackButton(
-                    onTap: () =>
-                        widget.backToCustomerDetailsFromEstimate(widget.customer),
+                    onTap: () => widget
+                        .backToCustomerDetailsFromEstimate(widget.customer),
                   ),
                   SizedBox(
                     width: 16,
@@ -156,8 +155,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                               scrollDirection: Axis.vertical,
                               children: <Widget>[
                                 Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     SizedBox(
                                       height: 16,
@@ -168,8 +166,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                           child: Text(
                                             "Creating estimate for, " +
                                                 widget.customer.Name,
-                                            style:
-                                                new TextStyle(fontSize: 20),
+                                            style: new TextStyle(fontSize: 20),
                                           )),
                                     ),
                                     SizedBox(
@@ -185,34 +182,35 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                         Column(
                                           children: <Widget>[
                                             Align(
-                                              alignment:
-                                                  Alignment.centerLeft,
+                                              alignment: Alignment.centerLeft,
                                               child: Row(
-                                                mainAxisSize:
-                                                    MainAxisSize.min,
+                                                mainAxisSize: MainAxisSize.min,
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
+                                                    CrossAxisAlignment.start,
                                                 children: <Widget>[
                                                   Container(
-                                                    width: orientation==Orientation.landscape ? 256 : 144,
+                                                    width: orientation ==
+                                                            Orientation
+                                                                .landscape
+                                                        ? 256
+                                                        : 144,
                                                     decoration: new BoxDecoration(
-                                                        color: Colors.grey
-                                                            .shade200,
-                                                        shape: BoxShape
-                                                            .rectangle,
+                                                        color: Colors
+                                                            .grey.shade200,
+                                                        shape:
+                                                            BoxShape.rectangle,
                                                         border: Border.all(
                                                             width: 1.0,
-                                                            color: Colors
-                                                                .black26),
-                                                        borderRadius: BorderRadius
-                                                            .all(Radius
-                                                                .circular(
+                                                            color:
+                                                                Colors.black26),
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
                                                                     5.0))),
-                                                    padding:
-                                                        EdgeInsets.all(8),
+                                                    padding: EdgeInsets.all(8),
                                                     child: Row(
-                                                      mainAxisSize: MainAxisSize.max,
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .start,
@@ -222,10 +220,14 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                           width: 8,
                                                         ),
                                                         Container(
-                                                          width: orientation==Orientation.landscape ? 206 : 94,
+                                                          width: orientation ==
+                                                                  Orientation
+                                                                      .landscape
+                                                              ? 206
+                                                              : 94,
                                                           child: Text(
-                                                            widget.customer
-                                                                .Email,
+                                                            widget
+                                                                .customer.Email,
                                                             style:
                                                                 estimateTextStyle(),
                                                             overflow:
@@ -237,25 +239,23 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                     ),
                                                   ),
                                                   Container(
-                                                    margin:
-                                                        EdgeInsets.only(
-                                                            left: 8),
+                                                    margin: EdgeInsets.only(
+                                                        left: 8),
                                                     width: 144,
                                                     decoration: new BoxDecoration(
-                                                        color: Colors.grey
-                                                            .shade200,
-                                                        shape: BoxShape
-                                                            .rectangle,
+                                                        color: Colors
+                                                            .grey.shade200,
+                                                        shape:
+                                                            BoxShape.rectangle,
                                                         border: Border.all(
                                                             width: 1.0,
-                                                            color: Colors
-                                                                .black26),
-                                                        borderRadius: BorderRadius
-                                                            .all(Radius
-                                                                .circular(
+                                                            color:
+                                                                Colors.black26),
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
                                                                     5.0))),
-                                                    padding:
-                                                        EdgeInsets.all(8),
+                                                    padding: EdgeInsets.all(8),
                                                     child: Row(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -271,9 +271,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                               .toString(),
                                                           style:
                                                               estimateTextStyle(),
-                                                          overflow:
-                                                              TextOverflow
-                                                                  .ellipsis,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
                                                       ],
                                                     ),
@@ -285,41 +284,39 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                               height: 8,
                                             ),
                                             Align(
-                                              alignment:
-                                                  Alignment.centerLeft,
+                                              alignment: Alignment.centerLeft,
                                               child: Row(
-                                                mainAxisSize:
-                                                    MainAxisSize.min,
+                                                mainAxisSize: MainAxisSize.min,
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .center,
+                                                    CrossAxisAlignment.center,
                                                 children: <Widget>[
                                                   Container(
-                                                    width: orientation==Orientation.landscape ? 256 : 144,
+                                                    width: orientation ==
+                                                            Orientation
+                                                                .landscape
+                                                        ? 256
+                                                        : 144,
                                                     height: 48,
                                                     decoration: new BoxDecoration(
-                                                        color: Colors.grey
-                                                            .shade200,
-                                                        shape: BoxShape
-                                                            .rectangle,
+                                                        color: Colors
+                                                            .grey.shade200,
+                                                        shape:
+                                                            BoxShape.rectangle,
                                                         border: Border.all(
                                                             width: 1.0,
-                                                            color: Colors
-                                                                .black26),
-                                                        borderRadius: BorderRadius
-                                                            .all(Radius
-                                                                .circular(
+                                                            color:
+                                                                Colors.black26),
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
                                                                     5.0))),
-                                                    padding:
-                                                        EdgeInsets.all(8),
+                                                    padding: EdgeInsets.all(8),
                                                     child:
                                                         DropdownButtonHideUnderline(
-                                                      child:
-                                                          DropdownButton<
-                                                              String>(
-                                                        items: _days.map(
-                                                            (String
-                                                                dropDownStringItem) {
+                                                      child: DropdownButton<
+                                                          String>(
+                                                        items: _days.map((String
+                                                            dropDownStringItem) {
                                                           return DropdownMenuItem<
                                                               String>(
                                                             value:
@@ -343,20 +340,32 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                                 _currentValueSelected) {
                                                               case "After 15 days":
                                                                 {
-                                                                  nextDate =
-                                                                      DateFormat('MM/dd/yyyy').format(DateTime.now().add(Duration(days: 15)));
+                                                                  nextDate = DateFormat(
+                                                                          'MM/dd/yyyy')
+                                                                      .format(DateTime
+                                                                              .now()
+                                                                          .add(Duration(
+                                                                              days: 15)));
                                                                 }
                                                                 break;
                                                               case "After 30 days":
                                                                 {
-                                                                  nextDate =
-                                                                      DateFormat('MM/dd/yyyy').format(DateTime.now().add(Duration(days: 30)));
+                                                                  nextDate = DateFormat(
+                                                                          'MM/dd/yyyy')
+                                                                      .format(DateTime
+                                                                              .now()
+                                                                          .add(Duration(
+                                                                              days: 30)));
                                                                 }
                                                                 break;
                                                               case "After 60 days":
                                                                 {
-                                                                  nextDate =
-                                                                      DateFormat('MM/dd/yyyy').format(DateTime.now().add(Duration(days: 60)));
+                                                                  nextDate = DateFormat(
+                                                                          'MM/dd/yyyy')
+                                                                      .format(DateTime
+                                                                              .now()
+                                                                          .add(Duration(
+                                                                              days: 60)));
                                                                 }
                                                                 break;
                                                             }
@@ -369,24 +378,22 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                   ),
                                                   Container(
                                                     width: 144,
-                                                    margin:
-                                                        EdgeInsets.only(
-                                                            left: 8),
+                                                    margin: EdgeInsets.only(
+                                                        left: 8),
                                                     decoration: new BoxDecoration(
-                                                        color: Colors.grey
-                                                            .shade200,
-                                                        shape: BoxShape
-                                                            .rectangle,
+                                                        color: Colors
+                                                            .grey.shade200,
+                                                        shape:
+                                                            BoxShape.rectangle,
                                                         border: Border.all(
                                                             width: 1.0,
-                                                            color: Colors
-                                                                .black26),
-                                                        borderRadius: BorderRadius
-                                                            .all(Radius
-                                                                .circular(
+                                                            color:
+                                                                Colors.black26),
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
                                                                     5.0))),
-                                                    padding:
-                                                        EdgeInsets.all(8),
+                                                    padding: EdgeInsets.all(8),
                                                     child: Row(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -401,9 +408,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                           nextDate,
                                                           style:
                                                               estimateTextStyle(),
-                                                          overflow:
-                                                              TextOverflow
-                                                                  .ellipsis,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
                                                       ],
                                                     ),
@@ -414,9 +420,11 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                           ],
                                         ),
                                         Column(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
                                           mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
                                               "Amount",
@@ -436,8 +444,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                 highlightElevation: 2,
                                                 shape: RoundedRectangleBorder(
                                                     borderRadius:
-                                                    new BorderRadius.circular(
-                                                        36.0),
+                                                        new BorderRadius
+                                                            .circular(36.0),
                                                     side: BorderSide(
                                                         color: Colors.white12)),
                                                 disabledColor: Colors.black,
@@ -451,18 +459,22 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                     bottom: 12),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
                                                   children: <Widget>[
                                                     Icon(Icons.add),
                                                     Text(
                                                       "Add Product",
-                                                      style: customButtonTextStyle(),
+                                                      style:
+                                                          customButtonTextStyle(),
                                                     ),
                                                   ],
                                                 ),
                                                 onPressed: () {
-                                                  _productNameController.text = "";
-                                                  _descriptionController.text = "";
+                                                  _productNameController.text =
+                                                      "";
+                                                  _descriptionController.text =
+                                                      "";
                                                   _quantityController.text = "";
                                                   _rateController.text = "";
                                                   _discountController.text = "";
@@ -524,7 +536,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                                   .start,
                                                           children: <Widget>[
                                                             Row(
-                                                              children: <Widget>[
+                                                              children: <
+                                                                  Widget>[
                                                                 Icon(MdiIcons
                                                                     .cubeOutline),
                                                                 SizedBox(
@@ -545,7 +558,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                               height: 8,
                                                             ),
                                                             Row(
-                                                              children: <Widget>[
+                                                              children: <
+                                                                  Widget>[
                                                                 Icon(MdiIcons
                                                                     .text),
                                                                 SizedBox(
@@ -569,16 +583,18 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                               height: 8,
                                                             ),
                                                             Row(
-                                                              children: <Widget>[
+                                                              children: <
+                                                                  Widget>[
                                                                 Icon(MdiIcons
                                                                     .calendarClock),
                                                                 SizedBox(
                                                                   width: 16,
                                                                 ),
                                                                 Text(
-                                                                  formatDate(_productList[
-                                                                  index]
-                                                                      .Date),
+                                                                  formatDate(
+                                                                      _productList[
+                                                                              index]
+                                                                          .Date),
                                                                   style:
                                                                       listTextStyle(),
                                                                 )
@@ -600,7 +616,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                               mainAxisSize:
                                                                   MainAxisSize
                                                                       .min,
-                                                              children: <Widget>[
+                                                              children: <
+                                                                  Widget>[
                                                                 Icon(MdiIcons
                                                                     .layers),
                                                                 SizedBox(
@@ -620,7 +637,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                               mainAxisSize:
                                                                   MainAxisSize
                                                                       .min,
-                                                              children: <Widget>[
+                                                              children: <
+                                                                  Widget>[
                                                                 Icon(MdiIcons
                                                                     .cashUsdOutline),
                                                                 SizedBox(
@@ -640,14 +658,16 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                               mainAxisSize:
                                                                   MainAxisSize
                                                                       .min,
-                                                              children: <Widget>[
+                                                              children: <
+                                                                  Widget>[
                                                                 Icon(MdiIcons
                                                                     .cashUsd),
                                                                 SizedBox(
                                                                   width: 16,
                                                                 ),
                                                                 RichText(
-                                                                  text: TextSpan(
+                                                                  text:
+                                                                      TextSpan(
                                                                     style: Theme.of(
                                                                             context)
                                                                         .textTheme
@@ -658,17 +678,14 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                                           text:
                                                                               "${_discountController.text == "0.0" ? _productList[index].Price.replaceAllMapped(reg, mathFunc) : "${_productList[index].Price.replaceAllMapped(reg, mathFunc)}"}",
                                                                           style: TextStyle(
-                                                                              fontWeight:
-                                                                                  FontWeight.bold,
+                                                                              fontWeight: FontWeight.bold,
                                                                               color: Colors.black)),
                                                                       _productList[index].Discount ==
                                                                               "0.00"
                                                                           ? TextSpan()
                                                                           : TextSpan(
-                                                                              text:
-                                                                                  "${_discountController.text == "0.00" ? _productList[index].Price.replaceAllMapped(reg, mathFunc) : " ( ${_productList[index].discountAsPercentage ? "${_productList[index].discount}%" : "\$${_productList[index].discount}"} off )"}",
-                                                                              style:
-                                                                                  TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                                                                              text: "${_discountController.text == "0.00" ? _productList[index].Price.replaceAllMapped(reg, mathFunc) : " ( ${_productList[index].discountAsPercentage ? "${_productList[index].discount}%" : "\$${_productList[index].discount}"} off )"}",
+                                                                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
                                                                     ],
                                                                   ),
                                                                 ),
@@ -727,16 +744,24 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                           mainAxisSize: MainAxisSize.min,
                                           children: <Widget>[
                                             Container(
-                                              width: orientation==Orientation.landscape ? 172 : 108,
-                                              height: orientation==Orientation.landscape ? 172 : 108,
+                                              width: orientation ==
+                                                      Orientation.landscape
+                                                  ? 172
+                                                  : 108,
+                                              height: orientation ==
+                                                      Orientation.landscape
+                                                  ? 172
+                                                  : 108,
                                               decoration: new BoxDecoration(
                                                   color: Colors.grey.shade200,
                                                   shape: BoxShape.rectangle,
                                                   border: Border.all(
                                                       width: 1.0,
                                                       color: Colors.black26),
-                                                  borderRadius: BorderRadius.all(
-                                                      Radius.circular(5.0))),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              5.0))),
                                               child: InkWell(
                                                 child: _imageFile == null
                                                     ? Icon(Icons.camera_enhance)
@@ -746,7 +771,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                       ),
                                                 onTap: () {
                                                   FocusScope.of(context)
-                                                      .requestFocus(FocusNode());
+                                                      .requestFocus(
+                                                          FocusNode());
                                                   _showDialog(context);
                                                 },
                                               ),
@@ -754,10 +780,14 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                           ],
                                         ),
                                         SizedBox(
-                                          width: orientation==Orientation.landscape ? 420 : 360,
+                                          width: orientation ==
+                                                  Orientation.landscape
+                                              ? 420
+                                              : 360,
                                           child: Table(
                                             defaultVerticalAlignment:
-                                                TableCellVerticalAlignment.middle,
+                                                TableCellVerticalAlignment
+                                                    .middle,
                                             columnWidths: {
                                               0: FlexColumnWidth(1),
                                               1: FlexColumnWidth(2),
@@ -821,7 +851,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                             signed: true,
                                                             decimal: true),
                                                     decoration: InputDecoration(
-                                                    isDense: true,
+                                                      isDense: true,
                                                       border:
                                                           OutlineInputBorder(),
                                                       prefixIcon: IconButton(
@@ -851,7 +881,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                     child: Text(
                                                       "\$ ${estimateDiscountTotal.toStringAsFixed(2) == "0.00" ? "" : "-"} ${estimateDiscountTotal.toStringAsFixed(2).replaceAllMapped(reg, mathFunc)}",
                                                       style: TextStyle(
-                                                          color: discountColor()),
+                                                          color:
+                                                              discountColor()),
                                                     ),
                                                   ),
                                                 ),
@@ -910,9 +941,10 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                           .middle,
                                                   child: Container(
                                                     decoration: new BoxDecoration(
-                                                        color:
-                                                            Colors.grey.shade200,
-                                                        shape: BoxShape.rectangle,
+                                                        color: Colors
+                                                            .grey.shade200,
+                                                        shape:
+                                                            BoxShape.rectangle,
                                                         border: Border.all(
                                                             width: 1.0,
                                                             color:
@@ -922,12 +954,14 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                                 Radius.circular(
                                                                     5.0))),
                                                     padding: EdgeInsets.only(
-                                                        left: 8, right: 8, top: 0),
+                                                        left: 8,
+                                                        right: 8,
+                                                        top: 0),
                                                     child:
                                                         DropdownButtonHideUnderline(
                                                       child:
                                                           DropdownButtonFormField(
-                                                            isDense: true,
+                                                        isDense: true,
                                                         decoration:
                                                             InputDecoration(
                                                                 enabled: false),
@@ -935,7 +969,6 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                             dropDownStringItem) {
                                                           return DropdownMenuItem<
                                                               String>(
-
                                                             value:
                                                                 dropDownStringItem,
                                                             child: Text(
@@ -1023,8 +1056,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
 /*------------------BASEMENT DRAWING------------------*/
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.all(Radius.circular(4)),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(4)),
                                         color: Colors.white,
                                         boxShadow: [
                                           BoxShadow(
@@ -1059,9 +1092,10 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                               ),
                                             ),
                                             AspectRatio(
-                                              aspectRatio: MediaQuery.of(context)
-                                                  .size
-                                                  .aspectRatio,
+                                              aspectRatio:
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .aspectRatio,
                                               child: Container(
                                                 color: Colors.grey.shade100,
                                                 child: InkWell(
@@ -1086,7 +1120,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                                 picture:
                                                                     _generateDrawingPicture);
                                                           },
-                                                          fullscreenDialog: true),
+                                                          fullscreenDialog:
+                                                              true),
                                                     );
                                                   },
                                                 ),
@@ -1102,8 +1137,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
 /*------------------Agreement DRAWING------------------*/
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.all(Radius.circular(4)),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(4)),
                                         color: Colors.white,
                                         boxShadow: [
                                           BoxShadow(
@@ -1151,7 +1186,8 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                               minLines: 10,
                                               style: customTextStyle(),
                                               decoration: new InputDecoration(
-                                                  fillColor: Colors.grey.shade200,
+                                                  fillColor:
+                                                      Colors.grey.shade200,
                                                   filled: true,
                                                   labelText: "Notes",
                                                   labelStyle: customTextStyle(),
@@ -1225,8 +1261,10 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
                                                                 const EdgeInsets
                                                                     .all(8.0),
                                                             child: Center(
-                                                              child: ListRowItem(
-                                                                icon: Icons.event,
+                                                              child:
+                                                                  ListRowItem(
+                                                                icon:
+                                                                    Icons.event,
                                                                 text:
                                                                     "${DateFormat('MM/dd/yyyy').format(DateTime.now())}",
                                                               ),
@@ -1863,11 +1901,10 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
 
   void showSendMail() async {
     Map<String, dynamic> result = await showSavingForSendMail();
-    if(result!=null) {
+    if (result != null) {
       Navigator.of(context).push(new MaterialPageRoute<Null>(
-          builder: (context) =>
-              SendMail(result, estimateId,
-                  widget.customer, backToCustomerDetails),
+          builder: (context) => SendMail(
+              result, estimateId, widget.customer, backToCustomerDetails),
           fullscreenDialog: true));
     }
   }
@@ -1998,8 +2035,12 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
         setState(() {
           estimateId = "Server Error";
         });
-        showMessage(context, "Network error!", json.decode(result.body)["Message"],
-            Colors.redAccent, Icons.warning);
+        showMessage(
+            context,
+            "Network error!",
+            json.decode(result.body)["Message"],
+            Colors.redAccent,
+            Icons.warning);
         return "";
       }
     } catch (error) {
@@ -2089,7 +2130,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       "Authorization": user.accessToken
     };
     Map<String, String> body = <String, String>{
-      "filename": "${DateTime.now().toIso8601String()}.png",
+      "filename": "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg",
       "filepath": base64.encode(_imageFile.readAsBytesSync())
     };
     var result = await http.post(BASE_URL + API_UPLOAD_FILE,
@@ -2097,6 +2138,9 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
       _CameraImagePath = "https://api.gratecrm.com" + map['filePath'];
+    }else {
+      showMessage(context, "Network error!", json.decode(result.body),
+          Colors.redAccent, Icons.warning);
     }
     setState(() {
       isCameraSaving = false;
@@ -2111,7 +2155,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       "Authorization": user.accessToken
     };
     Map<String, String> body = <String, String>{
-      "filename": "${DateTime.now().toIso8601String()}.png",
+      "filename": "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg",
       "filepath": base64Drawing
     };
     var result = await http.post(BASE_URL + API_UPLOAD_FILE,
@@ -2119,6 +2163,9 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
       _drawingImagePath = "https://api.gratecrm.com" + map['filePath'];
+    }else {
+      showMessage(context, "Network error!", json.decode(result.body),
+          Colors.redAccent, Icons.warning);
     }
     setState(() {
       isDrawingSaving = false;
@@ -2133,7 +2180,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       "Authorization": user.accessToken
     };
     Map<String, String> body = <String, String>{
-      "filename": "${DateTime.now().toIso8601String()}.png",
+      "filename": "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg",
       "filepath": base64HOSignature
     };
     var result = await http.post(BASE_URL + API_UPLOAD_FILE,
@@ -2141,6 +2188,9 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
     if (result.statusCode == 200) {
       Map map = json.decode(result.body);
       _HOSignatureImagePath = "https://api.gratecrm.com" + map['filePath'];
+    }else {
+      showMessage(context, "Network error!", json.decode(result.body),
+          Colors.redAccent, Icons.warning);
     }
     setState(() {
       isHOSignatureSaving = false;
@@ -2152,7 +2202,7 @@ class _AddEstimateFragmentState extends State<AddEstimateFragment> with SingleTi
       setState(() {
         _productList.add(selectedProduct);
       });
-    } catch(error) {
+    } catch (error) {
       print(error);
     }
     estimateTotalCalculation();

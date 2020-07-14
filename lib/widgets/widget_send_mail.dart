@@ -5,21 +5,17 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fullpdfview/flutter_fullpdfview.dart';
 import 'package:flutter_grate_app/model/attachment.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
 import 'package:flutter_grate_app/utils.dart';
-import 'package:flutter_grate_app/widgets/widget_attachment_item.dart';
 import 'package:flutter_grate_app/widgets/widget_pdf.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:pdf/widgets.dart' as pw;
 
 class SendMail extends StatefulWidget {
   Map map;
@@ -346,83 +342,6 @@ class _SendMailState extends State<SendMail>
     setState(() {
       attachments.removeAt(index);
     });
-  }
-
-  Future<void> _showDialog(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-            child: AlertDialog(
-              title: Text("Make A choice"),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    ListTile(
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        _openGallery(context);
-                      },
-                      leading: Icon(Icons.photo_album),
-                      title: Text("Gallery"),
-                    ),
-                    ListTile(
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        _openCamera();
-                      },
-                      leading: Icon(Icons.camera_enhance),
-                      title: Text("Camera"),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
-  }
-
-  _openCamera() async {
-    try {
-      File cameraOutput =
-          (await ImagePicker.pickImage(source: ImageSource.camera));
-      if (cameraOutput != null) {
-        setState(() {
-          attachments.add(Attachment(
-              attachments.length,
-              "",
-              cameraOutput,
-              cameraOutput.path.substring(cameraOutput.path
-                  .lastIndexOf("/", cameraOutput.path.lastIndexOf("."))),
-              true,
-              false,
-              user.accessToken));
-        });
-      }
-    } catch (error) {
-      print(error.message);
-    }
-    Navigator.of(context).pop();
-  }
-
-  _openGallery(BuildContext context) async {
-    File pickFromGallery =
-        (await ImagePicker.pickImage(source: ImageSource.gallery));
-    if (pickFromGallery != null) {
-      setState(() {
-        attachments.add(Attachment(
-            attachments.length,
-            "",
-            pickFromGallery,
-            pickFromGallery.path.substring(pickFromGallery.path
-                .lastIndexOf("/", pickFromGallery.path.lastIndexOf("."))),
-            true,
-            false,
-            user.accessToken));
-      });
-    }
-    Navigator.of(context).pop();
   }
 
   Future<Uint8List> getFileFromUrl(String url) async {

@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:dio/dio.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/estimate.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
@@ -20,7 +19,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../constraints.dart';
@@ -87,28 +86,16 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
   }
 
   Future<void> downloadFile(String url, int index, String invoiceId) async {
-    Dio dio = Dio();
-
-    if (await Permission.storage.request().isGranted) {
-      try {
-        var dir = await ExtStorage.getExternalStoragePublicDirectory(
-            ExtStorage.DIRECTORY_DOWNLOADS);
-        await dio.download(url, "${dir}/${invoiceId}.pdf",
-            onReceiveProgress: (rec, total) {
-          print("Directory: $dir");
-        });
-      } catch (e) {
-        print(e);
-      }
-      setState(() {
-        downloadingList[index] = false;
-        progressString = "Completed";
-      });
-      showDialog(context: context, builder: (context) => deleteSuccess());
-      print("Completed");
-    } else {
-      await Permission.storage.isRestricted;
-    }
+    var response = await http.get(url);
+    final output = await getTemporaryDirectory();
+    final file = File("${output.path}/$invoiceId.pdf");
+    await file.writeAsBytes(response.bodyBytes);
+    final params = SaveFileDialogParams(sourceFilePath: "${output.path}/$invoiceId.pdf", localOnly: true);
+    await FlutterFileDialog.saveFile(params: params);
+    setState(() {
+      downloadingList[index] = false;
+      progressString = "Completed";
+    });
   }
 
   Future<void> _showDialog(BuildContext context) {
