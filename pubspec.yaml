@@ -36,7 +36,9 @@ dependencies:
   hive:
   hive_flutter:
   printing:
-  flutter_file_dialog:
+  dio: ^3.0.0
+  ext_storage: ^1.0.3
+  permission_handler: ^5.0.1+1
 
 dev_dependencies:
   flutter_test:
