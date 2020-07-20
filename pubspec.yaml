@@ -30,13 +30,13 @@ dependencies:
   dotted_border:
   flutter_html:
   url_launcher:
-  youtube_player_flutter:
   flutter_keyboard_visibility:
   flutter_fullpdfview:
   hive:
   hive_flutter:
   printing:
   flutter_file_dialog:
+  progress_dialog: ^1.2.4
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +50,7 @@ flutter:
 
   assets:
     - images/
+    - videos/
 
   fonts:
     - family: Monserrat

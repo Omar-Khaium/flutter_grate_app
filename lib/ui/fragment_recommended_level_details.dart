@@ -4,7 +4,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grate_app/model/customer_details.dart';
 import 'package:flutter_grate_app/model/hive/user.dart';
-import 'package:flutter_grate_app/model/video_preview.dart';
 import 'package:flutter_grate_app/widgets/widget_media_player.dart';
 import 'package:flutter_grate_app/widgets/widget_no_internet.dart';
 import 'package:hive/hive.dart';
@@ -30,7 +29,8 @@ class RecommendedLevelDetails extends StatefulWidget {
   _RecommendedLevelDetails createState() => _RecommendedLevelDetails();
 }
 
-class _RecommendedLevelDetails extends State<RecommendedLevelDetails> with SingleTickerProviderStateMixin {
+class _RecommendedLevelDetails extends State<RecommendedLevelDetails>
+    with SingleTickerProviderStateMixin {
   List<String> _videoLinks = [
     "Eb5QhpcRHVg",
     "3HIV1Q8Oxsw",
@@ -38,6 +38,14 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> with Singl
     "gat8ZT7nP8s",
     "dwYzWVMLQ_k",
     "bBCM6G5Jvpk",
+  ];
+  List<String> _videoOfflineLinks = [
+    "videos/Level-1.mp4",
+    "videos/Level-2.mp4",
+    "videos/Level-3.mp4",
+    "videos/Level-4.mp4",
+    "videos/Level-5.mp4",
+    "videos/Level-6.mp4",
   ];
 
   bool isLoading = false;
@@ -73,17 +81,19 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> with Singl
       ),
       floatingActionButton: FloatingActionButton.extended(
         elevation: 8,
-        onPressed: offline ? null : () {
-          showDialog(context: context, builder: (_) => loadingAlert());
-          _save();
-        },
+        onPressed: offline
+            ? null
+            : () {
+                showDialog(context: context, builder: (_) => loadingAlert());
+                _save();
+              },
         icon: Icon(Icons.save),
         label: Text("Save"),
         backgroundColor: offline ? Colors.grey : Colors.black,
       ),
       backgroundColor: Colors.white,
       body: OrientationBuilder(
-        builder: (context, orientation){
+        builder: (context, orientation) {
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -349,39 +359,72 @@ class _RecommendedLevelDetails extends State<RecommendedLevelDetails> with Singl
                       width: double.infinity,
                       height: double.infinity,
                       margin: EdgeInsets.only(left: 16, right: 16, top: 16),
-                      child: offline ? NoInternetConnectionWidget(refreshConnectivity) : Stack(
-                        children: <Widget>[
-                          InkWell(
-                            onTap: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VideoPlayerScreen(url: _videoLinks[widget.index - 1],),fullscreenDialog: true)),
-                            child: Image.network(
-                              "https://img.youtube.com/vi/${_videoLinks[widget.index - 1]}/maxresdefault.jpg",
-                              fit: BoxFit.contain,
-                              loadingBuilder: (BuildContext context, Widget child,
-                                  ImageChunkEvent loadingProgress) {
-                                if (loadingProgress == null) {
-                                  isLoading = false;
-                                  return child;
-                                }
-                                isLoading = true;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes
-                                        : null,
+                      child: offline
+                          ? NoInternetConnectionWidget(refreshConnectivity)
+                          : Stack(
+                              children: <Widget>[
+                                InkWell(
+                                  onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              VideoPlayerScreen(
+                                                url: _videoOfflineLinks[
+                                                    widget.index - 1],
+                                              ),
+                                          fullscreenDialog: true)),
+                                  child: Image.network(
+                                    "https://img.youtube.com/vi/${_videoLinks[widget.index - 1]}/maxresdefault.jpg",
+                                    fit: BoxFit.contain,
+                                    loadingBuilder: (BuildContext context,
+                                        Widget child,
+                                        ImageChunkEvent loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        isLoading = false;
+                                        return child;
+                                      }
+                                      isLoading = true;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes
+                                              : null,
+                                        ),
+                                      );
+                                    },
                                   ),
-                                );
-                              },
+                                ),
+                                isLoading
+                                    ? Container()
+                                    : Positioned(
+                                        left: 0,
+                                        right: 0,
+                                        top:
+                                            orientation == Orientation.landscape
+                                                ? 144
+                                                : 72,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            MdiIcons.youtube,
+                                            color: Color(0xFFff0000),
+                                            size: 144,
+                                          ),
+                                          onPressed: () => Navigator.of(context)
+                                              .push(MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      VideoPlayerScreen(
+                                                        url: _videoLinks[
+                                                            widget.index - 1],
+                                                      ),
+                                                  fullscreenDialog: true)),
+                                        ),
+                                      )
+                              ],
                             ),
-                          ),
-                          isLoading ? Container() : Positioned(
-                            left: 0,
-                            right: 0,
-                            top: orientation == Orientation.landscape ? 144 : 72,
-                            child: IconButton(icon: Icon(MdiIcons.youtube, color: Color(0xFFff0000), size: 144,),onPressed: ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VideoPlayerScreen(url: _videoLinks[widget.index - 1],),fullscreenDialog: true)),),
-                          )
-                        ],
-                      ),
                     ),
                   ),
                 ),

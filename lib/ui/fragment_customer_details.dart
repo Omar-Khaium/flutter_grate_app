@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
 import 'dart:io';
 import 'dart:ui';
 
@@ -74,7 +75,6 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
   User user;
 
   List<bool> downloadingList = [];
-
   var progressString = "0%";
   @override
   void initState() {
@@ -896,13 +896,9 @@ class _CustomerDetailsFragmentState extends State<CustomerDetailsFragment>
                                                                               0,
                                                                           left:
                                                                               0,
-                                                                          child:
-                                                                              Visibility(
-                                                                            visible:
-                                                                                downloadingList[index],
-                                                                            child:
-                                                                                CircularProgressIndicator(),
-                                                                          ),
+                                                                          child: Visibility(
+                                                                              visible: downloadingList[index],
+                                                                              child: CircularProgressIndicator()),
                                                                         )
                                                                       ],
                                                                     ),
